@@ -95,7 +95,13 @@
             padding: 0.1em 0.2em;
         }
         .description {
-            font-size: 0.85em;
+            display: none;
+            background-color: #222d;
+            padding: 0.5em;
+            position: absolute;
+        }
+        .letter:hover ~ .description {
+            display: block;
         }
         input[type="range"] {
             vertical-align: top;
@@ -168,6 +174,7 @@
         .drawing canvas {
             margin: auto;
             max-height: 100vh !important;
+            max-width: 100%;
             background-color: white;
         }
     </style>
@@ -222,14 +229,15 @@
         -->
     </aside>
     <script>
-        a
         const options = {
-            radius: {letter: "𐡀", min: 0, max: 3000, step: 10},
-            segments: {letter: "𐡀", min: 100, max: 10000, step: 100},
+            radius: {letter: "𐡀", description: "radius of circle", type: "slider", min: 0, max: 3000, step: 10},
+            segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", type: "slider", min: 100, max: 10000, step: 100},
+            fps: {letter: "𐡔", description: "frames per second", type: "slider", min: 1, max: 1000, step: 1},
         };
         const defaults = {
             radius: 100,
-            segments: 1000
+            segments: 1000,
+            fps: 60,
         };
         let optionValues = JSON.parse(JSON.stringify(defaults));
 
@@ -238,16 +246,18 @@
             Object.keys(options).forEach(n => {
                 const o = options[n];
                 const v = optionValues[n];
-                rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" id="option-${n}"><div class="value">${v}</div></label>`;
+                if (o.type === "slider") {
+                    rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" id="option-${n}"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+                }
             })
             document.querySelector(".bitsnbobs").innerHTML = rendered;
         }
         setupOptions();
 
         function handleOptionInput(e) {
-            optionValues[e.name] = e.value;
-            e.parentElement.querySelector(".value").innerText = e.value;
-            restartRendering();
+            optionValues[e.name] = parseInt(e.value);
+            e.parentElement.querySelector(".value").innerText = parseInt(e.value);
+            restartRendering(optionValues);
         }
         function refreshRenderedOption(name) {
             const e = document.querySelector(`.bitsnbobs [name=${name}]`);
@@ -261,7 +271,7 @@
         function applyPreset(preset) {
             optionValues = Object.assign(optionValues, preset);
             refreshAllRenderedOptions();
-            restartRendering();
+            restartRendering(optionValues);
         }
 
         function restartRendering() {
@@ -272,38 +282,17 @@
         <canvas></canvas>
     </div>
     <script>
-        let dimensions = [2000, 2000];
+        let dimensions = [2048, 2048];
 
         ////////////////////////////////////////////////////////////////////////
 
         let canvas = document.getElementsByTagName("canvas")[0];
 
-        let w, h, dpr, W, H;
-
-        if (dimensions) {
-            w = W = dimensions[0];
-            h = H = dimensions[1];
-            canvas.style.maxHeight = "100%";
-            canvas.style.maxWidth = "100%";
-            canvas.setAttribute("width", W);
-            canvas.setAttribute("height", H);
-        } else {
-            // set height and width correctly on retina devices
-            // w, h: logical pixels
-            // W, H: physical pixels
-            w = window.innerWidth;
-            h = window.innerHeight;
-            dpr = 1;
-            if (window.devicePixelRatio) {
-                dpr = window.devicePixelRatio;
-                canvas.style.width = w + "px";
-                canvas.style.height = h + "px";
-                W = w * dpr;
-                H = h * dpr;
-            }
-            canvas.setAttribute("width", W);
-            canvas.setAttribute("height", H);
-        }
+        let w, h;
+        w = dimensions[0];
+        h = dimensions[1];
+        canvas.setAttribute("width", w);
+        canvas.setAttribute("height", h);
 
         // based on https://stackoverflow.com/a/16245768
         function htmlToObjectURL(html) {
@@ -379,57 +368,51 @@
         }
 
         let ctx = canvas.getContext("2d");
+        let inter = null;
 
         let r = Math.random;
 
-        // generate initial line
-        let center = [W / 2, 0];
-        let radius = 1000;
-        let segments = 10000;
-        let line1 = [];
-        for (let i = 0; i < segments/2; i++) {
-            /*let x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
-            let y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);*/
+        function restartRendering(opts) {
 
-            /*let x, y;
-            if (i < segments / 4) {
-                x = center[0] - radius + 2 * radius * (i / (segments / 4));
-                y = center[1] - radius;
-            } else if (i < segments / 2) {
-                x = center[0] + radius;
-                y = center[1] - radius + 2 * radius * ((i - segments / 4) / (segments / 4));
-            } else if (i < 3 * segments / 4) {
-                x = center[0] + radius - 2 * radius * ((i - segments / 2) / (segments / 4));
-                y = center[1] + radius;
-            } else {
-                x = center[0] - radius;
-                y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
-            }*/
+            clearInterval(inter);
+            ctx.clearRect(0, 0, w, h);
 
-            let x = center[0] - radius + 2 * radius * (i / segments * 2);
-            let y = center[1];
+            // generate initial line
+            let center = [w / 2, h / 2];
+            let radius = opts.radius;
+            let segments = opts.segments;
+            line = [];
+            for (let i = 0; i < segments; i++) {
+                /*let x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
+                let y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);*/
 
-            line1.push([x,y]);
-        }
-        let line2 = [];
-        for (let i = 0; i < segments/2; i++) {
-            let x = center[0] - radius + 2 * radius * (i / segments * 2);
-            let y = center[1] + H/3;
+                let x, y;
+                if (i < segments / 4) {
+                    x = center[0] - radius + 2 * radius * (i / (segments / 4));
+                    y = center[1] - radius;
+                } else if (i < segments / 2) {
+                    x = center[0] + radius;
+                    y = center[1] - radius + 2 * radius * ((i - segments / 4) / (segments / 4));
+                } else if (i < 3 * segments / 4) {
+                    x = center[0] - radius + 2 * radius * ((i - segments / 2) / (segments / 4));
+                    y = center[1] + radius;
+                } else {
+                    x = center[0] - radius;
+                    y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
+                }
 
-            line2.push([x,y]);
-        }
-        let lines = [line1, line2];
+                line.push([x,y]);
+            }
 
-        // thing goes brr
-        let n = 0;
-        let inter = setInterval(() => {
-            if (n++ > 5000) return;
+            // thing goes brr
+            let n = 0;
+            inter = setInterval(() => {
+                if (n++ > 5000) return;
 
-            ctx.beginPath();
+                ctx.beginPath();
 
-            // draw
-            lines = lines.map((l, li) => {
-                l = l.map((p, i) => {
+                // draw
+                line = line.map((p, i) => {
 
                     let x = p[0];
                     let y = p[1];
@@ -440,17 +423,16 @@
                         ctx.lineTo(x, y);
                     }
 
-                    x = center[0] + (x - center[0] + r() - 0.5) * 1.001 + 0.5 * li;
-                    y = center[1] + (y - center[1] + r() - 0.5) + 3;
+                    x = center[0] + (x - center[0] + r() - 0.5) * 0.999 ** n + Math.cos(n/100);
+                    y = center[1] + (y - center[1] + r() - 0.5) * 0.999 ** n - Math.sin(i/100);
 
-                    return rotate(center, [x,y], 0.001 * (li + 1));
+                    return rotate([500,500], [x,y], 0.01);
                 });
-
-                ctx.strokeStyle = "rgba(0,0,0,0.03)";
+                ctx.strokeStyle = "rgba(0,0,0,1)";
                 ctx.stroke();
+            }, 1000 / opts.fps);
+        }
 
-                return l;
-            });
-        }, 1000/60);
+        restartRendering(optionValues);
     </script>
 </body>

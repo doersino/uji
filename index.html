@@ -220,7 +220,7 @@
         https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
 
         TODO
-        * make options actually affect the drawing
+        * add all the relevant options
         * make presets work (once selected, hover state persists until another selected to sliders changed)
         * make buttons work
         * add colors etc.
@@ -230,16 +230,23 @@
     </aside>
     <script>
         const options = {
+            shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", type: "slider", min: 1, max: 2, step: 1},
             radius: {letter: "𐡀", description: "radius of circle", type: "slider", min: 0, max: 3000, step: 10},
             segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", type: "slider", min: 100, max: 10000, step: 100},
-            fps: {letter: "𐡔", description: "frames per second", type: "slider", min: 1, max: 1000, step: 1},
+            fps: {letter: "𐡚", description: "frames per second", type: "slider", min: 1, max: 1000, step: 1},
+            iterations: {letter: "𐡘", description: "iterations before stopping", type: "slider", min: 10, max: 5000, step: 1},
+            skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", type: "slider", min: 0, max: 1, step: 0.01},
         };
         const defaults = {
-            radius: 100,
+            shape: 2,
+            radius: 1000,
             segments: 1000,
             fps: 60,
+            iterations: 1000,
+            skipchance: 0.4
         };
         let optionValues = JSON.parse(JSON.stringify(defaults));
+        //optionValues = JSON.parse("{\"shape\":2,\"radius\":1000,\"segments\":1600,\"fps\":11,\"iterations\":59,\"skipchance\":0.4}");
 
         function setupOptions() {
             let rendered = "";
@@ -255,8 +262,8 @@
         setupOptions();
 
         function handleOptionInput(e) {
-            optionValues[e.name] = parseInt(e.value);
-            e.parentElement.querySelector(".value").innerText = parseInt(e.value);
+            optionValues[e.name] = parseFloat(e.value);
+            e.parentElement.querySelector(".value").innerText = parseFloat(e.value);
             restartRendering(optionValues);
         }
         function refreshRenderedOption(name) {
@@ -383,22 +390,24 @@
             let segments = opts.segments;
             line = [];
             for (let i = 0; i < segments; i++) {
-                /*let x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
-                let y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);*/
-
                 let x, y;
-                if (i < segments / 4) {
-                    x = center[0] - radius + 2 * radius * (i / (segments / 4));
-                    y = center[1] - radius;
-                } else if (i < segments / 2) {
-                    x = center[0] + radius;
-                    y = center[1] - radius + 2 * radius * ((i - segments / 4) / (segments / 4));
-                } else if (i < 3 * segments / 4) {
-                    x = center[0] - radius + 2 * radius * ((i - segments / 2) / (segments / 4));
-                    y = center[1] + radius;
-                } else {
-                    x = center[0] - radius;
-                    y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
+                if (opts.shape == 1) {
+                    x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
+                    y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);
+                } else if (opts.shape == 2) {
+                    if (i < segments / 4) {
+                        x = center[0] - radius + 2 * radius * (i / (segments / 4));
+                        y = center[1] - radius;
+                    } else if (i < segments / 2) {
+                        x = center[0] + radius;
+                        y = center[1] - radius + 2 * radius * ((i - segments / 4) / (segments / 4));
+                    } else if (i < 3 * segments / 4) {
+                        x = center[0] + radius - 2 * radius * ((i - segments / 2) / (segments / 4));
+                        y = center[1] + radius;
+                    } else {
+                        x = center[0] - radius;
+                        y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
+                    }
                 }
 
                 line.push([x,y]);
@@ -407,7 +416,7 @@
             // thing goes brr
             let n = 0;
             inter = setInterval(() => {
-                if (n++ > 5000) return;
+                if (n++ > opts.iterations) clearInterval(inter);
 
                 ctx.beginPath();
 
@@ -417,7 +426,7 @@
                     let x = p[0];
                     let y = p[1];
 
-                    if (i == 0 || r() > 0.4) {
+                    if (i == 0 || r() < opts.skipchance) {
                         ctx.moveTo(x, y);
                     } else {
                         ctx.lineTo(x, y);

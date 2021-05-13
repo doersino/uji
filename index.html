@@ -181,13 +181,6 @@
     </style>
 </head>
 <body>
-    <aside class="buttons">
-        <button name="reset">reset</button>
-        <button name="playpause">pause</button>
-        <button name="download">download</button>
-        <button name="share">share</button>
-        <button name="randomize">randomize</button>
-    </aside>
     <aside class="sidebar">
         <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: #eee; fill: none;" viewBox="0 0 52 52">
             <g transform="translate(2,2)">
@@ -212,6 +205,13 @@
         </div>
         <div class="bitsnbobs"></div>
     </aside>
+    <aside class="buttons">
+        <button name="stop" onclick="stop()">stop</button>
+        <button name="reset" onclick="refresh()">reset</button>
+        <button name="download" onclick="download()">download</button>
+        <button name="share">share</button>
+        <button name="randomize">randomize</button>
+    </aside>
     <div class="drawing">
         <canvas></canvas>
     </div>
@@ -224,8 +224,8 @@ https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
 
 TODO
 * add all the relevant options
-* make presets work (once selected, hover state persists until another selected to sliders changed)
-* make buttons work
+* make presets work (once selected, hover state persists until another selected or sliders changed)
+* make buttons work (randomize: integer in range, but float for ones with "." in step)
 * add colors etc.
 * maybe add square mode, or some other things that require multi-selects instead of buttons
 * make work on mobile (square at top, scrollable list on bottom)

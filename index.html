@@ -99,6 +99,7 @@
             background-color: #222d;
             padding: 0.5em;
             position: absolute;
+            z-index: 1000;
         }
         .letter:hover ~ .description {
             display: block;
@@ -202,246 +203,30 @@
         </svg>
         <p class="hero">A minimalist generative art thing – play with the sliders and press the buttons. Find out <a href="https://github.com/doersino/uji">more on GitHub.</a></p>
         <hr>
+        <p>Presets:</p>
         <div class="presets">
             <button name="preset1">ⴲ</button>
             <button name="preset2">ⵅ</button>
             <button name="preset3">ⵓ</button>
             <button name="preset4">ⵍ</button>
         </div>
-        <div class="bitsnbobs">
-            <label><div class="letter">𐡀</div><input type="range" min="1" max="100" value="50"><div class="value">50</div><div class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</div></label>
-            <label><div class="letter">𐡔</div><input type="range" min="1" max="100" value="50" class="red"><div class="value">100</div></label>
-            <label><div class="letter">𐡋</div><input type="range" min="1" max="100" value="50"><div class="value">0.25</div></label>
-            <hr>
-        </div>
-        <!--
-        https://en.m.wikipedia.org/wiki/Imperial_Aramaic_(Unicode_block)
-        https://en.m.wikipedia.org/wiki/Buhid_(Unicode_block)
-        https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
-
-        TODO
-        * add all the relevant options
-        * make presets work (once selected, hover state persists until another selected to sliders changed)
-        * make buttons work
-        * add colors etc.
-        * maybe add square mode, or some other things that require multi-selects instead of buttons
-        * make work on mobile (square at top, scrollable list on bottom)
-        -->
+        <div class="bitsnbobs"></div>
     </aside>
-    <script>
-        const options = {
-            shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", type: "slider", min: 1, max: 2, step: 1},
-            radius: {letter: "𐡀", description: "radius of circle", type: "slider", min: 0, max: 3000, step: 10},
-            segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", type: "slider", min: 100, max: 10000, step: 100},
-            fps: {letter: "𐡚", description: "frames per second", type: "slider", min: 1, max: 1000, step: 1},
-            iterations: {letter: "𐡘", description: "iterations before stopping", type: "slider", min: 10, max: 5000, step: 1},
-            skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", type: "slider", min: 0, max: 1, step: 0.01},
-        };
-        const defaults = {
-            shape: 2,
-            radius: 1000,
-            segments: 1000,
-            fps: 60,
-            iterations: 1000,
-            skipchance: 0.4
-        };
-        let optionValues = JSON.parse(JSON.stringify(defaults));
-        //optionValues = JSON.parse("{\"shape\":2,\"radius\":1000,\"segments\":1600,\"fps\":11,\"iterations\":59,\"skipchance\":0.4}");
-
-        function setupOptions() {
-            let rendered = "";
-            Object.keys(options).forEach(n => {
-                const o = options[n];
-                const v = optionValues[n];
-                if (o.type === "slider") {
-                    rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" id="option-${n}"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
-                }
-            })
-            document.querySelector(".bitsnbobs").innerHTML = rendered;
-        }
-        setupOptions();
-
-        function handleOptionInput(e) {
-            optionValues[e.name] = parseFloat(e.value);
-            e.parentElement.querySelector(".value").innerText = parseFloat(e.value);
-            restartRendering(optionValues);
-        }
-        function refreshRenderedOption(name) {
-            const e = document.querySelector(`.bitsnbobs [name=${name}]`);
-            const v = optionValues[name];
-            e.value = v;
-            e.parentElement.querySelector(".value").innerText = v;
-        }
-        function refreshAllRenderedOptions() {
-            Object.keys(options).forEach(refreshRenderedOption);
-        }
-        function applyPreset(preset) {
-            optionValues = Object.assign(optionValues, preset);
-            refreshAllRenderedOptions();
-            restartRendering(optionValues);
-        }
-
-        function restartRendering() {
-            // clear interval, reset, apply options, restart
-        }
-    </script>
     <div class="drawing">
         <canvas></canvas>
     </div>
-    <script>
-        let dimensions = [2048, 2048];
-
-        ////////////////////////////////////////////////////////////////////////
-
-        let canvas = document.getElementsByTagName("canvas")[0];
-
-        let w, h;
-        w = dimensions[0];
-        h = dimensions[1];
-        canvas.setAttribute("width", w);
-        canvas.setAttribute("height", h);
-
-        // based on https://stackoverflow.com/a/16245768
-        function htmlToObjectURL(html) {
-            const sliceSize = 512;
-            const byteArrays = [];
-
-            for (let offset = 0; offset < html.length; offset += sliceSize) {
-                const slice = html.slice(offset, offset + sliceSize);
-
-                const byteNumbers = new Array(slice.length);
-                for (let i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
-                }
-
-                const byteArray = new Uint8Array(byteNumbers);
-                byteArrays.push(byteArray);
-            }
-
-            const blob = new Blob(byteArrays, {type: 'text/html'});
-            const url = URL.createObjectURL(blob)
-            return url;
-        }
-
-        function canvasToDataURL(canvas) {
-            return canvas.toDataURL();
-        }
-
-        function downloadFile(hrefData, filename) {
-            let a = document.createElement("a");
-            a.href = hrefData;
-            a.setAttribute("download", filename);
-            document.body.appendChild(a);
-            a.click();
-            a.outerHTML = "";
-        }
-
-        function download() {
-            let filename = "art_" + new Date().toISOString().replace(/\:/g, ".");
-            downloadFile(htmlToObjectURL(document.documentElement.outerHTML), filename + ".html")
-            setTimeout(() => {downloadFile(canvasToDataURL(canvas), filename + ".png");}, 100);  // safari doesn't like two simultaneous downloads
-        }
-
-        function refresh() {
-            location.reload(true)
-        }
-
-        function stop() {
-            clearInterval(inter);
-        }
-
-        // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on
-        // http://stackoverflow.com/a/2259502
-        function rotate(o, p, angle) {
-            var s = Math.sin(angle);
-            var c = Math.cos(angle);
-
-            // copy point
-            p = [p[0],p[1]];
-
-            // translate point back to origin
-            p[0] -= o[0];
-            p[1] -= o[1];
-
-            // rotate point
-            var xnew = p[0] * c - p[1] * s;
-            var ynew = p[0] * s + p[1] * c;
-
-            // translate point back:
-            p[0] = xnew + o[0];
-            p[1] = ynew + o[1];
-
-            return p;
-        }
-
-        let ctx = canvas.getContext("2d");
-        let inter = null;
-
-        let r = Math.random;
-
-        function restartRendering(opts) {
-
-            clearInterval(inter);
-            ctx.clearRect(0, 0, w, h);
-
-            // generate initial line
-            let center = [w / 2, h / 2];
-            let radius = opts.radius;
-            let segments = opts.segments;
-            line = [];
-            for (let i = 0; i < segments; i++) {
-                let x, y;
-                if (opts.shape == 1) {
-                    x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
-                    y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);
-                } else if (opts.shape == 2) {
-                    if (i < segments / 4) {
-                        x = center[0] - radius + 2 * radius * (i / (segments / 4));
-                        y = center[1] - radius;
-                    } else if (i < segments / 2) {
-                        x = center[0] + radius;
-                        y = center[1] - radius + 2 * radius * ((i - segments / 4) / (segments / 4));
-                    } else if (i < 3 * segments / 4) {
-                        x = center[0] + radius - 2 * radius * ((i - segments / 2) / (segments / 4));
-                        y = center[1] + radius;
-                    } else {
-                        x = center[0] - radius;
-                        y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
-                    }
-                }
-
-                line.push([x,y]);
-            }
-
-            // thing goes brr
-            let n = 0;
-            inter = setInterval(() => {
-                if (n++ > opts.iterations) clearInterval(inter);
-
-                ctx.beginPath();
-
-                // draw
-                line = line.map((p, i) => {
-
-                    let x = p[0];
-                    let y = p[1];
-
-                    if (i == 0 || r() < opts.skipchance) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-
-                    x = center[0] + (x - center[0] + r() - 0.5) * 0.999 ** n + Math.cos(n/100);
-                    y = center[1] + (y - center[1] + r() - 0.5) * 0.999 ** n - Math.sin(i/100);
-
-                    return rotate([500,500], [x,y], 0.01);
-                });
-                ctx.strokeStyle = "rgba(0,0,0,1)";
-                ctx.stroke();
-            }, 1000 / opts.fps);
-        }
-
-        restartRendering(optionValues);
-    </script>
+    <script src="script.js"></script>
 </body>
+<!--
+https://en.m.wikipedia.org/wiki/Imperial_Aramaic_(Unicode_block)
+https://en.m.wikipedia.org/wiki/Buhid_(Unicode_block)
+https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
+
+TODO
+* add all the relevant options
+* make presets work (once selected, hover state persists until another selected to sliders changed)
+* make buttons work
+* add colors etc.
+* maybe add square mode, or some other things that require multi-selects instead of buttons
+* make work on mobile (square at top, scrollable list on bottom)
+-->

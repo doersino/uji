@@ -88,10 +88,10 @@
         .value {
             display: inline-block;
             position: absolute;
-            width: 3em;
+            width: 7em;
             pointer-events: none;
             text-align: right;
-            margin-left: -3em;
+            margin-left: -7em;
             padding: 0.1em 0.2em;
         }
         .description {
@@ -158,12 +158,30 @@
         button:hover {
             background-color: #aaa;
         }
+        .presets {
+            padding-bottom: 1.2em;
+            text-align: right;
+            padding-right: 0.5em;
+        }
         .presets button {
             font-family: NotoSansTifinagh;
             font-size: 1.3em;
             width: 2em;
+            height: 2em;
             padding: 0.2em;
+            margin-right: 1.2em;
+            margin-bottom: 1.2em;
+            border-radius: 99em;
         }
+        .presets button:nth-child(even) {
+            margin-top: 1.6em;
+            margin-left: -1.6em;
+            position: absolute;
+        }
+        .presets button.selected {
+            background-color: #aaa;
+        }
+
         .drawing {
             position: fixed;
             top: 0;
@@ -196,13 +214,8 @@
         </svg>
         <p class="hero">A minimalist generative art thing – play with the sliders and press the buttons. Find out <a href="https://github.com/doersino/uji">more on GitHub.</a></p>
         <hr>
-        <p>Presets:</p>
-        <div class="presets">
-            <button name="preset1">ⴲ</button>
-            <button name="preset2">ⵅ</button>
-            <button name="preset3">ⵓ</button>
-            <button name="preset4">ⵍ</button>
-        </div>
+        <div class="presets"></div>
+        <hr>
         <div class="bitsnbobs"></div>
     </aside>
     <aside class="buttons">

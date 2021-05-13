@@ -5,9 +5,12 @@ const dimensions = [2048, 2048];
 const options = {
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", min: 1, max: 2, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
-    rotationspeed: {letter: "R", description: "rotation speed", min: 0, max: 0.2, step: 0.01},
+    rotationspeed: {letter: "R", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
     rotationoriginhori: {letter: "X", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     rotationoriginverti: {letter: "X", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+    expansionhori: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
+    expansionverti: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
+    // TODO colors, etc.
 
     opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01},
 
@@ -28,6 +31,8 @@ const defaults = {
     rotationspeed: 0.01,
     rotationoriginhori: 0.5,
     rotationoriginverti: 0.5,
+    expansionhori: 0.999,
+    expansionverti: 0.999,
 
     opacity: 0.2,
 
@@ -41,21 +46,22 @@ const defaults = {
     horicenter: 0.5,
     vericenter: 0.5,
 };
+
 let optionValues = JSON.parse(JSON.stringify(defaults));
-//optionValues = JSON.parse("{\"shape\":2,\"radius\":1000,\"segments\":1600,\"fps\":11,\"iterations\":59,\"skipchance\":0.4}");
 
 function setupOptions() {
     let rendered = "";
     Object.keys(options).forEach(n => {
         const o = options[n];
         const v = optionValues[n];
-        rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" id="option-${n}"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
-    })
+        rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+    });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
 }
 setupOptions();
 
 function handleOptionInput(e) {
+    unselectPreset();
     optionValues[e.name] = parseFloat(e.value);
     e.parentElement.querySelector(".value").innerText = parseFloat(e.value);
     restartRendering(optionValues);
@@ -67,16 +73,50 @@ function refreshRenderedOption(name) {
     e.parentElement.querySelector(".value").innerText = v;
 }
 function refreshAllRenderedOptions() {
-    Object.keys(options).forEach(refreshRenderedOption);
+    Object.keys(optionValues).forEach(refreshRenderedOption);
+}
+
+const presets = {
+    "ⴻ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⴼ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⴽ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⴾ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵃ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵅ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵉ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵋ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵌ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵒ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵚ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⵣ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+};
+
+function setupPresets() {
+    let rendered = "";
+    Object.keys(presets).forEach(n => {
+        const p = presets[n];
+        rendered += `<button name="${n}" onclick="handlePresetClick(this)">${n}</button>`;
+    });
+    document.querySelector(".presets").innerHTML = rendered;
+}
+setupPresets();
+
+function handlePresetClick(e) {
+    unselectPreset();
+    const preset = JSON.parse(presets[e.name]);
+    applyPreset(preset);
+    e.classList.add("selected");
 }
 function applyPreset(preset) {
     optionValues = Object.assign(optionValues, preset);
     refreshAllRenderedOptions();
     restartRendering(optionValues);
 }
-
-function restartRendering() {
-    // clear interval, reset, apply options, restart
+function unselectPreset() {
+    const selectedPreset = document.querySelector(".presets .selected");
+    if (selectedPreset) {
+        selectedPreset.classList.remove("selected");
+    }
 }
 
 // based on https://stackoverflow.com/a/16245768
@@ -214,8 +254,8 @@ function restartRendering(opts) {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + r() - 0.5) * 0.999 ** n + Math.cos(n/100);
-            y = center[1] + (y - center[1] + r() - 0.5) * 0.999 ** n - Math.sin(i/100);
+            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori ** n + Math.cos(n/100);
+            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti ** n - Math.sin(i/100);
 
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
         });

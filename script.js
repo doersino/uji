@@ -5,23 +5,37 @@ const dimensions = [2048, 2048];
 const options = {
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", min: 1, max: 2, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
+    rotationspeed: {letter: "R", description: "rotation speed", min: 0, max: 0.2, step: 0.01},
+    rotationoriginhori: {letter: "X", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
+    rotationoriginverti: {letter: "X", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+
+    opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01},
+
     segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
+
     fps: {letter: "𐡚", description: "frames per second", min: 1, max: 1000, step: 1},
     iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 5000, step: 1},
     width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2500, step: 1},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2500, step: 1},
-    horicenter: {letter: "𐡏", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
-    vericenter: {letter: "𐡏", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+    horicenter: {letter: "X", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
+    vericenter: {letter: "X", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
 };
 
 const defaults = {
     shape: 2,
     radius: 1000,
+    rotationspeed: 0.01,
+    rotationoriginhori: 0.5,
+    rotationoriginverti: 0.5,
+
+    opacity: 0.2,
+
     segments: 1000,
+    skipchance: 0.4,
+
     fps: 60,
     iterations: 1000,
-    skipchance: 0.4,
     width: 1024,
     height: 1024,
     horicenter: 0.5,
@@ -189,7 +203,6 @@ function restartRendering(opts) {
 
         ctx.beginPath();
 
-        // draw
         line = line.map((p, i) => {
 
             let x = p[0];
@@ -204,9 +217,9 @@ function restartRendering(opts) {
             x = center[0] + (x - center[0] + r() - 0.5) * 0.999 ** n + Math.cos(n/100);
             y = center[1] + (y - center[1] + r() - 0.5) * 0.999 ** n - Math.sin(i/100);
 
-            return rotate([500,500], [x,y], 0.01);
+            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
         });
-        ctx.strokeStyle = "rgba(0,0,0,1)";
+        ctx.strokeStyle = `rgba(0,0,0,${opts.opacity})`;
         ctx.stroke();
     }, 1000 / opts.fps);
 }

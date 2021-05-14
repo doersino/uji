@@ -26,6 +26,16 @@ const options = {
     vericenter: {letter: "X", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
 };
 
+const optionSections = {
+    general: ["shape", "radius", "horicenter", "vericenter"],
+    rotation: ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
+    expansion: ["expansionhori", "expansionverti"],
+    "line drawing": ["segments", "skipchance", "thickness", "opacity"],
+    canvas: ["width", "height", "fps", "iterations"],
+
+};
+
+// TODO integrate into options?
 const defaults = {
     shape: 2,
     radius: 1000,
@@ -53,10 +63,13 @@ let optionValues = JSON.parse(JSON.stringify(defaults));
 
 function setupOptions() {
     let rendered = "";
-    Object.keys(options).forEach(n => {
-        const o = options[n];
-        const v = optionValues[n];
-        rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+    Object.keys(optionSections).forEach(s => {
+        rendered += `<hr><h2>${s}</h2>`;
+        optionSections[s].forEach(n => {
+            const o = options[n];
+            const v = optionValues[n];
+            rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+        });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
 }

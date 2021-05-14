@@ -41,7 +41,6 @@
             min-height: 100vh;
             background-color: #333;
             padding: 1em;
-            padding-bottom: 7em;
         }
         .logo {
             float: left;
@@ -59,6 +58,10 @@
         .hero {
             margin-top: -0.2em;
         }
+        .werdasliest {
+            margin-top: 10em;
+            opacity: 0.1;
+        }
         a {
             color: inherit;
             opacity: 0.7;
@@ -70,6 +73,14 @@
             border: none;
             height: 1px;
             background-color: #555;
+        }
+        h2 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            margin: 0;
+            margin-bottom: -0.5rem;
+            font-weight: normal;
+            letter-spacing: 0.2em;
         }
 
         .presets {
@@ -260,15 +271,15 @@
         <p class="hero">A minimalist generative art thing – play with the sliders and press the buttons. Find out <a href="https://github.com/doersino/uji">more on GitHub.</a></p>
         <hr>
         <div class="presets"></div>
-        <hr>
         <div class="bitsnbobs"></div>
+        <p class="werdasliest">wer das liest ist doof</p>
     </aside>
     <aside class="actions">
-        <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
-        <div class="button-container"><button class="reset" onclick="refresh()">reset</button></div>
-        <div class="button-container"><button class="download" onclick="download()">download</button></div>
-        <div class="button-container"><button class="share" onclick="share()">share</button></div>
         <div class="button-container"><button class="randomize" onclick="randomize()">randomize</button></div>
+        <div class="button-container"><button class="download" onclick="download()">download</button></div>
+        <div class="button-container"><button class="reset" onclick="refresh()">reset</button></div>
+        <div class="button-container"><button class="share" onclick="share()">share</button></div>
+        <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
     </aside>
     <div class="drawing">
         <canvas></canvas>
@@ -283,6 +294,7 @@ https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
 TODO
 * add sharing
 * add two lines mode? triangle mode?
+* options: add sections
 * add all the relevant options, also colors etc.
 * make work on mobile (square at top, scrollable list on bottom, actions behind hamburger?)
 -->

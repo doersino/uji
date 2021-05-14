@@ -17,7 +17,7 @@ const options = {
     segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
 
-    fps: {letter: "𐡚", description: "frames per second", min: 1, max: 1000, step: 1},
+    fps: {letter: "𐡚", description: "frames per second", min: 1, max: 240, step: 1},
     iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 5000, step: 1},
     width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2500, step: 1},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2500, step: 1},

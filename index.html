@@ -113,10 +113,13 @@
             background-color: #666;
             outline: none;
             border: 0;
+            border-radius: 0;
         }
-        label:hover input[type="range"],
-        input[type="range"]:active {
+        label:hover input[type="range"] {
             background-color: #888;
+        }
+        input[type="range"]:active {
+            background-color: #999 !important;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -159,27 +162,29 @@
             background-color: #aaa;
         }
         .presets {
-            padding-bottom: 1.2em;
-            text-align: right;
-            padding-right: 0.5em;
+            padding-bottom: 1em;
+            margin-left: -1.4em;
         }
         .presets button {
             font-family: NotoSansTifinagh;
-            font-size: 1.3em;
+            font-size: 1.2em;
             width: 2em;
             height: 2em;
             padding: 0.2em;
-            margin-right: 1.2em;
+            margin-left: 1.2em;
             margin-bottom: 1.2em;
             border-radius: 99em;
+            /*border-radius: 0.2em;
+            transform: rotate(-45deg);*/
         }
         .presets button:nth-child(even) {
             margin-top: 1.6em;
-            margin-left: -1.6em;
+            margin-left: -0.4em;
             position: absolute;
         }
         .presets button.selected {
             background-color: #aaa;
+            box-shadow: -0.1em -0.1em 0.4em #0004 inset;
         }
 
         .drawing {

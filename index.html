@@ -56,7 +56,7 @@
             stroke-width: 2px;
             stroke: yellow;
         }
-        p.hero {
+        .hero {
             margin-top: -0.2em;
         }
         a {
@@ -70,6 +70,42 @@
             border: none;
             height: 1px;
             background-color: #555;
+        }
+
+        .presets {
+            padding: 0.5em 0 1.5em;
+            margin-left: -1em;
+        }
+        .presets button {
+            background-color: #ddd;
+            font: inherit;
+            color: black;
+            border: 0;
+            cursor: pointer;
+            font-family: NotoSansTifinagh;
+            font-size: 1.2em;
+            width: 2em;
+            height: 2em;
+            padding: 0.2em;
+            margin-left: 1.2em;
+            margin-bottom: 1.2em;
+            border-radius: 0.2rem;
+            transform: rotate(-45deg);
+            transition: 0.2s;
+        }
+        .presets button:nth-child(even) {
+            margin-top: 1.6em;
+            margin-left: -0.4em;
+            position: absolute;
+        }
+        .presets button:hover {
+            background-color: #aaa;
+            transform: rotate(0deg) scale(0.8);
+        }
+        .presets button.selected {
+            background-color: #aaa;
+            box-shadow: -0.1em 0.1em 0.4em #0004 inset;
+            transform: rotate(45deg);
         }
         .presets + hr {
             margin-top: 0.5em;
@@ -152,6 +188,7 @@
         input[type="range"].red::-webkit-slider-thumb {
             background: red;
         }
+
         .actions {
             position: fixed;
             z-index: 1000;
@@ -163,11 +200,11 @@
         }
         .actions .button-container {
             display: inline-block;
-            width: 2.5em;
+            width: 3em;
         }
         .actions button {
             display: inline-block;
-            transform: rotate(-60deg);
+            transform: rotate(-45deg);
             transform-origin: top left;
             border-radius: 99em;
             background-color: #ddd;
@@ -183,42 +220,10 @@
         }
         .actions button:hover {
             background-color: white;
-            transform: rotate(-62deg) skew(10deg);
+            transform: rotate(-45deg) scaleX(1.2);
         }
-        .presets {
-            padding: 0.5em 0 1.5em;
-            margin-left: -1em;
-        }
-        .presets button {
-            background-color: #ddd;
-            font: inherit;
-            color: black;
-            border: 0;
-            cursor: pointer;
-            font-family: NotoSansTifinagh;
-            font-size: 1.2em;
-            width: 2em;
-            height: 2em;
-            padding: 0.2em;
-            margin-left: 1.2em;
-            margin-bottom: 1.2em;
-            border-radius: 0.2rem;
-            transform: rotate(-45deg);
-            transition: 0.2s;
-        }
-        .presets button:nth-child(even) {
-            margin-top: 1.6em;
-            margin-left: -0.4em;
-            position: absolute;
-        }
-        .presets button:hover {
-            background-color: #aaa;
-            transform: rotate(0deg) scale(0.8);
-        }
-        .presets button.selected {
-            background-color: #aaa;
-            box-shadow: -0.1em 0.1em 0.4em #0004 inset;
-            transform: rotate(45deg);
+        .reset:hover {
+            background-color: orangered !important;
         }
 
         .drawing {
@@ -258,11 +263,11 @@
         <div class="bitsnbobs"></div>
     </aside>
     <aside class="actions">
-        <div class="button-container"><button name="stop" onclick="stop()">stop</button></div>
-        <div class="button-container"><button name="reset" onclick="refresh()">reset</button></div>
-        <div class="button-container"><button name="download" onclick="download()">download</button></div>
-        <div class="button-container"><button name="share">share</button></div>
-        <div class="button-container"><button name="randomize">randomize</button></div>
+        <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
+        <div class="button-container"><button class="reset" onclick="refresh()">reset</button></div>
+        <div class="button-container"><button class="download" onclick="download()">download</button></div>
+        <div class="button-container"><button class="share">share</button></div>
+        <div class="button-container"><button class="randomize">randomize</button></div>
     </aside>
     <div class="drawing">
         <canvas></canvas>

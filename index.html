@@ -192,6 +192,7 @@
             height: calc(2rem - 2px);
             background: #fff;
             border-radius: 0.2rem;
+            outline: none;
         }
         input[type="range"]::-moz-range-thumb {
             width: 1em;
@@ -204,13 +205,25 @@
         input[type="range"].red::-webkit-slider-thumb {
             background: #e67;
         }
+        input[type="range"].red::-moz-range-thumb {
+            background: #e67;
+        }
         input[type="range"].green::-webkit-slider-thumb {
+            background: #5b6;
+        }
+        input[type="range"].green::-moz-range-thumb {
             background: #5b6;
         }
         input[type="range"].blue::-webkit-slider-thumb {
             background: #89f;
         }
+        input[type="range"].blue::-moz-range-thumb {
+            background: #89f;
+        }
         input[type="range"].halftransparent::-webkit-slider-thumb {
+            background: #0005;
+        }
+        input[type="range"].halftransparent::-moz-range-thumb {
             background: #0005;
         }
 

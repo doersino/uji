@@ -1,8 +1,5 @@
-const dimensions = [2048, 2048];
-
-////////////////////////////////////////////////////////////////////////
-
 const options = {
+    // TODO replace letters
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", min: 1, max: 2, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
     rotationspeed: {letter: "R", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
@@ -119,7 +116,7 @@ function refreshAllRenderedOptions() {
 
 const presets = {
     "ⴻ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⴼ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⴼ": "{\"shape\":1,\"radius\":290,\"rotationspeed\":0.005,\"rotationoriginhori\":0.24,\"rotationoriginverti\":0.13,\"expansionhori\":1.001,\"expansionverti\":0.9935,\"thickness\":0.2,\"opacity\":0.9,\"segments\":8900,\"skipchance\":0.4,\"fps\":28,\"iterations\":29,\"width\":1519,\"height\":1791,\"horicenter\":0.5,\"vericenter\":0.53,\"canvasred\":32,\"canvasgreen\":47,\"canvasblue\":47,\"linered\":28,\"linegreen\":174,\"lineblue\":125,\"blendmode\":5}",
     "ⴽ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
     "ⴾ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
     "ⵃ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",

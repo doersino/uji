@@ -19,7 +19,7 @@
         }
 
         :root {
-            --sidebar-width: 22em;
+            --sidebar-width: 22.5em;
         }
 
         * {
@@ -79,7 +79,7 @@
             width: 2rem;
             height: 2rem;
             text-align: center;
-            background-color: #aaa;
+            background-color: #bbb;
             color: black;
             font-size: 1.8em;
             line-height: 1;
@@ -138,34 +138,47 @@
         input[type="range"].red::-webkit-slider-thumb {
             background: red;
         }
-        .buttons {
+        .actions {
             position: fixed;
             z-index: 1000;
-            width: var(--sidebar-width);
             left: 0;
             bottom: 0;
+            padding: 2.5em 0.6em 0;
+            width: var(--sidebar-width);
             background: linear-gradient(to bottom, transparent, #0004 1em, #555 1em, #555 100%);
-            padding: 2em 1em 0.5em;
         }
-        button {
+        .actions .button-container {
+            display: inline-block;
+            width: 2.5em;
+        }
+        .actions button {
+            display: inline-block;
+            transform: rotate(-60deg);
+            transform-origin: top left;
+            border-radius: 99em;
             background-color: #ddd;
             font: inherit;
             color: black;
             border: 0;
             font-size: 1em;
-            padding: 0.35em 0.5em 0.45em 0.5em;
-            margin-bottom: 0.5em;
+            padding: 0.4em 1em 0.5em 1em;
             cursor: pointer;
             text-transform: uppercase;
         }
-        button:hover {
+        .actions button:hover {
             background-color: #aaa;
+            transform: rotate(-55deg);
         }
         .presets {
-            padding-bottom: 1em;
-            margin-left: -1.4em;
+            padding: 0.5em 0 1.5em;
+            margin-left: -1em;
         }
         .presets button {
+            background-color: #ddd;
+            font: inherit;
+            color: black;
+            border: 0;
+            cursor: pointer;
             font-family: NotoSansTifinagh;
             font-size: 1.2em;
             width: 2em;
@@ -173,18 +186,20 @@
             padding: 0.2em;
             margin-left: 1.2em;
             margin-bottom: 1.2em;
-            border-radius: 99em;
-            /*border-radius: 0.2em;
-            transform: rotate(-45deg);*/
+            border-radius: 0.2em;
+            transform: rotate(-45deg);
         }
         .presets button:nth-child(even) {
             margin-top: 1.6em;
             margin-left: -0.4em;
             position: absolute;
         }
+        .presets button:hover {
+            background-color: #aaa;
+        }
         .presets button.selected {
             background-color: #aaa;
-            box-shadow: -0.1em -0.1em 0.4em #0004 inset;
+            box-shadow: -0.1em 0.1em 0.4em #0004 inset;
         }
 
         .drawing {
@@ -223,12 +238,12 @@
         <hr>
         <div class="bitsnbobs"></div>
     </aside>
-    <aside class="buttons">
-        <button name="stop" onclick="stop()">stop</button>
-        <button name="reset" onclick="refresh()">reset</button>
-        <button name="download" onclick="download()">download</button>
-        <button name="share">share</button>
-        <button name="randomize">randomize</button>
+    <aside class="actions">
+        <div class="button-container"><button name="stop" onclick="stop()">stop</button></div>
+        <div class="button-container"><button name="reset" onclick="refresh()">reset</button></div>
+        <div class="button-container"><button name="download" onclick="download()">download</button></div>
+        <div class="button-container"><button name="share">share</button></div>
+        <div class="button-container"><button name="randomize">randomize</button></div>
     </aside>
     <div class="drawing">
         <canvas></canvas>

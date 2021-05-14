@@ -66,25 +66,29 @@
             color: inherit;
             opacity: 0.7;
         }
-        hr, label {
-            margin: 1em 0;
-        }
         hr {
             border: none;
             height: 1px;
             background-color: #555;
+            margin: 1em 0;
+        }
+        label + hr {
+            margin-top: 1.5em;
         }
         h2 {
             font-size: 0.8em;
             text-transform: uppercase;
-            margin: 0;
             margin-bottom: -0.5rem;
+            margin-top: -1.5rem;
+            background-color: #333;
             font-weight: normal;
             letter-spacing: 0.2em;
+            display: inline-block;
+            position: absolute;
         }
 
         .presets {
-            padding: 0.5em 0 1.5em;
+            padding: 0.5em 0 1em;
             margin-left: -1em;
         }
         .presets button {
@@ -123,6 +127,7 @@
         }
         label {
             display: block;
+            margin: 1em 0;
         }
         .letter {
             font-family: NotoSansImperialAramaic, sans-serif;
@@ -197,7 +202,16 @@
             border-radius: 0.2rem;
         }
         input[type="range"].red::-webkit-slider-thumb {
-            background: red;
+            background: #e67;
+        }
+        input[type="range"].green::-webkit-slider-thumb {
+            background: #5b6;
+        }
+        input[type="range"].blue::-webkit-slider-thumb {
+            background: #89f;
+        }
+        input[type="range"].halftransparent::-webkit-slider-thumb {
+            background: #0005;
         }
 
         .actions {
@@ -218,7 +232,7 @@
             transform: rotate(-90deg);
             transform-origin: bottom left;
             border-radius: 0.2em;
-            background-color: #aaa;
+            background-color: #ccc;
             font: inherit;
             color: black;
             border: 0;
@@ -231,7 +245,7 @@
             margin: 0.1em;
         }
         .actions button:hover {
-            background-color: #ddd;
+            background-color: #eee;
             letter-spacing: 0.1em;
         }
         .reset:hover {

@@ -13,7 +13,7 @@ const options = {
     thickness: {letter: "T", description: "line thiccness in pixels", min: 0.1, max: 10, step: 0.1},
     // TODO colors, etc.
 
-    opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01},
+    opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01, class: "halftransparent"},
 
     segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
@@ -24,14 +24,26 @@ const options = {
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1},
     horicenter: {letter: "X", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     vericenter: {letter: "X", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+
+    canvasred: {letter: "R", description: "red component of background color", min: 0, max: 255, step: 1, class: "red"},
+    canvasgreen: {letter: "G", description: "green component of background color", min: 0, max: 255, step: 1, class: "green"},
+    canvasblue: {letter: "B", description: "blue component of background color", min: 0, max: 255, step: 1, class: "blue"},
+    // TODO binary: draw background at all? (or white)
+
+    linered: {letter: "R", description: "red component of line color", min: 0, max: 255, step: 1, class: "red"},
+    linegreen: {letter: "G", description: "green component of line color", min: 0, max: 255, step: 1, class: "green"},
+    lineblue: {letter: "B", description: "blue component of line color", min: 0, max: 255, step: 1, class: "blue"},
+
+    blendmode: {letter: "M", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
 };
 
 const optionSections = {
-    general: ["shape", "radius", "horicenter", "vericenter"],
-    rotation: ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
-    expansion: ["expansionhori", "expansionverti"],
-    "line drawing": ["segments", "skipchance", "thickness", "opacity"],
-    canvas: ["width", "height", "fps", "iterations"],
+    "": ["shape", "radius", "horicenter", "vericenter"],
+    "expansion": ["expansionhori", "expansionverti"],
+    "rotation": ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
+    "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "opacity", "blendmode"],
+    "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue"],
+    "nitpicky details": ["fps", "iterations"],
 
 };
 
@@ -57,6 +69,16 @@ const defaults = {
     height: 1024,
     horicenter: 0.5,
     vericenter: 0.5,
+
+    canvasred: 255,
+    canvasgreen: 255,
+    canvasblue: 255,
+
+    linered: 0,
+    linegreen: 0,
+    lineblue: 0,
+
+    blendmode: 0,
 };
 
 let optionValues = JSON.parse(JSON.stringify(defaults));
@@ -68,7 +90,11 @@ function setupOptions() {
         optionSections[s].forEach(n => {
             const o = options[n];
             const v = optionValues[n];
-            rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+            let c = "";
+            if (o.hasOwnProperty("class")) {
+                c = o.class;
+            }
+            rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" class="${c}"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
@@ -200,7 +226,7 @@ function stop() {
 }
 
 function randomize() {
-    // TODO exclude fps/iterations/size/etc.?
+    // TODO exclude fps/iterations/size/etc.? only randomize a few sliders at a time?
     let randomized = JSON.parse(JSON.stringify(optionValues));
     Object.keys(options).forEach(n => {
         const o = options[n];
@@ -219,11 +245,11 @@ function randomize() {
 }
 
 function generateShareURL(options) {
-    // TODO
+    // TODO for each option, output char and value, append to url of current html doc?
 }
 
 function parseShareURL(url) {
-    // TODO
+    // TODO regex maybe: (.[0-9.]+)+
 }
 
 function share() {
@@ -262,6 +288,7 @@ const ctx = canvas.getContext("2d");
 let inter = null;
 
 let r = Math.random;
+let blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
 
 function restartRendering(opts) {
     let w = opts.width;
@@ -269,8 +296,13 @@ function restartRendering(opts) {
     canvas.setAttribute("width", w);
     canvas.setAttribute("height", h);
 
+    // TODO for export's sake, actually draw a rect with this color
+    canvas.setAttribute("style", `background-color: rgb(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue})`);
+
     clearInterval(inter);
     ctx.clearRect(0, 0, w, h);
+
+    ctx.globalCompositeOperation = blendModes[opts.blendmode];
 
     // generate initial line
     let center = [w * opts.horicenter, h * opts.vericenter];
@@ -324,7 +356,7 @@ function restartRendering(opts) {
 
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
         });
-        ctx.strokeStyle = `rgba(0,0,0,${opts.opacity})`;
+        ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.opacity})`;
         ctx.lineWidth = opts.thickness;
         ctx.stroke();
     }, 1000 / opts.fps);

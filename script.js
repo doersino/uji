@@ -10,6 +10,7 @@ const options = {
     rotationoriginverti: {letter: "X", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
     expansionhori: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
     expansionverti: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
+    thickness: {letter: "T", description: "line thiccness in pixels", min: 0.1, max: 10, step: 0.1},
     // TODO colors, etc.
 
     opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01},
@@ -33,6 +34,7 @@ const defaults = {
     rotationoriginverti: 0.5,
     expansionhori: 0.999,
     expansionverti: 0.999,
+    thickness: 1,
 
     opacity: 0.2,
 
@@ -101,6 +103,10 @@ const presets = {
     "J": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
     "K": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
     "L": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "=": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "+": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "-": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "no": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
 };
 
 function setupPresets() {
@@ -197,6 +203,14 @@ function randomize() {
         randomized[n] = rand;
     });
     applyPreset(randomized);
+}
+
+function generateShareURL(options) {
+    // TODO
+}
+
+function parseShareURL(url) {
+    // TODO
 }
 
 function share() {
@@ -298,6 +312,7 @@ function restartRendering(opts) {
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
         });
         ctx.strokeStyle = `rgba(0,0,0,${opts.opacity})`;
+        ctx.lineWidth = opts.thickness;
         ctx.stroke();
     }, 1000 / opts.fps);
 }

@@ -8,8 +8,8 @@ const options = {
     rotationspeed: {letter: "R", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
     rotationoriginhori: {letter: "X", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     rotationoriginverti: {letter: "X", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
-    expansionhori: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
-    expansionverti: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
+    expansionhori: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
+    expansionverti: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
     // TODO colors, etc.
 
     opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01},
@@ -18,9 +18,9 @@ const options = {
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
 
     fps: {letter: "𐡚", description: "frames per second", min: 1, max: 240, step: 1},
-    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 5000, step: 1},
-    width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2500, step: 1},
-    height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2500, step: 1},
+    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1},
+    width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1},
+    height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1},
     horicenter: {letter: "X", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     vericenter: {letter: "X", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
 };
@@ -40,7 +40,7 @@ const defaults = {
     skipchance: 0.4,
 
     fps: 60,
-    iterations: 1000,
+    iterations: 200,
     width: 1024,
     height: 1024,
     horicenter: 0.5,
@@ -178,6 +178,32 @@ function refresh() {
 
 function stop() {
     clearInterval(inter);
+}
+
+function randomize() {
+    // TODO exclude fps/iterations/size/etc.?
+    let randomized = JSON.parse(JSON.stringify(optionValues));
+    Object.keys(options).forEach(n => {
+        const o = options[n];
+        const v = optionValues[n];
+
+        const minScaled = o.min / o.step;
+        const maxScaled = o.max / o.step;
+        let rand = parseInt(minScaled + Math.random() * (maxScaled - minScaled)) * o.step;
+        // TODO deal with dumb floating point stringification stuff
+        if (!o.step.toString().includes(".")) {
+            rand = parseInt(rand);
+        }
+        randomized[n] = rand;
+    });
+    applyPreset(randomized);
+}
+
+function share() {
+    // TODO generate url (also, if the page was opened with such an url, load that thing)
+    // TODO set url of page to that (or maybe do that on every change?)
+    // TODO copy to clipboard (see mddb)
+
 }
 
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on

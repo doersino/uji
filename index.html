@@ -47,10 +47,10 @@
             float: left;
             width: 52px;
             margin-right: 1em;
-            transition: 0.5s;
+            transition: 0.1s;
         }
         .logo:hover {
-            transform: rotate(3600deg);
+            transform: rotate(-90deg);
         }
         .logo path:hover {
             stroke-width: 2px;
@@ -61,7 +61,7 @@
         }
         a {
             color: inherit;
-            opacity: 0.66;
+            opacity: 0.7;
         }
         hr, label {
             margin: 1em 0;
@@ -82,7 +82,7 @@
             color: black;
             border: 0;
             cursor: pointer;
-            font-family: NotoSansTifinagh;
+            font-family: NotoSansTifinagh, sans-serif;
             font-size: 1.2em;
             width: 2em;
             height: 2em;
@@ -114,7 +114,7 @@
             display: block;
         }
         .letter {
-            font-family: NotoSansImperialAramaic;
+            font-family: NotoSansImperialAramaic, sans-serif;
             display: inline-block;
             width: 2rem;
             height: 2rem;
@@ -207,7 +207,7 @@
             transform: rotate(-90deg);
             transform-origin: bottom left;
             border-radius: 0.2em;
-            background-color: #ddd;
+            background-color: #aaa;
             font: inherit;
             color: black;
             border: 0;
@@ -217,9 +217,10 @@
             text-transform: uppercase;
             box-shadow: 0 0 1em #0004;
             transition: 0.1s;
+            margin: 0.1em;
         }
         .actions button:hover {
-            background-color: #aaa;
+            background-color: #ddd;
             letter-spacing: 0.1em;
         }
         .reset:hover {
@@ -266,8 +267,8 @@
         <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
         <div class="button-container"><button class="reset" onclick="refresh()">reset</button></div>
         <div class="button-container"><button class="download" onclick="download()">download</button></div>
-        <div class="button-container"><button class="share">share</button></div>
-        <div class="button-container"><button class="randomize">randomize</button></div>
+        <div class="button-container"><button class="share" onclick="share()">share</button></div>
+        <div class="button-container"><button class="randomize" onclick="randomize()">randomize</button></div>
     </aside>
     <div class="drawing">
         <canvas></canvas>
@@ -280,10 +281,11 @@ https://en.m.wikipedia.org/wiki/Buhid_(Unicode_block)
 https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
 
 TODO
+* add sharing
+* add two lines mode? triangle mode?
 * add all the relevant options
 * make presets work (once selected, hover state persists until another selected or sliders changed)
 * make buttons work (randomize: integer in range, but float for ones with "." in step)
 * add colors etc.
-* maybe add square mode, or some other things that require multi-selects instead of buttons
 * make work on mobile (square at top, scrollable list on bottom)
 -->

@@ -342,7 +342,7 @@ function restartRendering(opts) {
             let x = p[0];
             let y = p[1];
 
-            if (i == 0 || r() < opts.skipchance) {
+            if (i == 0 || r() < opts.skipchance) {  // TODO fadeout: || n > i % r() * 1000
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);

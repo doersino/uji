@@ -151,7 +151,7 @@ const presets = {
     "ⵄ": "",
     "ⵅ": "",
     "ⵆ": "",
-    "ⵇ": "",
+    /*"ⵇ": "",
     "ⵈ": "",
     "ⵉ": "",
     "ⵊ": "",
@@ -183,7 +183,7 @@ const presets = {
     "ⵤ": "",
     "ⵥ": "",
     "ⵦ": "",
-    "ⵧ": "",
+    "ⵧ": "",*/
 };
 
 function setupPresets() {
@@ -309,27 +309,42 @@ window.addEventListener('load', e => {
     restartRendering(optionValues);
 });
 
-function share() {
-    console.log(generateShareURL(optionValues));
-    // TODO copy to clipboard (see mddb), show centered message on success or preselected noneditable text field on failure
-    /*
-    // ...create text input field...
+function closeShareSheet() {
+    document.querySelector(".share-sheet").style.display = "none";
+}
 
-    textfield.focus();
-    textfield.select();
+function copyShareLink() {
+    const caring = document.querySelector(".caring");
+    caring.focus();
+    caring.select();
 
-    var successful = false;
+    let successful = false;
+    let error = "";
     try {
         successful = document.execCommand("copy");
     } catch (err) {
-        console.log("Unable to copy to clipboard: " + err);
+        error = err;
     }
 
-    button.querySelector("b").innerHTML = successful ? "✅" : "❌";
-    setTimeout(function() {
-        button.querySelector("b").innerHTML = "";
-    }, 1000);
-    */
+    const shareStatus = document.querySelector(".share-status");
+    if (successful) {
+        shareStatus.innerText = "Success!";
+    } else {
+        let text = "Couldn't copy"
+        if (error) text += `(${err})`
+        text += " – try copying the URL manually."
+
+        shareStatus.innerText = text;
+    }
+    shareStatus.style.display = "block";
+}
+
+function share() {
+    const shareUrl = generateShareURL(optionValues);
+    document.querySelector(".caring").value = shareUrl;
+
+    document.querySelector(".share-status").style.display = "none";
+    document.querySelector(".share-sheet").style.display = "block";
 }
 
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on

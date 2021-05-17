@@ -165,7 +165,7 @@
             background-color: #222d;
             padding: 0.5em;
             position: absolute;
-            z-index: 1000;
+            z-index: 100;
             margin-top: -3.7em;
             margin-left: 1.7em;
             transform: rotate(-5deg);
@@ -249,7 +249,7 @@
 
         .actions {
             position: fixed;
-            z-index: 1000;
+            z-index: 200;
             left: 0;
             bottom: 0;
             padding: 1em 3em 1em;
@@ -299,6 +299,76 @@
             max-width: 100%;
             background-color: white;
         }
+
+        .share-sheet {
+            display: none;
+            position: fixed;
+            width: 40em;
+            max-width: 90%;
+            padding: 2em;
+            box-shadow: 0 0 10em black, 0 0 8em black, 0 0 6em darkgray;
+            background-color: #111;
+            left: calc(50% + var(--sidebar-width) / 2);
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 300;
+        }
+        .share-sheet p {
+            margin-bottom: 1em;
+        }
+        .share-close {
+            background: none;
+            border: none;
+            font: inherit;
+            color: #eee;
+            font-size: 2em;
+            padding: 0;
+            margin-top: -0.4em;
+            margin-bottom: 1em;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .share-close:hover {
+            transform: rotate(20deg);
+        }
+        .caring {  /* both share-link and share-text seem to trip some ad blockers, and sharing is caring */
+            background-color: #bbb;
+            border: 0;
+            height: 3em;
+            margin-top: 2em;
+            font: inherit;
+            color: #111;
+            line-height: 1;
+            width: calc(100% - 4em);
+            vertical-align: bottom;
+            padding: 0 1em;
+            border-radius: 0.2em 0 0 0.2em;
+        }
+        .share-copy {
+            background: none;
+            border: none;
+            font: inherit;
+            color: #eee;
+            background-color: #666;
+            height: 3em;
+            width: 4em;
+            cursor: pointer;
+            vertical-align: bottom;
+            text-transform: uppercase;
+            border-radius: 0 0.2em 0.2em 0;
+            transition: 0.1s;
+        }
+        .share-copy:hover {
+            background-color: #888;
+        }
+        .share-copy:active {
+            background-color: #999;
+        }
+        .share-status {
+            display: none;
+            margin-top: 0.5rem;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
@@ -329,6 +399,13 @@
     </aside>
     <div class="drawing">
         <canvas></canvas>
+    </div>
+    <div class="share-sheet">
+        <button class="share-close" onclick="closeShareSheet()">×</button>
+        <p>This link will cause this thing to draw what you're seeing now, <em>again</em>.</p>
+        <p><em>Fun fact:</em> Its location hash follows the same conventions as the filenames of downloaded images, so you can recover the settings from those, too.</p>
+        <input type="text" class="caring" readonly spellcheck="false" value="test"><button class="share-copy" onclick="copyShareLink()">Copy</button>
+        <p class="share-status"></p>
     </div>
     <script src="script.js"></script>
 </body>

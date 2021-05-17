@@ -14,6 +14,12 @@
             src: url('NotoSansImperialAramaic-unhinted/NotoSansImperialAramaic-Regular.ttf') format('truetype');
         }
         @font-face {
+            font-family: 'NotoSansPhoenician';
+            font-weight: 400;
+            font-style: normal;
+            src: url('NotoSansPhoenician-unhinted/NotoSansPhoenician-Regular.ttf') format('truetype');
+        }
+        @font-face {
             font-family: 'NotoSansTifinagh';
             font-weight: 400;
             font-style: normal;
@@ -100,7 +106,7 @@
             color: black;
             border: 0;
             cursor: pointer;
-            font-family: NotoSansTifinagh, sans-serif;
+            font-family: NotoSansTifinagh, NotoSansPhoenician, sans-serif;
             font-size: 1.2em;
             width: 2em;
             height: 2em;
@@ -118,7 +124,7 @@
         }
         .presets button:hover {
             background-color: #aaa;
-            transform: rotate(0deg) scale(0.8);
+            transform: rotate(-30deg) scale(0.9);
         }
         .presets button.selected {
             background-color: #aaa;
@@ -165,6 +171,7 @@
             transform: rotate(-5deg);
             transform-origin: bottom left;
             border-radius: 0.2em;
+            max-width: 30em;
         }
         .letter:hover ~ .description {
             display: block;
@@ -181,6 +188,7 @@
             border-radius: 0;
             transition: 0.1s;
             border-radius: 0 0.2rem 0.2rem 0;
+            padding: 0 1px;
         }
         label:hover input[type="range"] {
             background-color: #888;
@@ -205,28 +213,37 @@
             border-radius: 0;
             border-radius: 0.2rem;
         }
-        input[type="range"].red::-webkit-slider-thumb {
+        .red .letter {
+            background-color: #e67;
+        }
+        .red input[type="range"]::-webkit-slider-thumb {
             background: #e67;
         }
-        input[type="range"].red::-moz-range-thumb {
+        .red input[type="range"]::-moz-range-thumb {
             background: #e67;
         }
-        input[type="range"].green::-webkit-slider-thumb {
+        .green .letter {
+            background-color: #5b6;
+        }
+        .green input[type="range"]::-webkit-slider-thumb {
             background: #5b6;
         }
-        input[type="range"].green::-moz-range-thumb {
+        .green input[type="range"]::-moz-range-thumb {
             background: #5b6;
         }
-        input[type="range"].blue::-webkit-slider-thumb {
+        .blue .letter {
+            background-color: #89f;
+        }
+        .blue input[type="range"]::-webkit-slider-thumb {
             background: #89f;
         }
-        input[type="range"].blue::-moz-range-thumb {
+        .blue input[type="range"]::-moz-range-thumb {
             background: #89f;
         }
-        input[type="range"].halftransparent::-webkit-slider-thumb {
+        .halftransparent input[type="range"]::-webkit-slider-thumb {
             background: #0005;
         }
-        input[type="range"].halftransparent::-moz-range-thumb {
+        .halftransparent input[type="range"]::-moz-range-thumb {
             background: #0005;
         }
 
@@ -307,7 +324,6 @@
     <aside class="actions">
         <div class="button-container"><button class="randomize" onclick="randomize()">randomize</button></div>
         <div class="button-container"><button class="download" onclick="download()">download</button></div>
-        <div class="button-container"><button class="reset" onclick="refresh()">reset</button></div>
         <div class="button-container"><button class="share" onclick="share()">share</button></div>
         <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
     </aside>
@@ -324,7 +340,6 @@ https://en.m.wikipedia.org/wiki/Tifinagh_(Unicode_block)
 TODO
 * add sharing
 * add two lines mode? triangle mode?
-* options: add sections
 * add all the relevant options, also colors etc.
 * make work on mobile (square at top, scrollable list on bottom, actions behind hamburger?)
 -->

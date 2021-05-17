@@ -1,50 +1,62 @@
+// don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys
 const options = {
     // TODO replace letters
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", min: 1, max: 2, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
-    rotationspeed: {letter: "R", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
-    rotationoriginhori: {letter: "X", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
-    rotationoriginverti: {letter: "X", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
-    expansionhori: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
-    expansionverti: {letter: ">", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
-    thickness: {letter: "T", description: "line thiccness in pixels", min: 0.1, max: 10, step: 0.1},
-    // TODO colors, etc.
-
-    opacity: {letter: "X", description: "opacity of line segments", min: 0, max: 1, step: 0.01, class: "halftransparent"},
+    rotationspeed: {letter: "𐤒‎", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
+    rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
+    rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+    expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
+    expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
+    thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1},
 
     segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
 
-    fps: {letter: "𐡚", description: "frames/iterations per second", min: 1, max: 240, step: 1},
+    fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1},
     iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1},
     width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1},
-    horicenter: {letter: "X", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
-    vericenter: {letter: "X", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+    horicenter: {letter: "𐤔", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
+    vericenter: {letter: "𐤘‎", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
 
-    canvasred: {letter: "R", description: "red component of background color", min: 0, max: 255, step: 1, class: "red"},
-    canvasgreen: {letter: "G", description: "green component of background color", min: 0, max: 255, step: 1, class: "green"},
-    canvasblue: {letter: "B", description: "blue component of background color", min: 0, max: 255, step: 1, class: "blue"},
-    // TODO binary: draw background at all? (or white)
+    canvasred: {letter: "𐤏", description: "red component of background color", min: 0, max: 255, step: 1, class: "red"},
+    canvasgreen: {letter: "𐤏", description: "green component of background color", min: 0, max: 255, step: 1, class: "green"},
+    canvasblue: {letter: "𐤏", description: "blue component of background color", min: 0, max: 255, step: 1, class: "blue"},
+    canvasopacity: {letter: "𐤑‎", description: "opacity of background color", min: 0, max: 1, step: 0.01, class: "halftransparent"},
 
-    linered: {letter: "R", description: "red component of line color", min: 0, max: 255, step: 1, class: "red"},
-    linegreen: {letter: "G", description: "green component of line color", min: 0, max: 255, step: 1, class: "green"},
-    lineblue: {letter: "B", description: "blue component of line color", min: 0, max: 255, step: 1, class: "blue"},
+    linered: {letter: "𐤟‎", description: "red component of line color", min: 0, max: 255, step: 1, class: "red"},
+    linegreen: {letter: "𐤟‎", description: "green component of line color", min: 0, max: 255, step: 1, class: "green"},
+    lineblue: {letter: "𐤟‎", description: "blue component of line color", min: 0, max: 255, step: 1, class: "blue"},
+    lineopacity: {letter: "𐤑‎", description: "opacity of line segments", min: 0, max: 1, step: 0.01, class: "halftransparent"},
 
-    blendmode: {letter: "M", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
+    blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
+
+    fadeoutspeed: {letter: "𐡞", description: "TODO (-1 to disable)", min: -1, max: 1000, step: 1},
 };
+
+let optionShorts = {};
+Object.keys(options).forEach(n => {
+    for (let i = 1; i < n.length; i++) {
+        let prefix = n.substring(0, i);
+        if (!Object.values(optionShorts).includes(prefix)) {
+            optionShorts[n] = prefix;
+            break;
+        }
+    }
+});
 
 const optionSections = {
     "": ["shape", "radius", "horicenter", "vericenter"],
-    "expansion": ["expansionhori", "expansionverti"],
+    "expansion": ["expansionhori", "expansionverti", "fadeoutspeed"],
     "rotation": ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
-    "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "opacity", "blendmode"],
-    "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue"],
+    "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode"],
+    "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity"],
     "nitpicky details": ["fps", "iterations"],
 
 };
 
-// TODO integrate into options?
+// TODO integrate into options, or as a preset?
 const defaults = {
     shape: 2,
     radius: 1000,
@@ -55,13 +67,11 @@ const defaults = {
     expansionverti: 0.999,
     thickness: 1,
 
-    opacity: 0.2,
-
     segments: 1000,
     skipchance: 0.4,
 
     fps: 60,
-    iterations: 200,
+    iterations: 100,
     width: 1024,
     height: 1024,
     horicenter: 0.5,
@@ -70,12 +80,16 @@ const defaults = {
     canvasred: 255,
     canvasgreen: 255,
     canvasblue: 255,
+    canvasopacity: 1,
 
     linered: 0,
     linegreen: 0,
     lineblue: 0,
+    lineopacity: 0.4,
 
     blendmode: 0,
+
+    fadeoutspeed: 1000,
 };
 
 let optionValues = JSON.parse(JSON.stringify(defaults));
@@ -91,12 +105,11 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)" class="${c}"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
 }
-setupOptions();
 
 function handleOptionInput(e) {
     unselectPreset();
@@ -115,34 +128,62 @@ function refreshAllRenderedOptions() {
 }
 
 const presets = {
-    "ⴻ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⴼ": "{\"shape\":1,\"radius\":290,\"rotationspeed\":0.005,\"rotationoriginhori\":0.24,\"rotationoriginverti\":0.13,\"expansionhori\":1.001,\"expansionverti\":0.9935,\"thickness\":0.2,\"opacity\":0.9,\"segments\":8900,\"skipchance\":0.4,\"fps\":28,\"iterations\":29,\"width\":1519,\"height\":1791,\"horicenter\":0.5,\"vericenter\":0.53,\"canvasred\":32,\"canvasgreen\":47,\"canvasblue\":47,\"linered\":28,\"linegreen\":174,\"lineblue\":125,\"blendmode\":5}",
-    "ⴽ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⴾ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵃ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵅ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵉ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵋ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵌ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵒ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵚ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "ⵣ": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "A": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "B": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "C": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "D": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "E": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "F": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "G": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "H": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "I": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "J": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "K": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "L": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "=": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "+": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "-": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
-    "no": "{\"shape\":2,\"radius\":1000,\"rotationspeed\":-0.085,\"rotationoriginhori\":0.32,\"rotationoriginverti\":0.5,\"expansionhori\":0.999,\"expansionverti\":0.999,\"opacity\":0.2,\"segments\":1000,\"skipchance\":0.4,\"fps\":60,\"iterations\":1000,\"width\":1024,\"height\":1024,\"horicenter\":0.5,\"vericenter\":0.5}",
+    "ⴰ": "s2r1000ro0.05rot0.39rota0.65e0.999ex0.999t0.5se1000sk0.5f60i115w1024h1024ho0.5v0.5c74ca83can87canv1l217li235lin255line0.69b0fa-1",
+    "ⴱ": "",
+    "ⴲ": "",
+    "ⴳ": "",
+    "ⴴ": "",
+    "ⴵ": "",
+    "ⴶ": "",
+    "ⴷ": "",
+    "ⴸ": "",
+    "ⴹ": "",
+    "ⴺ": "",
+    "ⴻ": "",
+    "ⴼ": "",
+    "ⴽ": "",
+    "ⴾ": "",
+    "ⴿ": "",
+    "ⵀ": "",
+    "ⵁ": "",
+    "ⵂ": "",
+    "ⵃ": "",
+    "ⵄ": "",
+    "ⵅ": "",
+    "ⵆ": "",
+    "ⵇ": "",
+    "ⵈ": "",
+    "ⵉ": "",
+    "ⵊ": "",
+    "ⵋ": "",
+    "ⵌ": "",
+    "ⵍ": "",
+    "ⵎ": "",
+    "ⵏ": "",
+    "ⵐ": "",
+    "ⵑ": "",
+    "ⵒ": "",
+    "ⵓ": "",
+    "ⵔ": "",
+    "ⵕ": "",
+    "ⵖ": "",
+    "ⵗ": "",
+    "ⵘ": "",
+    "ⵙ": "",
+    "ⵚ": "",
+    "ⵛ": "",
+    "ⵜ": "",
+    "ⵝ": "",
+    "ⵞ": "",
+    "ⵟ": "",
+    "ⵠ": "",
+    "ⵡ": "",
+    "ⵢ": "",
+    "ⵣ": "",
+    "ⵤ": "",
+    "ⵥ": "",
+    "ⵦ": "",
+    "ⵧ": "",
 };
 
 function setupPresets() {
@@ -153,11 +194,10 @@ function setupPresets() {
     });
     document.querySelector(".presets").innerHTML = rendered;
 }
-setupPresets();
 
 function handlePresetClick(e) {
     unselectPreset();
-    const preset = JSON.parse(presets[e.name]);
+    const preset = parseShareHash(presets[e.name]);
     applyPreset(preset);
     e.classList.add("selected");
 }
@@ -173,32 +213,6 @@ function unselectPreset() {
     }
 }
 
-// based on https://stackoverflow.com/a/16245768
-function htmlToObjectURL(html) {
-    const sliceSize = 512;
-    const byteArrays = [];
-
-    for (let offset = 0; offset < html.length; offset += sliceSize) {
-        const slice = html.slice(offset, offset + sliceSize);
-
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-        }
-
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, {type: 'text/html'});
-    const url = URL.createObjectURL(blob)
-    return url;
-}
-
-function canvasToDataURL(canvas) {
-    return canvas.toDataURL();
-}
-
 function downloadFile(hrefData, filename) {
     let a = document.createElement("a");
     a.href = hrefData;
@@ -207,15 +221,12 @@ function downloadFile(hrefData, filename) {
     a.click();
     a.outerHTML = "";
 }
-
 function download() {
-    let filename = "art_" + new Date().toISOString().replace(/\:/g, ".");
-    downloadFile(htmlToObjectURL(document.documentElement.outerHTML), filename + ".html")
-    setTimeout(() => {downloadFile(canvasToDataURL(canvas), filename + ".png");}, 100);  // safari doesn't like two simultaneous downloads
-}
-
-function refresh() {
-    location.reload(true)
+    // TODO also include share url hash in filename
+    const date = new Date().toISOString().replace(/\:/g, ".");
+    const hash = generateShareHash(optionValues);
+    let filename = `uji_${date}_${hash}.png`;
+    downloadFile(canvas.toDataURL(), filename);
 }
 
 function stop() {
@@ -241,19 +252,84 @@ function randomize() {
     applyPreset(randomized);
 }
 
-function generateShareURL(options) {
-    // TODO for each option, output char and value, append to url of current html doc?
+function generateShareHash(opts) {
+    let hash = "";
+    Object.keys(opts).forEach(n => {
+        const l = optionShorts[n];
+        const v = opts[n];
+        hash += `${l}${v}`;
+    });
+    return hash;
+}
+
+// TODO maybe pass base url as parameter?
+function generateShareURL(opts) {
+    const baseUrl = window.location.href.replace(window.location.hash, "");
+    const hash = generateShareHash(opts);
+    const url = `${baseUrl}#${hash}`;
+    return url;
+}
+
+function parseShareHash(hash) {
+    const matches = [...hash.matchAll(/([a-z]+)([0-9.]+)/g)];
+    if (!matches) return false;
+    let opts = {};
+    matches.forEach(m => {
+        const n = Object.keys(optionShorts).find(n => optionShorts[n] == m[1]);  // TODO maybe also generate inverted optionShorts to make this more elegant?
+        if (!n) return false;
+        const v = parseFloat(m[2]);
+        if (!v) return false;
+        opts[n] = v;
+    })
+    return opts;
 }
 
 function parseShareURL(url) {
-    // TODO regex maybe: (.[0-9.]+)+
+    const hash = url.split('#')[1];
+    if (!hash) return false;
+    const opts = parseShareHash(hash);
+    return opts;
 }
 
-function share() {
-    // TODO generate url (also, if the page was opened with such an url, load that thing)
-    // TODO set url of page to that (or maybe do that on every change?)
-    // TODO copy to clipboard (see mddb)
+// TODO rename
+function tryApplyingOptionsFromUrl() {
+    const opts = parseShareURL(window.location.href);
+    if (opts) {
+        optionValues = Object.assign(optionValues, opts);
+    }
+    // TODO else defaults or random preset that would also be selected in the presets interface?
+}
 
+window.addEventListener('load', e => {
+    tryApplyingOptionsFromUrl();
+
+    setupPresets();
+    setupOptions();
+
+    restartRendering(optionValues);
+});
+
+function share() {
+    console.log(generateShareURL(optionValues));
+    // TODO copy to clipboard (see mddb), show centered message on success or preselected noneditable text field on failure
+    /*
+    // ...create text input field...
+
+    textfield.focus();
+    textfield.select();
+
+    var successful = false;
+    try {
+        successful = document.execCommand("copy");
+    } catch (err) {
+        console.log("Unable to copy to clipboard: " + err);
+    }
+
+    button.querySelector("b").innerHTML = successful ? "✅" : "❌";
+    setTimeout(function() {
+        button.querySelector("b").innerHTML = "";
+    }, 1000);
+    */
 }
 
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on
@@ -293,11 +369,13 @@ function restartRendering(opts) {
     canvas.setAttribute("width", w);
     canvas.setAttribute("height", h);
 
-    // TODO for export's sake, actually draw a rect with this color
-    canvas.setAttribute("style", `background-color: rgb(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue})`);
-
     clearInterval(inter);
     ctx.clearRect(0, 0, w, h);
+
+    ctx.fillStyle = `rgba(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue},${opts.canvasopacity})`;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
 
     ctx.globalCompositeOperation = blendModes[opts.blendmode];
 
@@ -342,21 +420,20 @@ function restartRendering(opts) {
             let x = p[0];
             let y = p[1];
 
-            if (i == 0 || r() < opts.skipchance) {  // TODO fadeout: || n > i % r() * 1000
+            if (i == 0 || r() < opts.skipchance || (opts.fadeoutspeed > -1 && n > i % r() * opts.fadeoutspeed)) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori ** n + Math.cos(n/100);
-            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti ** n - Math.sin(i/100);
+            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori ** n;
+            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti ** n;
 
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
         });
-        ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.opacity})`;
+
         ctx.lineWidth = opts.thickness;
         ctx.stroke();
+
     }, 1000 / opts.fps);
 }
-
-restartRendering(optionValues);

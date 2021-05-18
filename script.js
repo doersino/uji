@@ -3,7 +3,7 @@ const options = {
     // TODO replace letters
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
-    rotationspeed: {letter: "𐤒", description: "rotation speed (TODO unit – change to degrees?)", min: -0.15, max: 0.15, step: 0.005},
+    rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05},
     rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
     expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
@@ -159,10 +159,10 @@ const presets = {
     "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
     "ⴴ": "s1r2870ro0.005rot0.5rota0.44e0.983ex0.985t0.7se4100sk0f60i613w2134h2134ho0.49v0.49c243ca215can228canv1l85li20lin55line0.52b0fa-1in223re-1tr0tra5.1rotat-1wa966wav268",
     "ⴵ": "s1r610ro0.03rot0.5rota0.44e0.998ex1.002t0.7se7900sk0.62f212i1407w2134h2134ho0.49v0.25c0ca0can0canv1l255li255lin255line1b0fa533in205re18tr0.4tra-2.5rotat-1wa759wav779",
-    "ⴶ": "",
-    "ⴷ": "",
-    "ⴸ": "",
-    "ⴹ": "",
+    "ⴶ": "s2r3000ro0.025rot0.5rota0.5e0.994ex0.994t0.5se8000sk0.74f60i1388w2560h2560ho0.5v0.5c255ca255can255canv1l0li0lin0line0.35b0fa-1in0re-1tr0tra0rotat-1wa-1wav206",
+    "ⴷ": "s2r1560ro0.005rot0.31rota0.69e0.994ex0.994t0.5se8000sk0.74f60i1388w2560h2560ho0.5v0.5c255ca255can255canv1l0li0lin0line0.35b0fa-1in0re-1tr0tra0rotat201wa-1wav206",
+    "ⴸ": "s1r610ro0.03rot0.5rota0.59e0.999ex0.994t2.9se100sk0.62f212i1407w2134h2134ho0.49v0.25c20ca13can6canv1l238li228lin208line1b6fa533in283re18tr0.4tra0rotat158wa759wav779",
+    "ⴹ": "s4r1830ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i2000w2134h2134ho0.91v0.07c243ca215can228canv1l85li20lin55line0.52b0fa939in223re18tr0.4tra0rotat158wa759wav779",
     "ⴺ": "",
     "ⴻ": "",
     "ⴼ": "",
@@ -227,7 +227,7 @@ function handlePresetClick(e) {
     e.classList.add("selected");
 }
 function applyPreset(preset) {
-    // TODO why doesn't this always override? is it because zeros are considered false maybe?
+    optionValues = Object.assign(optionValues, defaults);  // TODO this can be removed if it's clear that no more options will be added and all presets supply all options
     optionValues = Object.assign(optionValues, preset);
     refreshAllRenderedOptions();
     restartRendering(optionValues);
@@ -297,7 +297,7 @@ function generateShareURL(opts) {
 }
 
 function parseShareHash(hash) {
-    const matches = [...hash.matchAll(/([a-z]+)([0-9.]+)/g)];
+    const matches = [...hash.matchAll(/([a-z]+)([0-9.\-]+)/g)];
     if (!matches) return false;
     let opts = {};
     matches.forEach(m => {
@@ -490,7 +490,7 @@ function restartRendering(opts) {
             x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori + opts.translationhori + ((opts.wavinesshori > -1) ? Math.sin(i / opts.wavinesshori) : 0);
             y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti + opts.translationverti + ((opts.wavinessverti > -1) ? Math.sin(i / opts.wavinessverti) : 0);
 
-            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], opts.rotationspeed * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));
+            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], (opts.rotationspeed * (Math.PI / 180)) * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));
         });
 
         ctx.lineWidth = opts.thickness;

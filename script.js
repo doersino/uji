@@ -6,8 +6,8 @@ const options = {
     rotationspeed: {letter: "𐤒", description: "rotation speed (TODO unit – change to degrees?)", min: -0.15, max: 0.15, step: 0.005},
     rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
-    expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
-    expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
+    expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
+    expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
     thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1},
 
     segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
@@ -32,9 +32,19 @@ const options = {
 
     blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
 
-    fadeoutspeed: {letter: "𐡞", description: "TODO (-1 to disable)", min: -1, max: 1000, step: 1},
+    fadeoutspeed: {letter: "𐡞", description: "rate at which line segments disappear in later iterations (-1 to disable)", min: -1, max: 1000, step: 1},
 
     initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1},
+
+    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 2000, step: 1},
+
+    translationhori: {letter: "H", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1},
+    translationverti: {letter: "V", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1},
+
+    rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1},
+
+    wavinesshori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1},
+    wavinessverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1},
 };
 
 let optionShorts = {};
@@ -49,9 +59,10 @@ Object.keys(options).forEach(n => {
 });
 
 const optionSections = {
-    "": ["shape", "radius", "horicenter", "vericenter", "initialrotation"],
-    "expansion": ["expansionhori", "expansionverti", "fadeoutspeed"],
-    "rotation": ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
+    "": ["shape", "radius", "horicenter", "vericenter"],
+    "expansion": ["expansionhori", "expansionverti", "wavinesshori", "wavinessverti", "revealspeed", "fadeoutspeed"],
+    "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod"],
+    "movement": ["translationhori", "translationverti"],
     "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity"],
     "nitpicky details": ["fps", "iterations"],
@@ -60,17 +71,17 @@ const optionSections = {
 
 // TODO integrate into options, or as a preset?
 const defaults = {
-    shape: 2,
-    radius: 1000,
-    rotationspeed: 0.01,
+    shape: 1,
+    radius: 500,
+    rotationspeed: 0,
     rotationoriginhori: 0.5,
     rotationoriginverti: 0.5,
-    expansionhori: 0.999,
-    expansionverti: 0.999,
+    expansionhori: 1,
+    expansionverti: 1,
     thickness: 1,
 
     segments: 1000,
-    skipchance: 0.4,
+    skipchance: 0,
 
     fps: 60,
     iterations: 100,
@@ -87,13 +98,23 @@ const defaults = {
     linered: 0,
     linegreen: 0,
     lineblue: 0,
-    lineopacity: 0.4,
+    lineopacity: 1,
 
     blendmode: 0,
 
-    fadeoutspeed: 1000,
+    fadeoutspeed: -1,
 
     initialrotation: 0,
+
+    revealspeed: -1,
+
+    translationhori: 0,
+    translationverti: 0,
+
+    rotationperiod: -1,
+
+    wavinesshori: -1,
+    wavinessverti: -1,
 };
 
 let optionValues = JSON.parse(JSON.stringify(defaults));
@@ -136,8 +157,8 @@ const presets = {
     "ⴱ": "s1r140ro0.025rot0.5rota0.5e0.9995ex0.9985t0.5se1600sk0.4f60i100w1024h1024ho0.5v0.5c208ca211can223canv1l50li29lin78line1b6fa302in243",
     "ⴲ": "s4r200ro0.035rot0.44rota0.48e1.0005ex1.0005t1se1800sk0.14f60i100w1024h1024ho0.5v0.5c233ca199can177canv1l166li21lin33line0.45b0fa71in173",
     "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
-    "ⴴ": "",
-    "ⴵ": "",
+    "ⴴ": "s1r2870ro0.005rot0.5rota0.44e0.983ex0.985t0.7se4100sk0f60i613w2134h2134ho0.49v0.49c243ca215can228canv1l85li20lin55line0.52b0fa-1in223re-1tr0tra5.1rotat-1wa966wav268",
+    "ⴵ": "s1r610ro0.03rot0.5rota0.44e0.998ex1.002t0.7se7900sk0.62f212i1407w2134h2134ho0.49v0.25c0ca0can0canv1l255li255lin255line1b0fa533in205re18tr0.4tra-2.5rotat-1wa759wav779",
     "ⴶ": "",
     "ⴷ": "",
     "ⴸ": "",
@@ -457,20 +478,19 @@ function restartRendering(opts) {
         ctx.beginPath();
 
         line = line.map((p, i) => {
-
             let x = p[0];
             let y = p[1];
 
-            if (i == 0 || r() < opts.skipchance || (opts.fadeoutspeed > -1 && n > i % r() * opts.fadeoutspeed)) {
+            if (i == 0 || r() < opts.skipchance || (opts.fadeoutspeed > -1 && n > i % r() * opts.fadeoutspeed) || (opts.revealspeed > -1 && i / opts.revealspeed > n)) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori ** n;
-            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti ** n;
+            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori + opts.translationhori + ((opts.wavinesshori > -1) ? Math.sin(i / opts.wavinesshori) : 0);
+            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti + opts.translationverti + ((opts.wavinessverti > -1) ? Math.sin(i / opts.wavinessverti) : 0);
 
-            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], opts.rotationspeed);
+            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], opts.rotationspeed * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));
         });
 
         ctx.lineWidth = opts.thickness;

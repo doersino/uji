@@ -414,4 +414,10 @@ TODO
 * add all the relevant options
 * refine sharing and other buttons, maybe revert to circular with nice icons (randomize at bottom of sidebar, remove stop button, other buttons circular and top right of page with icons?)
 * make work on mobile (square at top, scrollable list on bottom)
+
+maintain defaults in options dict
+those defaults should be zero/no-op style (with 60fps etc.)
+on load, set optionValues to those before doing anything else
+then load from hash or pick a random preset
+on sharing, only pick values that differ from defaults (same goes for presets as a result of this – for presets, also reset all other values to their defaults)
 -->

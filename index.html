@@ -369,12 +369,42 @@
             margin-top: 0.5rem;
             font-size: 0.8em;
         }
+
+        .actions2 {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1em 1em 0 0;
+            z-index: 300;
+        }
+        .actions2 button {
+            font: inherit;
+            font-size: 2em;
+            color: #eee;
+            font-family: NotoSansTifinagh;
+            height: 2em;
+            width: 2em;
+            background-color: rgba(100,100,100,0.7);
+            border-radius: 99em;
+            border: 0;
+            display: block;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+        .actions2 button svg {
+            height: 1em;
+            vertical-align: bottom;
+            padding-bottom: 0.2em;
+        }
+        .actions2 button:hover {
+            background-color: rgba(170,170,170,0.7);
+        }
     </style>
 </head>
 <body>
     <aside class="sidebar">
         <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: #eee; fill: none;" viewBox="0 0 52 52">
-            <g transform="translate(2,2)">
+            <g transform="translate(2, 2)">
                 <path d="M 0,0 L 0,16"></path>
                 <path d="M 32,0 L 32,16"></path>
                 <path d="M 40,0 L 40,32"></path>
@@ -396,6 +426,27 @@
         <div class="button-container"><button class="download" onclick="download()">download</button></div>
         <div class="button-container"><button class="share" onclick="share()">share</button></div>
         <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
+    </aside>
+    <aside class="actions2">
+        <button class="download2" onclick="download()">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; break-inside: avoid; stroke: white; fill: none;" viewBox="0 0 36 44">
+                <g transform="translate(2, -6)">
+                    <path d="M 16,8 L 16,48"></path>
+                    <path d="M 0,16 L 16,48"></path>
+                    <path d="M 16,48 L 32,16"></path>
+                </g>
+            </svg>
+        </button>
+        <button class="share2" onclick="share()">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; break-inside: avoid; stroke: white; fill: gray;" viewBox="0 0 40 48">
+                <g transform="translate(8, 8)">
+                    <path d="M 16,0 C -4.8,0 -4.8,32 16,32" style="fill: none;"></path>
+                    <circle cx="0" cy="16" r="6"></circle>
+                    <circle cx="24" cy="0" r="6"></circle>
+                    <circle cx="24" cy="32" r="6"></circle>
+                </g>
+            </svg>
+        </button>
     </aside>
     <div class="drawing">
         <canvas></canvas>

@@ -1,6 +1,6 @@
 // don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys
 const options = {
-    // TODO replace letters
+    // TODO replace letters, fix invisibly zero-width spaces or whatever after some of them
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
     rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05},

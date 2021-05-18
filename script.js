@@ -1,9 +1,9 @@
 // don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys
 const options = {
     // TODO replace letters
-    shape: {letter: "𐡎", description: "shape (1: circle, 2: square)", min: 1, max: 2, step: 1},
+    shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1},
     radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
-    rotationspeed: {letter: "𐤒‎", description: "rotation speed", min: -0.15, max: 0.15, step: 0.005},
+    rotationspeed: {letter: "𐤒", description: "rotation speed (TODO unit – change to degrees?)", min: -0.15, max: 0.15, step: 0.005},
     rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
     expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.97, max: 1.03, step: 0.0005},
@@ -33,6 +33,8 @@ const options = {
     blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
 
     fadeoutspeed: {letter: "𐡞", description: "TODO (-1 to disable)", min: -1, max: 1000, step: 1},
+
+    initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1},
 };
 
 let optionShorts = {};
@@ -47,7 +49,7 @@ Object.keys(options).forEach(n => {
 });
 
 const optionSections = {
-    "": ["shape", "radius", "horicenter", "vericenter"],
+    "": ["shape", "radius", "horicenter", "vericenter", "initialrotation"],
     "expansion": ["expansionhori", "expansionverti", "fadeoutspeed"],
     "rotation": ["rotationspeed", "rotationoriginhori", "rotationoriginverti"],
     "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode"],
@@ -90,6 +92,8 @@ const defaults = {
     blendmode: 0,
 
     fadeoutspeed: 1000,
+
+    initialrotation: 0,
 };
 
 let optionValues = JSON.parse(JSON.stringify(defaults));
@@ -129,9 +133,9 @@ function refreshAllRenderedOptions() {
 
 const presets = {
     "ⴰ": "s2r1000ro0.05rot0.39rota0.65e0.999ex0.999t0.5se1000sk0.5f60i115w1024h1024ho0.5v0.5c74ca83can87canv1l217li235lin255line0.69b0fa-1",
-    "ⴱ": "",
-    "ⴲ": "",
-    "ⴳ": "",
+    "ⴱ": "s1r140ro0.025rot0.5rota0.5e0.9995ex0.9985t0.5se1600sk0.4f60i100w1024h1024ho0.5v0.5c208ca211can223canv1l50li29lin78line1b6fa302in243",
+    "ⴲ": "s4r200ro0.035rot0.44rota0.48e1.0005ex1.0005t1se1800sk0.14f60i100w1024h1024ho0.5v0.5c233ca199can177canv1l166li21lin33line0.45b0fa71in173",
+    "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
     "ⴴ": "",
     "ⴵ": "",
     "ⴶ": "",
@@ -202,6 +206,7 @@ function handlePresetClick(e) {
     e.classList.add("selected");
 }
 function applyPreset(preset) {
+    // TODO why doesn't this always override? is it because zeros are considered false maybe?
     optionValues = Object.assign(optionValues, preset);
     refreshAllRenderedOptions();
     restartRendering(optionValues);
@@ -278,7 +283,7 @@ function parseShareHash(hash) {
         const n = Object.keys(optionShorts).find(n => optionShorts[n] == m[1]);  // TODO maybe also generate inverted optionShorts to make this more elegant?
         if (!n) return false;
         const v = parseFloat(m[2]);
-        if (!v) return false;
+        if (v === undefined) return false;  // important not to use !v here since !0 => true
         opts[n] = v;
     })
     return opts;
@@ -374,9 +379,10 @@ function rotate(o, p, angle) {
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
 let inter = null;
+let line = null;
 
-let r = Math.random;
-let blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
+const r = Math.random;
+const blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
 
 function restartRendering(opts) {
     let w = opts.width;
@@ -402,8 +408,8 @@ function restartRendering(opts) {
     for (let i = 0; i < segments; i++) {
         let x, y;
         if (opts.shape == 1) {
-            x = center[0] + 2 * radius * Math.cos((i / segments) * 2 * Math.PI);
-            y = center[1] + 2 * radius * Math.sin((i / segments) * 2 * Math.PI);
+            x = center[0] + radius * Math.cos((i / segments) * 2 * Math.PI);
+            y = center[1] + radius * Math.sin((i / segments) * 2 * Math.PI);
         } else if (opts.shape == 2) {
             if (i < segments / 4) {
                 x = center[0] - radius + 2 * radius * (i / (segments / 4));
@@ -418,9 +424,29 @@ function restartRendering(opts) {
                 x = center[0] - radius;
                 y = center[1] + radius - 2 * radius * ((i - 3 * segments / 4) / (segments / 4));
             }
+        } else if (opts.shape == 3) {
+            if (i < segments / 3) {
+                x = center[0] - radius + 2 * radius * (i / (segments / 3));
+                y = center[1] + radius;
+            } else if (i < 2 * segments / 3) {
+                x = center[0] + radius - radius * ((i - segments / 3) / (segments / 3));
+                y = center[1] + radius - 2 * radius * ((i - segments / 3) / (segments / 3));
+            } else {
+                x = center[0] - radius * ((i - 2 * segments / 3) / (segments / 3));
+                y = center[1] - radius + 2 * radius * ((i - 2 * segments / 3) / (segments / 3));
+            }
+        } else if (opts.shape == 4) {
+            x = center[0] - radius + 2 * radius * (i / segments);
+            y = center[1];
         }
 
         line.push([x,y]);
+    }
+
+    if (opts.initialrotation > 0) {
+        line = line.map(p => {
+            return rotate([w / 2, h / 2], p, opts.initialrotation * (Math.PI / 180));
+        });
     }
 
     // thing goes brr
@@ -444,7 +470,7 @@ function restartRendering(opts) {
             x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori ** n;
             y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti ** n;
 
-            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x,y], opts.rotationspeed);
+            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], opts.rotationspeed);
         });
 
         ctx.lineWidth = opts.thickness;

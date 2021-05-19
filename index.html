@@ -256,11 +256,11 @@
         }
         .actions button {
             font: inherit;
-            font-size: 1.33em;
+            font-size: 1.2em;
             color: #111;
             text-transform: uppercase;
             height: 2em;
-            background-color: #ccc;
+            background-color: #ddd;
             border-radius: 0.2rem;
             border: none;
             display: inline-block;
@@ -269,17 +269,25 @@
             transition: 0.2s;
             transform: translateY(-1rem);
             box-shadow: 0 -0.5rem 1rem #0003;
+            padding-bottom: 0.1em;
+            margin-right: 0.5em;
+        }
+        .actions button:last-child {
+            margin-right: 0;
         }
         .actions button svg {
-            height: 1em;
+            height: 0.95em;
             vertical-align: bottom;
             padding-bottom: 0.2em;
             stroke: #111;
         }
         .actions button:hover {
-            background-color: #eee;
+            background-color: #aaa;
             transform: translateY(-1rem) rotate(-3deg);
             transform-origin: bottom left;
+        }
+        .actions button:active {
+            transform: translateY(-10rem) rotate(-3deg);
         }
 
         .drawing {
@@ -425,8 +433,7 @@
 <!--
 TODO
 * add all the relevant options
-* refine sharing and other buttons, maybe revert to circular with nice icons (randomize at bottom of sidebar, remove stop button, other buttons circular and top right of page with icons?)
-* make work on mobile (square at top, scrollable list on bottom)
+* make work on mobile (square at top, scrollable list on bottom), download/sharing on side?
 
 maintain defaults in options dict
 those defaults should be zero/no-op style (with 60fps etc.)

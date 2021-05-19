@@ -483,7 +483,7 @@ function restartRendering(opts) {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori + opts.translationhori + ((opts.wavinesshori > -1) ? Math.sin(i / opts.wavinesshori) : 0);
+            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori + opts.translationhori + ((opts.wavinesshori > -1) ? Math.sin(i / opts.wavinesshori) : 0);  // TODO also amplitude of waviness
             y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti + opts.translationverti + ((opts.wavinessverti > -1) ? Math.sin(i / opts.wavinessverti) : 0);
 
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], (opts.rotationspeed * (Math.PI / 180)) * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));

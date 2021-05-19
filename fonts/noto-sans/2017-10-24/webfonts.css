@@ -1,0 +1,18 @@
+@font-face {
+    font-family: 'NotoSansImperialAramaic';
+    font-weight: 400;
+    font-style: normal;
+    src: url('ttf/NotoSansImperialAramaic-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'NotoSansPhoenician';
+    font-weight: 400;
+    font-style: normal;
+    src: url('ttf/NotoSansPhoenician-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'NotoSansTifinagh';
+    font-weight: 400;
+    font-style: normal;
+    src: url('ttf/NotoSansTifinagh-Regular.ttf') format('truetype');
+}

@@ -127,7 +127,7 @@ const presets = {
     "ⴳ": "s2r520ro0.15e0.996ex0.997se10510i1474line0.02fa1000wa398wav268wavi0.1wavin0.1",
     "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat95wa18wav47wavi0.1wavin0.1",
     "ⴵ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat9wa57wav66wavi0.4wavin0.3j0",
-    "ⴶ": "",
+    "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav355",
     "ⴷ": "",
     "ⴸ": "",
     "ⴹ": "",

@@ -254,7 +254,7 @@
             background: linear-gradient(to bottom, transparent, #0004 1em, #555 1em, #555 100%);
             text-align: center;
         }
-        .actions button {
+        .actions .buttons button {
             font: inherit;
             font-size: 1.2em;
             color: #111;
@@ -272,22 +272,71 @@
             padding-bottom: 0.1em;
             margin-right: 0.5em;
         }
-        .actions button:last-child {
+        .actions .buttons button:last-child {
             margin-right: 0;
         }
-        .actions button svg {
+        .actions .buttons button svg {
             height: 0.95em;
             vertical-align: bottom;
             padding-bottom: 0.2em;
             stroke: #111;
         }
-        .actions button:hover {
+        .actions .buttons button:hover,
+        .actions .buttons button.active {
             background-color: #aaa;
             transform: translateY(-1rem) rotate(-3deg);
             transform-origin: bottom left;
         }
-        .actions button:active {
-            transform: translateY(-10rem) rotate(-3deg);
+        .actions .buttons button.active:hover {
+            background-color: #ddd;
+            transform: translateY(-1rem);
+        }
+
+        .share-sheet {
+            display: none;
+            text-align: left;
+            padding-bottom: 1em;
+        }
+        .share-sheet p {
+            margin-bottom: 1em;
+        }
+        .caring {  /* both share-link and share-text seem to trip some ad blockers, and sharing is caring */
+            background-color: #999;
+            border: 0;
+            height: 3em;
+            margin-top: 1em;
+            font: inherit;
+            color: #111;
+            line-height: 1;
+            width: calc(100% - 4em);
+            vertical-align: bottom;
+            padding: 0 1em;
+            border-radius: 0.2em 0 0 0.2em;
+        }
+        .share-copy {
+            background: none;
+            border: none;
+            font: inherit;
+            background-color: #ddd;
+            height: 3em;
+            width: 4em;
+            cursor: pointer;
+            vertical-align: bottom;
+            text-transform: uppercase;
+            border-radius: 0 0.2em 0.2em 0;
+            transition: 0.1s;
+        }
+        .share-copy:hover {
+            background-color: #aaa;
+        }
+        .share-copy:active {
+            background-color: #aaa;
+        }
+        .share-sheet .share-status {
+            display: none;
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+            font-size: 0.8em;
         }
 
         .drawing {
@@ -303,76 +352,6 @@
             max-height: 100vh !important;
             max-width: 100%;
             background-color: white;
-        }
-
-        .share-sheet {
-            display: none;
-            position: fixed;
-            width: 40em;
-            max-width: 90%;
-            padding: 2em;
-            box-shadow: 0 0 10em black, 0 0 8em black, 0 0 6em darkgray;
-            background-color: #111;
-            left: calc(50% + var(--sidebar-width) / 2);
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 300;
-        }
-        .share-sheet p {
-            margin-bottom: 1em;
-        }
-        .share-close {
-            background: none;
-            border: none;
-            font: inherit;
-            color: #eee;
-            font-size: 2em;
-            padding: 0;
-            margin-top: -0.4em;
-            margin-bottom: 1em;
-            cursor: pointer;
-            transition: 0.1s;
-        }
-        .share-close:hover {
-            transform: rotate(20deg);
-        }
-        .caring {  /* both share-link and share-text seem to trip some ad blockers, and sharing is caring */
-            background-color: #bbb;
-            border: 0;
-            height: 3em;
-            margin-top: 2em;
-            font: inherit;
-            color: #111;
-            line-height: 1;
-            width: calc(100% - 4em);
-            vertical-align: bottom;
-            padding: 0 1em;
-            border-radius: 0.2em 0 0 0.2em;
-        }
-        .share-copy {
-            background: none;
-            border: none;
-            font: inherit;
-            color: #eee;
-            background-color: #666;
-            height: 3em;
-            width: 4em;
-            cursor: pointer;
-            vertical-align: bottom;
-            text-transform: uppercase;
-            border-radius: 0 0.2em 0.2em 0;
-            transition: 0.1s;
-        }
-        .share-copy:hover {
-            background-color: #888;
-        }
-        .share-copy:active {
-            background-color: #999;
-        }
-        .share-status {
-            display: none;
-            margin-top: 0.5rem;
-            font-size: 0.8em;
         }
     </style>
 </head>
@@ -396,37 +375,38 @@
         <div class="bitsnbobs"></div>
     </aside>
     <aside class="actions">
-        <button class="download" onclick="download()">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
-                <g transform="translate(2, -6)">
-                    <path d="M 16,8 L 16,48"></path>
-                    <path d="M 0,16 L 16,48"></path>
-                    <path d="M 16,48 L 32,16"></path>
-                </g>
-            </svg>
-            download
-        </button>
-        <button class="share" onclick="share()">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
-                <g transform="translate(8, 8)">
-                    <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
-                    <circle cx="0" cy="16" r="6" style="fill: #e67;"></circle>
-                    <circle cx="24" cy="0" r="6" style="fill: #5b6;"></circle>
-                    <circle cx="24" cy="32" r="6" style="fill: #89f;"></circle>
-                </g>
-            </svg>
-            share
-        </button>
+        <div class="buttons">
+            <button class="download" onclick="download()">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
+                    <g transform="translate(2, -6)">
+                        <path d="M 16,8 L 16,48"></path>
+                        <path d="M 0,16 L 16,48"></path>
+                        <path d="M 16,48 L 32,16"></path>
+                    </g>
+                </svg>
+                download
+            </button>
+            <button class="share" onclick="share()">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
+                    <g transform="translate(8, 8)">
+                        <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
+                        <circle cx="0" cy="16" r="6" style="fill: #e67;"></circle>
+                        <circle cx="24" cy="0" r="6" style="fill: #5b6;"></circle>
+                        <circle cx="24" cy="32" r="6" style="fill: #89f;"></circle>
+                    </g>
+                </svg>
+                share
+            </button>
+        </div>
+        <div class="share-sheet">
+            <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
+            <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover those from there, too.</p>
+            <input type="text" class="caring" readonly spellcheck="false" value="test"><button class="share-copy" onclick="copyShareLink()">Copy</button>
+            <p class="share-status"></p>
+        </div>
     </aside>
     <div class="drawing">
         <canvas></canvas>
-    </div>
-    <div class="share-sheet">
-        <button class="share-close" onclick="closeShareSheet()">×</button>
-        <p>This link will cause this thing to draw what you're seeing now, <em>again</em>.</p>
-        <p><em>Fun fact:</em> Its location hash follows the same conventions as the filenames of downloaded images, so you can recover the settings from those, too.</p>
-        <input type="text" class="caring" readonly spellcheck="false" value="test"><button class="share-copy" onclick="copyShareLink()">Copy</button>
-        <p class="share-status"></p>
     </div>
     <script src="script.js"></script>
 </body>

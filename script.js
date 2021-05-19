@@ -153,7 +153,7 @@ function refreshAllRenderedOptions() {
 }
 
 const presets = {
-    "ⴰ": "s2r1000ro0.05rot0.39rota0.65e0.999ex0.999t0.5se1000sk0.5f60i115w1024h1024ho0.5v0.5c74ca83can87canv1l217li235lin255line0.69b0fa-1",
+    "ⴰ": "s4r1080ro-0.9rot0.5rota0.5e1ex1t0.5se5600sk0.31f60i201w2560h2560ho0.5v0.5c44ca55can78canv1l163li183lin201line1b6fa201in0re172tr0.9tra0rotat-1wa-1wav355",
     "ⴱ": "s1r140ro0.025rot0.5rota0.5e0.9995ex0.9985t0.5se1600sk0.4f60i100w1024h1024ho0.5v0.5c208ca211can223canv1l50li29lin78line1b6fa302in243",
     "ⴲ": "s4r200ro0.035rot0.44rota0.48e1.0005ex1.0005t1se1800sk0.14f60i100w1024h1024ho0.5v0.5c233ca199can177canv1l166li21lin33line0.45b0fa71in173",
     "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
@@ -331,10 +331,6 @@ window.addEventListener('load', e => {
     restartRendering(optionValues);
 });
 
-function closeShareSheet() {
-    document.querySelector(".share-sheet").style.display = "none";
-}
-
 function copyShareLink() {
     const caring = document.querySelector(".caring");
     caring.focus();
@@ -362,11 +358,20 @@ function copyShareLink() {
 }
 
 function share() {
-    const shareUrl = generateShareURL(optionValues);
-    document.querySelector(".caring").value = shareUrl;
+    const shareButton = document.querySelector(".share");
+    const shareSheet = document.querySelector(".share-sheet");
 
-    document.querySelector(".share-status").style.display = "none";
-    document.querySelector(".share-sheet").style.display = "block";
+    if (shareSheet.style.display == "block") {
+        shareSheet.style.display = "none";
+        shareButton.classList.remove("active");
+    } else {
+        const shareUrl = generateShareURL(optionValues);
+        document.querySelector(".caring").value = shareUrl;
+
+        document.querySelector(".share-status").style.display = "none";
+        shareSheet.style.display = "block";
+        shareButton.classList.add("active");
+    }
 }
 
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on

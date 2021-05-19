@@ -1,58 +1,60 @@
-// don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys
+// don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys; defaults should be zero/no-op thingies
 const options = {
     // TODO replace letters, fix invisibly zero-width spaces or whatever after some of them
-    shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1},
-    radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10},
-    rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05},
-    rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
-    rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
-    expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
-    expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001},
-    thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1},
+    shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1, default: 1},
+    radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10, default: 500},
+    rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05, default: 0},
+    rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
+    rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
+    expansionhori: {letter: "𐤗‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
+    expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
+    thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1, default: 1},
 
-    segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100},
-    skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01},
+    segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100, default: 1000},
+    skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
 
-    fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1},
-    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1},
-    width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1},
-    height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1},
-    horicenter: {letter: "𐤔", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01},
-    vericenter: {letter: "𐤘‎", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01},
+    fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},
+    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1, default: 100},
+    width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1, default: 1024},
+    height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1, default: 1024},
+    horicenter: {letter: "𐤔", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
+    vericenter: {letter: "𐤘‎", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
 
-    canvasred: {letter: "𐤏", description: "red component of background color", min: 0, max: 255, step: 1, class: "red"},
-    canvasgreen: {letter: "𐤏", description: "green component of background color", min: 0, max: 255, step: 1, class: "green"},
-    canvasblue: {letter: "𐤏", description: "blue component of background color", min: 0, max: 255, step: 1, class: "blue"},
-    canvasopacity: {letter: "𐤑‎", description: "opacity of background color", min: 0, max: 1, step: 0.01, class: "halftransparent"},
+    canvasred: {letter: "𐤏", description: "red component of background color", min: 0, max: 255, step: 1, default: 255, class: "red"},
+    canvasgreen: {letter: "𐤏", description: "green component of background color", min: 0, max: 255, step: 1, default: 255, class: "green"},
+    canvasblue: {letter: "𐤏", description: "blue component of background color", min: 0, max: 255, step: 1, default: 255, class: "blue"},
+    canvasopacity: {letter: "𐤑‎", description: "opacity of background color", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
 
-    linered: {letter: "𐤟‎", description: "red component of line color", min: 0, max: 255, step: 1, class: "red"},
-    linegreen: {letter: "𐤟‎", description: "green component of line color", min: 0, max: 255, step: 1, class: "green"},
-    lineblue: {letter: "𐤟‎", description: "blue component of line color", min: 0, max: 255, step: 1, class: "blue"},
-    lineopacity: {letter: "𐤑‎", description: "opacity of line segments", min: 0, max: 1, step: 0.01, class: "halftransparent"},
+    linered: {letter: "𐤟‎", description: "red component of line color", min: 0, max: 255, step: 1, default: 0, class: "red"},
+    linegreen: {letter: "𐤟‎", description: "green component of line color", min: 0, max: 255, step: 1, default: 0, class: "green"},
+    lineblue: {letter: "𐤟‎", description: "blue component of line color", min: 0, max: 255, step: 1, default: 0, class: "blue"},
+    lineopacity: {letter: "𐤑‎", description: "opacity of line segments", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
 
-    blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1},
+    blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1, default: 0},
 
-    fadeoutspeed: {letter: "𐡞", description: "rate at which line segments disappear in later iterations (-1 to disable)", min: -1, max: 1000, step: 1},
+    fadeoutspeed: {letter: "𐡞", description: "rate at which line segments disappear in later iterations (-1 to disable)", min: -1, max: 1000, step: 1, default: -1},
 
-    initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1},
+    initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1, default: 0},
 
-    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 2000, step: 1},
+    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
 
-    translationhori: {letter: "H", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1},
-    translationverti: {letter: "V", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1},
+    translationhori: {letter: "H", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
+    translationverti: {letter: "V", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
 
-    rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1},
+    rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
 
-    wavinesshori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1},
-    wavinessverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1},
+    wavinesshori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinessverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
 };
 
 let optionShorts = {};
+let shortsOptions = {};
 Object.keys(options).forEach(n => {
     for (let i = 1; i < n.length; i++) {
         let prefix = n.substring(0, i);
         if (!Object.values(optionShorts).includes(prefix)) {
             optionShorts[n] = prefix;
+            shortsOptions[prefix] = n;
             break;
         }
     }
@@ -69,54 +71,7 @@ const optionSections = {
 
 };
 
-// TODO integrate into options, or as a preset?
-const defaults = {
-    shape: 1,
-    radius: 500,
-    rotationspeed: 0,
-    rotationoriginhori: 0.5,
-    rotationoriginverti: 0.5,
-    expansionhori: 1,
-    expansionverti: 1,
-    thickness: 1,
-
-    segments: 1000,
-    skipchance: 0,
-
-    fps: 60,
-    iterations: 100,
-    width: 1024,
-    height: 1024,
-    horicenter: 0.5,
-    vericenter: 0.5,
-
-    canvasred: 255,
-    canvasgreen: 255,
-    canvasblue: 255,
-    canvasopacity: 1,
-
-    linered: 0,
-    linegreen: 0,
-    lineblue: 0,
-    lineopacity: 1,
-
-    blendmode: 0,
-
-    fadeoutspeed: -1,
-
-    initialrotation: 0,
-
-    revealspeed: -1,
-
-    translationhori: 0,
-    translationverti: 0,
-
-    rotationperiod: -1,
-
-    wavinesshori: -1,
-    wavinessverti: -1,
-};
-
+const defaults = Object.fromEntries(Object.entries(options).map(([n, o]) => [n, o.default]));
 let optionValues = JSON.parse(JSON.stringify(defaults));
 
 function setupOptions() {
@@ -163,7 +118,8 @@ const presets = {
     "ⴷ": "s2r1560ro0.005rot0.31rota0.69e0.994ex0.994t0.5se8000sk0.74f60i1388w2560h2560ho0.5v0.5c255ca255can255canv1l0li0lin0line0.35b0fa-1in0re-1tr0tra0rotat201wa-1wav206",
     "ⴸ": "s1r610ro0.03rot0.5rota0.59e0.999ex0.994t2.9se100sk0.62f212i1407w2134h2134ho0.49v0.25c20ca13can6canv1l238li228lin208line1b6fa533in283re18tr0.4tra0rotat158wa759wav779",
     "ⴹ": "s4r1830ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i2000w2134h2134ho0.91v0.07c243ca215can228canv1l85li20lin55line0.52b0fa939in223re18tr0.4tra0rotat158wa759wav779",
-    "ⴺ": "",
+    "⌘": "",
+    /*"ⴺ": "",
     "ⴻ": "",
     "ⴼ": "",
     "ⴽ": "",
@@ -176,7 +132,7 @@ const presets = {
     "ⵄ": "",
     "ⵅ": "",
     "ⵆ": "",
-    /*"ⵇ": "",
+    "ⵇ": "",
     "ⵈ": "",
     "ⵉ": "",
     "ⵊ": "",
@@ -222,13 +178,16 @@ function setupPresets() {
 
 function handlePresetClick(e) {
     unselectPreset();
-    const preset = parseShareHash(presets[e.name]);
-    applyPreset(preset);
+    applyPreset(presets[e.name]);
     e.classList.add("selected");
 }
 function applyPreset(preset) {
-    optionValues = Object.assign(optionValues, defaults);  // TODO this can be removed if it's clear that no more options will be added and all presets supply all options
-    optionValues = Object.assign(optionValues, preset);
+    const opts = parseShareHash(preset);
+    applyOptions(opts);
+}
+function applyOptions(opts) {
+    optionValues = Object.assign(optionValues, defaults);
+    optionValues = Object.assign(optionValues, opts);
     refreshAllRenderedOptions();
     restartRendering(optionValues);
 }
@@ -271,12 +230,18 @@ function randomize() {
         }
         randomized[n] = rand;
     });
-    applyPreset(randomized);
+    applyOptions(randomized);
 }
 
 function generateShareHash(opts) {
     let hash = "";
     Object.keys(opts).forEach(n => {
+
+        // omit values identical to defaults
+        if (opts[n] === defaults[n]) {
+            return;
+        }
+
         const l = optionShorts[n];
         const v = opts[n];
         hash += `${l}${v}`;
@@ -297,7 +262,7 @@ function parseShareHash(hash) {
     if (!matches) return false;
     let opts = {};
     matches.forEach(m => {
-        const n = Object.keys(optionShorts).find(n => optionShorts[n] == m[1]);  // TODO maybe also generate inverted optionShorts to make this more elegant?
+        const n = shortsOptions[m[1]];
         if (!n) return false;
         const v = parseFloat(m[2]);
         if (v === undefined) return false;  // important not to use !v here since !0 => true
@@ -313,23 +278,9 @@ function parseShareURL(url) {
     return opts;
 }
 
-// TODO rename
-function tryApplyingOptionsFromUrl() {
-    const opts = parseShareURL(window.location.href);
-    if (opts) {
-        optionValues = Object.assign(optionValues, opts);
-    }
-    // TODO else defaults or random preset that would also be selected in the presets interface?
+function tryExtractingOptionsFromUrl() {
+    return parseShareURL(window.location.href);
 }
-
-window.addEventListener('load', e => {
-    tryApplyingOptionsFromUrl();
-
-    setupPresets();
-    setupOptions();
-
-    restartRendering(optionValues);
-});
 
 function copyShareLink() {
     const caring = document.querySelector(".caring");
@@ -499,3 +450,23 @@ function restartRendering(opts) {
 
     }, 1000 / opts.fps);
 }
+
+function applyRandomPreset() {
+    const p = Math.floor(Math.random() * Object.keys(presets).length);
+    const l = Object.keys(presets)[p];
+    applyPreset(presets[l]);
+    const e = document.querySelector(`.presets button[name=${l}]`)
+    e.classList.add("selected");
+}
+
+window.addEventListener('load', e => {
+    setupPresets();
+    setupOptions();
+
+    const opts = tryExtractingOptionsFromUrl();
+    if (opts) {
+        applyOptions(opts);
+    } else {
+        applyRandomPreset();
+    }
+});

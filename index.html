@@ -55,6 +55,7 @@
             float: left;
             width: 52px;
             margin-right: 1em;
+            margin-top: 0.2em;
             transition: 0.1s;
         }
         .logo:hover {
@@ -94,7 +95,7 @@
         }
 
         .presets {
-            padding: 0.5em 0 1em;
+            padding: 0.5em 2em 1em 0;
             margin-left: -1em;
         }
         .presets button {
@@ -251,7 +252,7 @@
             bottom: 0;
             padding: 1em 1em 0;
             width: var(--sidebar-width);
-            background: linear-gradient(to bottom, transparent, #0004 1em, #555 1em, #555 100%);
+            background: linear-gradient(to bottom, transparent, #0004 1em, #505050 1em, #444 100%);
             text-align: center;
         }
         .actions .buttons button {
@@ -357,19 +358,21 @@
 </head>
 <body>
     <aside class="sidebar">
-        <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: #eee; fill: none;" viewBox="0 0 52 52">
-            <g transform="translate(2, 2)">
-                <path d="M 0,0 L 0,16"></path>
-                <path d="M 32,0 L 32,16"></path>
-                <path d="M 40,0 L 40,32"></path>
-                <path d="M 48,0 L 48,48"></path>
-                <path d="M 0,48 L 24,48"></path>
-                <path d="M 16,32 C -0.8,32 0,16 0,16"></path>
-                <path d="M 16,32 C 32.8,32 32,16 32,16"></path>
-                <path d="M 24,48 C 40.8,48 40,32 40,32"></path>
-            </g>
-        </svg>
-        <p class="hero">A minimalist generative art thing – play with the sliders and press the buttons. Find out <a href="https://github.com/doersino/uji">more on GitHub.</a></p>
+        <div class="introduction">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: #eee; fill: none;" viewBox="0 0 52 52">
+                <g transform="translate(2, 2)">
+                    <path d="M 0,0 L 0,16"></path>
+                    <path d="M 32,0 L 32,16"></path>
+                    <path d="M 40,0 L 40,32"></path>
+                    <path d="M 48,0 L 48,48"></path>
+                    <path d="M 0,48 L 24,48"></path>
+                    <path d="M 16,32 C -0.8,32 0,16 0,16"></path>
+                    <path d="M 16,32 C 32.8,32 32,16 32,16"></path>
+                    <path d="M 24,48 C 40.8,48 40,32 40,32"></path>
+                </g>
+            </svg>
+            <p class="hero">A minimalist generative art thing – play with the sliders and press the buttons. Find out <a href="https://github.com/doersino/uji">more on GitHub.</a></p>
+        </div>
         <hr>
         <div class="presets"></div>
         <div class="bitsnbobs"></div>
@@ -414,10 +417,4 @@
 TODO
 * add all the relevant options
 * make work on mobile (square at top, scrollable list on bottom), download/sharing on side?
-
-maintain defaults in options dict
-those defaults should be zero/no-op style (with 60fps etc.)
-on load, set optionValues to those before doing anything else
-then load from hash or, if none given or that doesn't work, pick a random preset
-on sharing, only pick values that differ from defaults (same goes for presets as a result of this – for presets, also reset all other values to their defaults)
 -->

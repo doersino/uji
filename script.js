@@ -72,6 +72,7 @@ const optionSections = {
 };
 
 const defaults = Object.fromEntries(Object.entries(options).map(([n, o]) => [n, o.default]));
+
 let optionValues = JSON.parse(JSON.stringify(defaults));
 
 function setupOptions() {
@@ -108,7 +109,7 @@ function refreshAllRenderedOptions() {
 }
 
 const presets = {
-    "ⴰ": "s4r1080ro-0.9rot0.5rota0.5e1ex1t0.5se5600sk0.31f60i201w2560h2560ho0.5v0.5c44ca55can78canv1l163li183lin201line1b6fa201in0re172tr0.9tra0rotat-1wa-1wav355",
+    "ⴰ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav355",
     "ⴱ": "s1r140ro0.025rot0.5rota0.5e0.9995ex0.9985t0.5se1600sk0.4f60i100w1024h1024ho0.5v0.5c208ca211can223canv1l50li29lin78line1b6fa302in243",
     "ⴲ": "s4r200ro0.035rot0.44rota0.48e1.0005ex1.0005t1se1800sk0.14f60i100w1024h1024ho0.5v0.5c233ca199can177canv1l166li21lin33line0.45b0fa71in173",
     "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
@@ -175,7 +176,6 @@ function setupPresets() {
     });
     document.querySelector(".presets").innerHTML = rendered;
 }
-
 function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
@@ -191,11 +191,38 @@ function applyOptions(opts) {
     refreshAllRenderedOptions();
     restartRendering(optionValues);
 }
+function applyRandomPreset() {
+    const i = Math.floor(Math.random() * Object.keys(presets).length);
+    const l = Object.keys(presets)[i];
+    const p = presets[l];
+    applyPreset(p);
+    const e = document.querySelector(`.presets button[name=${l}]`)
+    e.classList.add("selected");
+}
 function unselectPreset() {
     const selectedPreset = document.querySelector(".presets .selected");
     if (selectedPreset) {
         selectedPreset.classList.remove("selected");
     }
+}
+
+function randomize() {
+    // TODO exclude fps/iterations/size/etc.? only randomize a few sliders at a time?
+    let randomized = JSON.parse(JSON.stringify(defaults));
+    Object.keys(options).forEach(n => {
+        const o = options[n];
+        const v = optionValues[n];
+
+        const minScaled = o.min / o.step;
+        const maxScaled = o.max / o.step;
+        let rand = parseInt(minScaled + Math.random() * (maxScaled - minScaled)) * o.step;
+        // TODO deal with dumb floating point stringification stuff
+        if (!o.step.toString().includes(".")) {
+            rand = parseInt(rand);
+        }
+        randomized[n] = rand;
+    });
+    applyOptions(randomized);
 }
 
 function downloadFile(hrefData, filename) {
@@ -214,25 +241,6 @@ function download() {
     downloadFile(canvas.toDataURL(), filename);
 }
 
-function randomize() {
-    // TODO exclude fps/iterations/size/etc.? only randomize a few sliders at a time?
-    let randomized = JSON.parse(JSON.stringify(optionValues));
-    Object.keys(options).forEach(n => {
-        const o = options[n];
-        const v = optionValues[n];
-
-        const minScaled = o.min / o.step;
-        const maxScaled = o.max / o.step;
-        let rand = parseInt(minScaled + Math.random() * (maxScaled - minScaled)) * o.step;
-        // TODO deal with dumb floating point stringification stuff
-        if (!o.step.toString().includes(".")) {
-            rand = parseInt(rand);
-        }
-        randomized[n] = rand;
-    });
-    applyOptions(randomized);
-}
-
 function generateShareHash(opts) {
     let hash = "";
     Object.keys(opts).forEach(n => {
@@ -248,15 +256,12 @@ function generateShareHash(opts) {
     });
     return hash;
 }
-
-// TODO maybe pass base url as parameter?
 function generateShareURL(opts) {
     const baseUrl = window.location.href.replace(window.location.hash, "");
     const hash = generateShareHash(opts);
     const url = `${baseUrl}#${hash}`;
     return url;
 }
-
 function parseShareHash(hash) {
     const matches = [...hash.matchAll(/([a-z]+)([0-9.\-]+)/g)];
     if (!matches) return false;
@@ -270,18 +275,15 @@ function parseShareHash(hash) {
     })
     return opts;
 }
-
 function parseShareURL(url) {
     const hash = url.split('#')[1];
     if (!hash) return false;
     const opts = parseShareHash(hash);
     return opts;
 }
-
 function tryExtractingOptionsFromUrl() {
     return parseShareURL(window.location.href);
 }
-
 function copyShareLink() {
     const caring = document.querySelector(".caring");
     caring.focus();
@@ -307,7 +309,6 @@ function copyShareLink() {
     }
     shareStatus.style.display = "block";
 }
-
 function share() {
     const shareButton = document.querySelector(".share");
     const shareSheet = document.querySelector(".share-sheet");
@@ -449,14 +450,6 @@ function restartRendering(opts) {
         ctx.stroke();
 
     }, 1000 / opts.fps);
-}
-
-function applyRandomPreset() {
-    const p = Math.floor(Math.random() * Object.keys(presets).length);
-    const l = Object.keys(presets)[p];
-    applyPreset(presets[l]);
-    const e = document.querySelector(`.presets button[name=${l}]`)
-    e.classList.add("selected");
 }
 
 window.addEventListener('load', e => {

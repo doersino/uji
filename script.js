@@ -1,7 +1,7 @@
 const options = {
     // TODO replace letters, fix invisibly zero-width spaces or whatever after some of them
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1, default: 1},
-    radius: {letter: "𐡀", description: "radius of circle", min: 0, max: 3000, step: 10, default: 500},
+    radius: {letter: "𐡀", description: "radius of shape", min: 0, max: 3000, step: 10, default: 500},
     rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05, default: 0},
     rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
@@ -9,7 +9,7 @@ const options = {
     expansionverti: {letter: "𐤓‎", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
     thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1, default: 1},
 
-    segments: {letter: "𐡔", description: "number of line segments the circle is comprised of", min: 100, max: 10000, step: 100, default: 1000},
+    segments: {letter: "𐡔", description: "number of line segments the shape is comprised of", min: 100, max: 20000, step: 100, default: 1000},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
 
     fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},
@@ -35,15 +35,19 @@ const options = {
 
     initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1, default: 0},
 
-    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
+    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 500, step: 1, default: -1},
 
     translationhori: {letter: "H", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
     translationverti: {letter: "V", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
 
     rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
 
-    wavinesshori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
-    wavinessverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinessphori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinesspverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinessahori: {letter: "X", description: "amplitude of horizontal sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
+    wavinessaverti: {letter: "X", description: "amplitude of vertical sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
+
+    jitter: {letter: "J", description: "jitter added to the shape in each iteration", min: 0, max: 10, step: 0.1, default: 1},
 
     // Note: When adding more options, only add to the bottom in order not to
     // break the prefixing used to shorten option keys in presets and shared
@@ -69,7 +73,7 @@ Object.keys(options).forEach(n => {
 
 const optionSections = {
     "": ["shape", "radius", "horicenter", "vericenter"],
-    "expansion": ["expansionhori", "expansionverti", "wavinesshori", "wavinessverti", "revealspeed", "fadeoutspeed"],
+    "expansion": ["jitter", "expansionhori", "expansionverti", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti", "revealspeed", "fadeoutspeed"],
     "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod"],
     "movement": ["translationhori", "translationverti"],
     "line drawing": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode"],
@@ -103,6 +107,7 @@ function handleOptionInput(e) {
     unselectPreset();
     optionValues[e.name] = parseFloat(e.value);
     e.parentElement.querySelector(".value").innerText = parseFloat(e.value);
+    refreshShareSheetUrl();
     restartRendering(optionValues);
 }
 function refreshRenderedOption(name) {
@@ -117,15 +122,15 @@ function refreshAllRenderedOptions() {
 
 const presets = {
     "ⴰ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav355",
-    "ⴱ": "s1r140ro0.025rot0.5rota0.5e0.9995ex0.9985t0.5se1600sk0.4f60i100w1024h1024ho0.5v0.5c208ca211can223canv1l50li29lin78line1b6fa302in243",
-    "ⴲ": "s4r200ro0.035rot0.44rota0.48e1.0005ex1.0005t1se1800sk0.14f60i100w1024h1024ho0.5v0.5c233ca199can177canv1l166li21lin33line0.45b0fa71in173",
-    "ⴳ": "s4r500ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i125w2134h2134ho0.69v0.49c243ca215can228canv1l85li20lin55line0.52b0fa939in223",
-    "ⴴ": "s1r2870ro0.005rot0.5rota0.44e0.983ex0.985t0.7se4100sk0f60i613w2134h2134ho0.49v0.49c243ca215can228canv1l85li20lin55line0.52b0fa-1in223re-1tr0tra5.1rotat-1wa966wav268",
-    "ⴵ": "s1r610ro0.03rot0.5rota0.44e0.998ex1.002t0.7se7900sk0.62f212i1407w2134h2134ho0.49v0.25c0ca0can0canv1l255li255lin255line1b0fa533in205re18tr0.4tra-2.5rotat-1wa759wav779",
-    "ⴶ": "s2r3000ro0.025rot0.5rota0.5e0.994ex0.994t0.5se8000sk0.74f60i1388w2560h2560ho0.5v0.5c255ca255can255canv1l0li0lin0line0.35b0fa-1in0re-1tr0tra0rotat-1wa-1wav206",
-    "ⴷ": "s2r1560ro0.005rot0.31rota0.69e0.994ex0.994t0.5se8000sk0.74f60i1388w2560h2560ho0.5v0.5c255ca255can255canv1l0li0lin0line0.35b0fa-1in0re-1tr0tra0rotat201wa-1wav206",
-    "ⴸ": "s1r610ro0.03rot0.5rota0.59e0.999ex0.994t2.9se100sk0.62f212i1407w2134h2134ho0.49v0.25c20ca13can6canv1l238li228lin208line1b6fa533in283re18tr0.4tra0rotat158wa759wav779",
-    "ⴹ": "s4r1830ro-0.025rot0.75rota0.44e0.9975ex0.9895t1.2se8400sk0.66f60i2000w2134h2134ho0.91v0.07c243ca215can228canv1l85li20lin55line0.52b0fa939in223re18tr0.4tra0rotat158wa759wav779",
+    "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37",
+    "ⴲ": "s2r1250ro0.025e0.994ex0.994t0.5se8000sk0.74i1388w2560h2560line0.35wav206",
+    "ⴳ": "s2r520ro0.15e0.996ex0.997se10510i1474line0.02fa1000wa398wav268wavi0.1wavin0.1",
+    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat95wa18wav47wavi0.1wavin0.1",
+    "ⴵ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat9wa57wav66wavi0.4wavin0.3j0",
+    "ⴶ": "",
+    "ⴷ": "",
+    "ⴸ": "",
+    "ⴹ": "",
     "⌘": "",
     /*"ⴺ": "",
     "ⴻ": "",
@@ -193,9 +198,15 @@ function applyPreset(preset) {
     applyOptions(opts);
 }
 function applyOptions(opts) {
+
+    // first reset everything to defaults...
     optionValues = Object.assign(optionValues, defaults);
+
+    // then apply the new, possibly-incomplete options
     optionValues = Object.assign(optionValues, opts);
+
     refreshAllRenderedOptions();
+    refreshShareSheetUrl();
     restartRendering(optionValues);
 }
 function applyRandomPreset() {
@@ -233,7 +244,7 @@ function randomize() {
 }
 
 function downloadFile(hrefData, filename) {
-    let a = document.createElement("a");
+    const a = document.createElement("a");
     a.href = hrefData;
     a.setAttribute("download", filename);
     document.body.appendChild(a);
@@ -241,10 +252,9 @@ function downloadFile(hrefData, filename) {
     a.outerHTML = "";
 }
 function download() {
-    // TODO also include share url hash in filename
     const date = new Date().toISOString().replace(/\:/g, ".");
     const hash = generateShareHash(optionValues);
-    let filename = `uji_${date}_${hash}.png`;
+    const filename = `uji_${date}_${hash}.png`;
     downloadFile(canvas.toDataURL(), filename);
 }
 
@@ -272,7 +282,7 @@ function generateShareURL(opts) {
 function parseShareHash(hash) {
     //const matches = [...hash.matchAll(/([a-z]+)([0-9.\-]+)/g)];
     let matches = [];
-    let regex = /([a-z]+)([0-9.\-]+)/g;
+    const regex = /([a-z]+)([0-9.\-]+)/g;
     let temp;
     while ((temp = regex.exec(hash)) !== null) {
         matches.push(temp);
@@ -292,8 +302,7 @@ function parseShareHash(hash) {
 function parseShareURL(url) {
     const hash = url.split('#')[1];
     if (!hash) return false;
-    const opts = parseShareHash(hash);
-    return opts;
+    return parseShareHash(hash);
 }
 function tryExtractingOptionsFromUrl() {
     return parseShareURL(window.location.href);
@@ -316,12 +325,17 @@ function copyShareLink() {
         shareStatus.innerText = "Success!";
     } else {
         let text = "Couldn't copy"
-        if (error) text += `(${err})`
+        if (error) text += ` (${err})`
         text += " – try copying the URL manually."
 
         shareStatus.innerText = text;
     }
     shareStatus.style.display = "block";
+}
+function refreshShareSheetUrl() {
+    const shareUrl = generateShareURL(optionValues);
+    document.querySelector(".caring").value = shareUrl;
+    document.querySelector(".share-status").style.display = "none";
 }
 function share() {
     const shareButton = document.querySelector(".share");
@@ -331,9 +345,7 @@ function share() {
         shareSheet.style.display = "none";
         shareButton.classList.remove("active");
     } else {
-        const shareUrl = generateShareURL(optionValues);
-        document.querySelector(".caring").value = shareUrl;
-
+        refreshShareSheetUrl();
         document.querySelector(".share-status").style.display = "none";
         shareSheet.style.display = "block";
         shareButton.classList.add("active");
@@ -343,8 +355,8 @@ function share() {
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on
 // http://stackoverflow.com/a/2259502
 function rotate(o, p, angle) {
-    var s = Math.sin(angle);
-    var c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const c = Math.cos(angle);
 
     // copy point
     p = [p[0],p[1]];
@@ -354,10 +366,10 @@ function rotate(o, p, angle) {
     p[1] -= o[1];
 
     // rotate point
-    var xnew = p[0] * c - p[1] * s;
-    var ynew = p[0] * s + p[1] * c;
+    const xnew = p[0] * c - p[1] * s;
+    const ynew = p[0] * s + p[1] * c;
 
-    // translate point back:
+    // translate point back
     p[0] = xnew + o[0];
     p[1] = ynew + o[1];
 
@@ -373,25 +385,25 @@ const r = Math.random;
 const blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
 
 function restartRendering(opts) {
-    let w = opts.width;
-    let h = opts.height;
+    clearInterval(inter);
+
+    const w = opts.width;
+    const h = opts.height;
     canvas.setAttribute("width", w);
     canvas.setAttribute("height", h);
 
-    clearInterval(inter);
     ctx.clearRect(0, 0, w, h);
 
     ctx.fillStyle = `rgba(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue},${opts.canvasopacity})`;
     ctx.fillRect(0, 0, w, h);
 
     ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
-
     ctx.globalCompositeOperation = blendModes[opts.blendmode];
 
     // generate initial line
-    let center = [w * opts.horicenter, h * opts.vericenter];
-    let radius = opts.radius;
-    let segments = opts.segments;
+    const center = [w * opts.horicenter, h * opts.vericenter];
+    const radius = opts.radius;
+    const segments = opts.segments;
     line = [];
     for (let i = 0; i < segments; i++) {
         let x, y;
@@ -448,14 +460,18 @@ function restartRendering(opts) {
             let x = p[0];
             let y = p[1];
 
-            if (i == 0 || r() < opts.skipchance || (opts.fadeoutspeed > -1 && n > i % r() * opts.fadeoutspeed) || (opts.revealspeed > -1 && i / opts.revealspeed > n)) {
+            if (   i == 0
+                || r() < opts.skipchance
+                || (opts.fadeoutspeed > -1 && n > i % r() * opts.fadeoutspeed)
+                || (opts.revealspeed > -1 && i / opts.revealspeed > n)
+                ) {
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + r() - 0.5) * opts.expansionhori + opts.translationhori + ((opts.wavinesshori > -1) ? Math.sin(i / opts.wavinesshori) : 0);  // TODO also amplitude of waviness
-            y = center[1] + (y - center[1] + r() - 0.5) * opts.expansionverti + opts.translationverti + ((opts.wavinessverti > -1) ? Math.sin(i / opts.wavinessverti) : 0);
+            x = center[0] + (x - center[0] + (r() - 0.5) * opts.jitter) * opts.expansionhori + opts.translationhori + ((opts.wavinessphori > -1) ? (opts.wavinessahori * Math.sin(i / opts.wavinessphori)) : 0);  // TODO also amplitude of waviness
+            y = center[1] + (y - center[1] + (r() - 0.5) * opts.jitter) * opts.expansionverti + opts.translationverti + ((opts.wavinesspverti > -1) ? (opts.wavinessaverti * Math.sin(i / opts.wavinesspverti)) : 0);
 
             return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], (opts.rotationspeed * (Math.PI / 180)) * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));
         });

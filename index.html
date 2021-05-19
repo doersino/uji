@@ -27,7 +27,15 @@
         }
 
         :root {
+            --font: "Iosevka Aile Web", "Iosevka Aile", "Iosevka", sans-serif;
+            --presets-font: NotoSansTifinagh, sans-serif;
+            --options-font: NotoSansImperialAramaic, NotoSansPhoenician, sans-serif;
+
             --sidebar-width: 22.5em;
+
+            --red: #e67;
+            --green: #5b6;
+            --blue: #89f;
         }
 
         * {
@@ -35,11 +43,10 @@
             box-sizing: border-box;
         }
         html {
-            /*filter: invert(1)*/;
             font-size: 12px;
         }
         body {
-            font-family: "Iosevka Aile Web", sans-serif;
+            font-family: var(--font);
             line-height: 1.2;
             background-color: #111;
             color: #eee;
@@ -64,7 +71,15 @@
         }
         .logo path:hover {
             stroke-width: 2px;
-            stroke: yellow;
+        }
+        .logo path:nth-child(3n):hover {
+            stroke: var(--red);
+        }
+        .logo path:nth-child(3n+1):hover {
+            stroke: var(--green);
+        }
+        .logo path:nth-child(3n+2):hover {
+            stroke: var(--blue);
         }
         .introduction p {
             margin-top: -0.2em;
@@ -106,7 +121,7 @@
             color: black;
             border: 0;
             cursor: pointer;
-            font-family: NotoSansTifinagh, sans-serif;
+            font-family: var(--presets-font);
             font-size: 1.2em;
             width: 2em;
             height: 2em;
@@ -139,7 +154,7 @@
             margin: 1em 0;
         }
         .letter {
-            font-family: NotoSansImperialAramaic, NotoSansPhoenician, sans-serif;
+            font-family: var(--options-font);
             display: inline-block;
             width: 2rem;
             height: 2rem;
@@ -214,31 +229,31 @@
             border-radius: 0.2rem;
         }
         .red .letter {
-            background-color: #e67;
+            background-color: var(--red);
         }
         .red input[type="range"]::-webkit-slider-thumb {
-            background: #e67;
+            background: var(--red);
         }
         .red input[type="range"]::-moz-range-thumb {
-            background: #e67;
+            background: var(--red);
         }
         .green .letter {
-            background-color: #5b6;
+            background-color: var(--green);
         }
         .green input[type="range"]::-webkit-slider-thumb {
-            background: #5b6;
+            background: var(--green);
         }
         .green input[type="range"]::-moz-range-thumb {
-            background: #5b6;
+            background: var(--green);
         }
         .blue .letter {
-            background-color: #89f;
+            background-color: var(--blue);
         }
         .blue input[type="range"]::-webkit-slider-thumb {
-            background: #89f;
+            background: var(--blue);
         }
         .blue input[type="range"]::-moz-range-thumb {
-            background: #89f;
+            background: var(--blue);
         }
         .halftransparent input[type="range"]::-webkit-slider-thumb {
             background: #0005;
@@ -416,9 +431,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
                     <g transform="translate(8, 8)">
                         <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
-                        <circle cx="0" cy="16" r="6" style="fill: #e67;"></circle>
-                        <circle cx="24" cy="0" r="6" style="fill: #5b6;"></circle>
-                        <circle cx="24" cy="32" r="6" style="fill: #89f;"></circle>
+                        <circle cx="0" cy="16" r="6" style="fill: var(--red);"></circle>
+                        <circle cx="24" cy="0" r="6" style="fill: var(--green);"></circle>
+                        <circle cx="24" cy="32" r="6" style="fill: var(--blue);"></circle>
                     </g>
                 </svg>
                 share

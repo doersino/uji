@@ -1,6 +1,6 @@
 # uji
 
-*TODO summary*
+*A minimalist generative art thing – play with the sliders and press the buttons.*
 
 TODO the interface is designed(or rather, deliberately not designed) for exploration through play – both for you, as the user, and me, as the person who made the weird-ass interface. maybe link to place where/if i strung together development screenshots/states
 

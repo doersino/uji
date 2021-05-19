@@ -1,4 +1,3 @@
-// don't rearrange and append only at the bottom (since prefixes generated in optionShorts are used in share urls), use only a-z in keys, obviously no duplicate keys; defaults should be zero/no-op thingies
 const options = {
     // TODO replace letters, fix invisibly zero-width spaces or whatever after some of them
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1, default: 1},
@@ -45,6 +44,14 @@ const options = {
 
     wavinesshori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
     wavinessverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+
+    // Note: When adding more options, only add to the bottom in order not to
+    // break the prefixing used to shorten option keys in presets and shared
+    // links. Option keys should use only a-z, and obviously there shouldn't be
+    // any duplicate keys (not like that would work). The defaults should be
+    // zero values, effectively no-ops, or, where that doesn't make sense,
+    // sensible defaults since newly added options must not modify the behavior
+    // of existing presets or shared links.
 };
 
 let optionShorts = {};
@@ -263,7 +270,14 @@ function generateShareURL(opts) {
     return url;
 }
 function parseShareHash(hash) {
-    const matches = [...hash.matchAll(/([a-z]+)([0-9.\-]+)/g)];
+    //const matches = [...hash.matchAll(/([a-z]+)([0-9.\-]+)/g)];
+    let matches = [];
+    let regex = /([a-z]+)([0-9.\-]+)/g;
+    let temp;
+    while ((temp = regex.exec(hash)) !== null) {
+        matches.push(temp);
+    }
+
     if (!matches) return false;
     let opts = {};
     matches.forEach(m => {

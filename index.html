@@ -361,14 +361,20 @@
         @media screen and (max-width: 600px) and (max-aspect-ratio: 3/4) {
             .sidebar {
                 width: 100%;
-                margin-top: 80vw;
+                margin-top: 75vw;
             }
             .actions {
                 width: 100%;
             }
             .drawing {
-                height: 80vw;
+                height: 75vw;
                 width: 100%;
+            }
+            input[type="range"]::-webkit-slider-thumb {
+                width: 4em;
+            }
+            input[type="range"]::-moz-range-thumb {
+                width: 4em;
             }
         }
     </style>
@@ -430,8 +436,3 @@
     </div>
     <script src="script.js"></script>
 </body>
-<!--
-TODO
-* add all the relevant options
-* make work on mobile (square at top, scrollable list on bottom), download/sharing on side?
--->

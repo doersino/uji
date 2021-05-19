@@ -255,10 +255,6 @@ function download() {
     downloadFile(canvas.toDataURL(), filename);
 }
 
-function stop() {
-    clearInterval(inter);
-}
-
 function randomize() {
     // TODO exclude fps/iterations/size/etc.? only randomize a few sliders at a time?
     let randomized = JSON.parse(JSON.stringify(optionValues));

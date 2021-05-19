@@ -49,6 +49,7 @@
             min-height: 100vh;
             background-color: #333;
             padding: 1em;
+            padding-bottom: 4em;
         }
         .logo {
             float: left;
@@ -65,10 +66,6 @@
         }
         .hero {
             margin-top: -0.2em;
-        }
-        .werdasliest {
-            margin-top: 10em;
-            opacity: 0.1;
         }
         a {
             color: inherit;
@@ -252,37 +249,37 @@
             z-index: 200;
             left: 0;
             bottom: 0;
-            padding: 1em 3em 1em;
+            padding: 1em 1em 0;
             width: var(--sidebar-width);
             background: linear-gradient(to bottom, transparent, #0004 1em, #555 1em, #555 100%);
-        }
-        .actions .button-container {
-            display: inline-block;
-            width: 2em;
+            text-align: center;
         }
         .actions button {
-            display: inline-block;
-            transform: rotate(-90deg);
-            transform-origin: bottom left;
-            border-radius: 0.2em;
-            background-color: #ccc;
             font: inherit;
-            color: black;
-            border: 0;
-            font-size: 1em;
-            padding: 0.4em 0.8em 0.5em 0.8em;
-            cursor: pointer;
+            font-size: 1.33em;
+            color: #111;
             text-transform: uppercase;
-            box-shadow: 0 0 1em #0004;
-            transition: 0.1s;
-            margin: 0.1em;
+            height: 2em;
+            background-color: #ccc;
+            border-radius: 0.2rem;
+            border: none;
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 1em;
+            transition: 0.2s;
+            transform: translateY(-1rem);
+            box-shadow: 0 -0.5rem 1rem #0003;
+        }
+        .actions button svg {
+            height: 1em;
+            vertical-align: bottom;
+            padding-bottom: 0.2em;
+            stroke: #111;
         }
         .actions button:hover {
             background-color: #eee;
-            letter-spacing: 0.1em;
-        }
-        .reset:hover {
-            background-color: orangered !important;
+            transform: translateY(-1rem) rotate(-3deg);
+            transform-origin: bottom left;
         }
 
         .drawing {
@@ -369,37 +366,6 @@
             margin-top: 0.5rem;
             font-size: 0.8em;
         }
-
-        .actions2 {
-            position: fixed;
-            bottom: 5%;
-            left: calc(50% + var(--sidebar-width) / 2);
-            transform: translateX(-50%);
-            z-index: 300;
-        }
-        .actions2 button {
-            font: inherit;
-            font-size: 1.5em;
-            color: #eee;
-            text-transform: uppercase;
-            height: 2em;
-            background-color: rgba(100,100,100,0.7);
-            border-radius: 0.2rem;
-            border: none;
-            display: inline-block;
-            margin-bottom: 1rem;
-            cursor: pointer;
-            padding: 0 1em;
-            transition: 0.1s;
-        }
-        .actions2 button svg {
-            height: 1em;
-            vertical-align: bottom;
-            padding-bottom: 0.2em;
-        }
-        .actions2 button:hover {
-            background-color: rgba(170,170,170,0.7);
-        }
     </style>
 </head>
 <body>
@@ -420,17 +386,10 @@
         <hr>
         <div class="presets"></div>
         <div class="bitsnbobs"></div>
-        <p class="werdasliest">wer das liest ist doof</p>
     </aside>
     <aside class="actions">
-        <div class="button-container"><button class="randomize" onclick="randomize()">randomize</button></div>
-        <div class="button-container"><button class="download" onclick="download()">download</button></div>
-        <div class="button-container"><button class="share" onclick="share()">share</button></div>
-        <div class="button-container"><button class="stop" onclick="stop()">stop</button></div>
-    </aside>
-    <aside class="actions2">
-        <button class="download2" onclick="download()">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; break-inside: avoid; stroke: white; fill: none;" viewBox="0 0 36 44">
+        <button class="download" onclick="download()">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
                 <g transform="translate(2, -6)">
                     <path d="M 16,8 L 16,48"></path>
                     <path d="M 0,16 L 16,48"></path>
@@ -439,13 +398,13 @@
             </svg>
             download
         </button>
-        <button class="share2" onclick="share()">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; break-inside: avoid; stroke: white; fill: gray;" viewBox="0 0 40 48">
+        <button class="share" onclick="share()">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
                 <g transform="translate(8, 8)">
-                    <path d="M 16,0 C -4.8,0 -4.8,32 16,32" style="fill: none;"></path>
-                    <circle cx="0" cy="16" r="6"></circle>
-                    <circle cx="24" cy="0" r="6"></circle>
-                    <circle cx="24" cy="32" r="6"></circle>
+                    <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
+                    <circle cx="0" cy="16" r="6" style="fill: #e67;"></circle>
+                    <circle cx="24" cy="0" r="6" style="fill: #5b6;"></circle>
+                    <circle cx="24" cy="32" r="6" style="fill: #89f;"></circle>
                 </g>
             </svg>
             share

@@ -372,24 +372,25 @@
 
         .actions2 {
             position: fixed;
-            top: 0;
-            right: 0;
-            padding: 1em 1em 0 0;
+            bottom: 5%;
+            left: calc(50% + var(--sidebar-width) / 2);
+            transform: translateX(-50%);
             z-index: 300;
         }
         .actions2 button {
             font: inherit;
-            font-size: 2em;
+            font-size: 1.5em;
             color: #eee;
-            font-family: NotoSansTifinagh;
+            text-transform: uppercase;
             height: 2em;
-            width: 2em;
             background-color: rgba(100,100,100,0.7);
-            border-radius: 99em;
-            border: 0;
-            display: block;
+            border-radius: 0.2rem;
+            border: none;
+            display: inline-block;
             margin-bottom: 1rem;
             cursor: pointer;
+            padding: 0 1em;
+            transition: 0.1s;
         }
         .actions2 button svg {
             height: 1em;
@@ -436,6 +437,7 @@
                     <path d="M 16,48 L 32,16"></path>
                 </g>
             </svg>
+            download
         </button>
         <button class="share2" onclick="share()">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; break-inside: avoid; stroke: white; fill: gray;" viewBox="0 0 40 48">
@@ -446,6 +448,7 @@
                     <circle cx="24" cy="32" r="6"></circle>
                 </g>
             </svg>
+            share
         </button>
     </aside>
     <div class="drawing">

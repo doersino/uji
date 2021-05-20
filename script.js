@@ -42,8 +42,8 @@ const options = {
 
     rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
 
-    wavinessphori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
-    wavinesspverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinessphori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
+    wavinesspverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
     wavinessahori: {letter: "X", description: "amplitude of horizontal sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
     wavinessaverti: {letter: "X", description: "amplitude of vertical sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
 
@@ -121,29 +121,29 @@ function refreshAllRenderedOptions() {
 }
 
 const presets = {
-    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav355",
-    "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37",
-    "ⴼ": "s2r1250ro0.025e0.994ex0.994t0.5se8000sk0.74i1388w2560h2560line0.35wav206",
+    "ⵋ": "s4r320ro-0.2ex1.003t0.5se5000i450v0.13c223ca216can168l201li96lin34line0.25b10fa711re100tra1.1rotat100wav2740wavi0.8wavin0.1",
+    "ⴳ": "s4r550t4se100i335v0c151ca172can207l201li230lin255line0.66b9fa336in180tra-3wa150wav24wavi0.1wavin0.1j0.5",
+    "ⵉ": "s2r300ro-0.2e1.002ex0.995t0.5se5000i460c42ca47can72l158li180lin212line0.25b3tra0.9rotat100wav576wavin0.1j1.3",
     "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474line0.02fa1000wa398wav268wavi0.1wavin0.1",
-    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat95wa18wav47wavi0.1wavin0.1",
-    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat9wa57wav66wavi0.4wavin0.3j0",
-    "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav355",
-    "ⵘ": "s4ro4e0.99ex0.983t0.8i278v0.01c16ca26can27l173li179lin147b8in183tr-3.7wa28wav18j0.2",
-    "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8fa403wav119j3.4",
-    "ⵞ": "r160ro-0.65e1.005ex1.006t0.5i402w2560h2560c0ca0can17l255li244lin204line0.05fa1000wa47j10",
-    "ⵓ": "s4r390ro0.15e0.994se5000i565w857h1372v0.04c53ca39can48l255li255lin255line0.24b3fa803tra1.8wa1000wav1000wavi0.1wavin0.4j0.1",
-    "ⴳ": "s4r550t4se100i335v0c151ca172can207l201li230lin255line0.66b9fa336in180tra-3wa23wav4wavi0.1wavin0.1j0.5",
-    "ⴻ": "s3r550ro-0.2e0.999ex0.985t0.5se2900i335ho0.36v0.42c26ca22can47l204li181lin145line0.66fa336in238tra-3wa23wav4wavi0.1wavin0.1j0.7",
-    "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat28wav206j8",
-    "ⴾ": "",
-    "ⴿ": "",
-    "ⵁ": "",
-    "ⵃ": "",
-    "ⵅ": "",
-    "ⵆ": "",
-    "ⵇ": "",
-    "ⵉ": "",
-    "ⵋ": "",
+    "ⵞ": "r160ro-0.65e1.005ex1.006t0.5i402w2560h2560c0ca0can17l255li244lin204line0.05fa1000wa300j10",
+    "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav2200",
+    "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0",
+    "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6fa658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5",
+    "ⴻ": "s3r550ro-0.2e0.999ex0.985t0.5se2900i335ho0.36v0.42c26ca22can47l204li181lin145line0.66fa336in238tra-3wa150wav24wavi0.1wavin0.1j0.7",
+    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0",
+    "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6fa225re25wa816wav336wavi3.2",
+    "ⵘ": "s4ro4e0.99ex0.983t0.8i278v0.01c16ca26can27l173li179lin147b8in183tr-3.7wa50wav40j0.2",
+    "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37",
+    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat600wa18wav47wavi0.1wavin0.1",
+    "ⵓ": "s4r390ro0.15e0.994se5000i565w857h1372v0.04c53ca39can48l255li255lin255line0.24b3fa803tra1.8wa6000wav6000wavi0.1wavin0.4j0.1",
+    "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat170wav1300j8",
+    "ⵁ": "s2r250ro5rot0rota0e0.995ex0.995t3se100i316w500h500c0ca0can64l255li255b10j0",
+    "ⴼ": "s2r1250ro0.025e0.994ex0.994t0.5se8000sk0.74i1388w2560h2560line0.35wav1300",
+    "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8fa403wav747j3.4",
+    "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can36l130li163lin199b6wa432wav47wavi5wavin5j10",
+    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav2200",
+    "ⵅ": "s2r100ro-1e1.01ex1.01t0.3se10000sk0.5i259ho0.56v0.46c13ca13can51l238li243lin230fa302tr1tra1rotat500j0.1",
+    "ⵆ": "s3r650ro5t2se400sk0.25i77w1995h1995c20ca23can39l227li235lin255b8in41j0",
     "ⵌ": "",
     "ⵍ": "",
     "ⵎ": "",
@@ -453,10 +453,10 @@ function restartRendering(opts) {
                 ctx.lineTo(x, y);
             }
 
-            x = center[0] + (x - center[0] + (r() - 0.5) * opts.jitter) * opts.expansionhori + opts.translationhori + ((opts.wavinessphori > -1) ? (opts.wavinessahori * Math.sin(i / opts.wavinessphori)) : 0);  // TODO also amplitude of waviness
-            y = center[1] + (y - center[1] + (r() - 0.5) * opts.jitter) * opts.expansionverti + opts.translationverti + ((opts.wavinesspverti > -1) ? (opts.wavinessaverti * Math.sin(i / opts.wavinesspverti)) : 0);
+            x = center[0] + (x - center[0] + (r() - 0.5) * opts.jitter) * opts.expansionhori + opts.translationhori + ((opts.wavinessphori > -1) ? (opts.wavinessahori * Math.sin(2 * Math.PI * i / opts.wavinessphori)) : 0);  // TODO also amplitude of waviness
+            y = center[1] + (y - center[1] + (r() - 0.5) * opts.jitter) * opts.expansionverti + opts.translationverti + ((opts.wavinesspverti > -1) ? (opts.wavinessaverti * Math.sin(2 * Math.PI * i / opts.wavinesspverti)) : 0);
 
-            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], (opts.rotationspeed * (Math.PI / 180)) * ((opts.rotationperiod > -1) ? Math.sin(n / opts.rotationperiod) : 1));
+            return rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], (opts.rotationspeed * (Math.PI / 180)) * ((opts.rotationperiod > -1) ? Math.sin(2 * Math.PI * n / opts.rotationperiod) : 1));
         });
 
         ctx.lineWidth = opts.thickness;

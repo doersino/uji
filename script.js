@@ -317,6 +317,14 @@ function parseShareURL(url) {
 function tryExtractingOptionsFromUrl() {
     return parseShareURL(window.location.href);
 }
+function showShareStatus(text) {
+    const shareStatus = document.querySelector(".share-status");
+    shareStatus.innerText = text;
+    shareStatus.style.display = "block";
+}
+function clearShareStatus() {
+    document.querySelector(".share-status").style.display = "none";
+}
 function copyShareLink() {
     const caring = document.querySelector(".caring");
     caring.focus();
@@ -330,34 +338,40 @@ function copyShareLink() {
         error = err;
     }
 
-    const shareStatus = document.querySelector(".share-status");
     if (successful) {
-        shareStatus.innerText = "Success!";
+        showShareStatus("Success!");
     } else {
         let text = "Couldn't copy"
         if (error) text += ` (${err})`
         text += " – try copying the URL manually."
 
-        shareStatus.innerText = text;
+        showShareStatus(text);
     }
-    shareStatus.style.display = "block";
 }
 async function shareShareLink() {
-    const caring = document.querySelector(".caring");
+    const url = document.querySelector(".caring").value;
 
     try {
-        await navigator.share({url: caring.value});
+        await navigator.share({url: url});
     } catch(err) {
-        // TODO
+        if (err.name != "AbortError") {
+            showShareStatus(`Couldn't share (${err}) – try copying the URL manually.`);
+        }
     }
 }
 function tweetShareLink() {
-    // TODO
+    const url = document.querySelector(".caring").value;
+    const text = "I've created some generative art, take a look!"
+
+    let link = document.createElement("a");
+    link.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    link.target = "_blank";
+    link.click();
 }
 function refreshShareSheetUrl() {
     const shareUrl = generateShareURL(optionValues);
     document.querySelector(".caring").value = shareUrl;
-    document.querySelector(".share-status").style.display = "none";
+    clearShareStatus();
 }
 function share() {
     const shareButton = document.querySelector(".share");
@@ -368,7 +382,7 @@ function share() {
         shareButton.classList.remove("active");
     } else {
         refreshShareSheetUrl();
-        document.querySelector(".share-status").style.display = "none";
+        clearShareStatus();
         shareSheet.style.display = "block";
         shareButton.classList.add("active");
     }

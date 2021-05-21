@@ -376,35 +376,44 @@ function restartRendering(opts) {
 
     ctx.clearRect(0, 0, w, h);
 
+    // TODO keep this but cooooooment out
     ctx.fillStyle = `rgba(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue},${opts.canvasopacity})`;
-    ctx.fillRect(0, 0, w, h);
+    //ctx.fillRect(0, 0, w, h);
 
     ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
-    ctx.globalCompositeOperation = blendModes[opts.blendmode];
+    //ctx.globalCompositeOperation = blendModes[opts.blendmode];
 
-    ctx.globalCompositeOperation = "overlay";
+    //ctx.globalCompositeOperation = "source-over";
 
     // based on https://www.cssscript.com/create-noise-background-javascript-canvas/
     // TODO control this very finely, respect background opacity somehow
-    //      => take bg color, permute brightness randomly, draw? replaced fillRect!
+    //      => take bg color (with transparency etc.), permute brightness randomly, draw? replaced fillRect!
     if (true) {
-        const idata = ctx.createImageData(w, h);
-        const buffer32 = new Uint32Array(idata.data.buffer);
-        const len = buffer32.length;
+        //value.toString(16).padStart(2, '0');
 
-        for (let i = 0; i < len; i++) {
-            if (Math.random() < 0.5) {
-                buffer32[i] = 0x11000000;
+        let imageData = ctx.createImageData(w, h);
+
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            /*if (Math.random() < 0.5) {
             } else {
                 buffer32[i] = 0x11ffffff;
             }
+            //if (Math.random() < 0.00001) console.log(buffer32[i], 0x11ffffff, 255 + 256 * 255 + 256 * 256 * 255 + 256 * 256 * 256 * 17);
+            buffer32[i] = parseInt(opts.canvasblue + opts.canvasgreen * 256 + opts.canvasblue * 256 * 256 + opts.canvasopacity * 256 * 256 * 256);
+            if (Math.random() < 0.00001) console.log(buffer32[i]);
+            */
+            imageData.data[i] = parseInt(opts.canvasred);
+            imageData.data[i+1] = parseInt(opts.canvasgreen);
+            imageData.data[i+2] = parseInt(opts.canvasblue);
+            imageData.data[i+3] = parseInt(opts.canvasopacity * 255);
         }
-        ctx.putImageData(idata, 0, 0);
+        ctx.putImageData(imageData, 0, 0);
     }
-    ctx.globalCompositeOperation = "overlay";
-    ctx.fillRect(0, 0, w, h);
+    //ctx.globalCompositeOperation = "overlay";
+    //ctx.fillRect(0, 0, w, h);
 
-    ctx.globalCompositeOperation = blendModes[opts.blendmode];
+    //ctx.globalCompositeOperation = blendModes[opts.blendmode];
+
 
     // generate initial line
     const center = [w * opts.horicenter, h * opts.vericenter];

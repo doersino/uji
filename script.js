@@ -342,6 +342,18 @@ function copyShareLink() {
     }
     shareStatus.style.display = "block";
 }
+async function shareShareLink() {
+    const caring = document.querySelector(".caring");
+
+    try {
+        await navigator.share({url: caring.value});
+    } catch(err) {
+        // TODO
+    }
+}
+function tweetShareLink() {
+    // TODO
+}
 function refreshShareSheetUrl() {
     const shareUrl = generateShareURL(optionValues);
     document.querySelector(".caring").value = shareUrl;

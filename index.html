@@ -165,7 +165,8 @@
             filter: drop-shadow(0 0 0.5em white);
         }
         .value.out-of-bounds {
-            color: orangered;
+            color: #f50;
+            font-style: italic;
         }
         .description {
             display: none;
@@ -310,7 +311,7 @@
         .share-sheet p {
             margin-bottom: 1em;
         }
-        .caring {  /* both share-link and share-text seem to trip some ad blockers, and sharing is caring */
+        .caring {  /* share-link, share-text, and share-button seem to trip some ad blockers, and sharing is caring, hence this class name */
             background-color: #999;
             border: 0;
             height: 3em;
@@ -318,28 +319,27 @@
             font: inherit;
             color: #111;
             line-height: 1;
-            width: calc(100% - 4em);
+            width: 100%;
             vertical-align: bottom;
             padding: 0 1em;
-            border-radius: 0.2em 0 0 0.2em;
+            border-radius: 0.2em 0.2em 0.2em 0;
         }
-        .share-copy {
+        .caring-button {
             background: none;
             border: none;
             font: inherit;
             background-color: #ddd;
-            height: 3em;
-            width: 4em;
+            height: 2em;
             cursor: pointer;
             vertical-align: bottom;
             text-transform: uppercase;
-            border-radius: 0 0.2em 0.2em 0;
+            border-radius: 0 0 0.2em 0.2em;
             transition: 0.1s;
         }
-        .share-copy:hover {
+        .caring-button:hover {
             background-color: #aaa;
         }
-        .share-copy:active {
+        .caring-button:active {
             background-color: #aaa;
         }
         .share-sheet .share-status {
@@ -437,9 +437,10 @@
         <div class="share-sheet">
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
             <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover those from there, too.</p>
-            <input type="text" class="caring" readonly spellcheck="false" value="test"><button class="share-copy" onclick="copyShareLink()">Copy</button>
-            <button class="share-copy" onclick="copyShareLink()">Share...</button>
-            <button class="share-copy" onclick="copyShareLink()">Tweet...</button>
+            <input type="text" class="caring" readonly spellcheck="false" value="test">
+            <button class="caring-button" onclick="copyShareLink()">Copy</button>
+            <button class="caring-button" onclick="shareShareLink()">Share…</button>
+            <button class="caring-button" onclick="tweetShareLink()">Tweet…</button>
             <p class="share-status"></p>
         </div>
     </aside>

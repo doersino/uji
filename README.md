@@ -19,7 +19,6 @@ TODO name: https://en.wikipedia.org/wiki/Uji_(Being-Time), but really something 
 Perhaps I'll revisit this list at some point if motivation strikes.
 
 * More shapes and options, of course.
-* editable value textboxes
 * + and - working when hovering over slider to increment value, with shift for 10x change
 * history: keep current action along with last value, etc.?
 * keep option values in local storage and load them if no url hash given (if is given or if nothing in local storage, only write to it on slider changes or preset selection)

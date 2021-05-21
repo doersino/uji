@@ -93,12 +93,11 @@ function setupOptions() {
         rendered += `<hr><h2>${s}</h2>`;
         optionSections[s].forEach(n => {
             const o = options[n];
-            const v = optionValues[n];
             let c = "";
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${v}" name="${n}" class="value" oninput="handleOptionValueInput(this)"><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)"><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
@@ -106,33 +105,41 @@ function setupOptions() {
 
 function handleOptionInput(e) {
     unselectPreset();
-    optionValues[e.name] = parseFloat(e.value);
-    e.parentElement.querySelector(".value").value = parseFloat(e.value);
+    const v = parseFloat(e.value);
+    optionValues[e.name] = v;
+    refreshRenderedOptionValue(e.name);
     refreshShareSheetUrl();
     restartRendering(optionValues);
 }
 function handleOptionValueInput(e) {
-
-    // return for control characters etc.
-    // TODO === right here?
-    /*if (parseFloat(e.value) === optionValues[e.name]) {
-        return;
-    }*/
-
-
-
     unselectPreset();
-    optionValues[e.name] = parseFloat(e.value);
-    //e.parentElement.querySelector(".value").value = parseFloat(e.value);
-    e.parentElement.querySelector(".slider").value = parseFloat(e.value);
+    const v = parseFloat(e.value);
+    optionValues[e.name] = v;
+    refreshRenderedOptionValue(e.name);
+    e.parentElement.querySelector(".slider").value = v;
     refreshShareSheetUrl();
     restartRendering(optionValues);
+}
+function refreshRenderedOptionValue(name) {
+    const e = document.querySelector(`.bitsnbobs .value[name=${name}]`);
+    const v = optionValues[name];
+
+    // avoid possibly making the cursor jump to the end
+    if (v != e.value) {
+        e.value = v;
+    }
+
+    if (v != Math.min(Math.max(v, options[e.name].min), options[e.name].max)) {
+        e.classList.add("out-of-bounds");
+    } else {
+        e.classList.remove("out-of-bounds");
+    }
 }
 function refreshRenderedOption(name) {
     const e = document.querySelector(`.bitsnbobs .slider[name=${name}]`);
     const v = optionValues[name];
     e.value = v;
-    e.parentElement.querySelector(".value").value = v;
+    refreshRenderedOptionValue(name);
 }
 function refreshAllRenderedOptions() {
     Object.keys(optionValues).forEach(refreshRenderedOption);

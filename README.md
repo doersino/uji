@@ -19,16 +19,19 @@ TODO name: https://en.wikipedia.org/wiki/Uji_(Being-Time), but really something 
 Perhaps I'll revisit this list at some point if motivation strikes.
 
 * More shapes and options, of course.
-* + and - working when hovering over slider to increment value, with shift for 10x change
-* history: keep current action along with last value, etc.?
-* keep option values in local storage and load them if no url hash given (if is given or if nothing in local storage, only write to it on slider changes or preset selection)
-* maybe use Navigator.share() instead of deprecated copying thing in sharing, also twitter etc. buttons
-* webgl rendering (although blend modes and blurring might not be so easy there?)
+* Allowing fine-grained adjustment of the options via keyboard shortcuts – when hovering over a slider, press <kbd>+</kbd> or <kbd>-</kbd> to increment and decrement its value according to its `step` attribute, perhaps with <kbd>shift</kbd> for a 10× larger change.
+* History: I think keeping the *current* action along with the *last* instance `optionValues` should suffice? If a user keeps adjusting the same value, the history would stay constant, then. The thinking needs to a be a bit more fleshed out than this, though.
+* Keeping option values in local storage and restoring them on load if no URL hash present.
+* WebGL rendering (although blend modes and blurring might not be so easy there).
 
 
 known bugs: chrome often less distinct/clear/bright lines than other browsers
 
 
 ## License
+
+Not sure how much legal weight the following sentence has (if any): This license doesn't apply if you're using this tool to generate art intended for distribution as an NFT. TODO link, etc. As a result, it is prohibited to TODO, although I'll make an exception if you invest 100% of your revenue into bird seed and disperse said bird seed around your area for the local birds to feed on, take pictures of all that, and send them to me so I can look at birbs.
+
+THE MIT LICENSE EXCEPT YOU'RE NOT ALLOWED TO MAKE AN NFT UNLESS YOU USE THE PROCEEDS TO FEED BIRDS
 
 TODO license stuff

@@ -354,6 +354,21 @@
             font-size: 0.8em;
         }
 
+        .iterations {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            z-index: 400;
+        }
+        .iterations i {
+            display: block;
+            background-color: #888;
+            height: 0.3em;
+            width: 0;
+            transition: 0.2s linear;
+        }
+
         .drawing {
             position: fixed;
             top: 0;
@@ -376,6 +391,9 @@
                 margin-top: 75vw;
             }
             .actions {
+                width: 100%;
+            }
+            .iterations {
                 width: 100%;
             }
             .drawing {
@@ -441,14 +459,18 @@
         </div>
         <div class="share-sheet">
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
-            <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover those from there, too.</p>
+            <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover them from there, too.</p>
             <input type="text" class="caring" readonly spellcheck="false" value="test">
             <button class="caring-button" onclick="copyShareLink()">Copy</button>
+            <button class="caring-button" onclick="openShareLink()">Open</button>
             <button class="caring-button" onclick="shareShareLink()">Share…</button>
             <button class="caring-button" onclick="tweetShareLink()">Tweet…</button>
             <p class="share-status"></p>
         </div>
     </aside>
+    <div class="iterations">
+        <i></i>
+    </div>
     <div class="drawing">
         <canvas></canvas>
     </div>

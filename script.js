@@ -19,7 +19,7 @@ const options = {
     segments: {letter: "𐡔", description: "number of line segments the shape is comprised of", min: 100, max: 20000, step: 100, default: 1000},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
     fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},
-    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1, default: 100},
+    iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1, default: 500},
     width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1, default: 1024},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1, default: 1024},
     horicenter: {letter: "𐤔", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
@@ -47,7 +47,7 @@ const options = {
     rotationuntil: {letter: "U", description: "until which iteration should the rotation fade to zero? (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
     rotationuntil: {letter: "U", description: "until which iteration should the rotation fade to zero? (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
     fadeoutstart: {letter: "S", description: "iteration where line segments begin disappearing", min: 0, max: 1000, step: 1, default: 0},
-    sawtoothfadeoutsize: {letter: "T", description: "size of \"saw teeth\" that disappear (in line segments, -1 to disable)", min: 0, max: 5000, step: 10, default: -1},
+    sawtoothfadeoutsize: {letter: "T", description: "size of \"saw teeth\" that disappear (in line segments, -1 to disable)", min: -1, max: 5000, step: 10, default: -1},
     sawtoothfadeoutstart: {letter: "S", description: "iteration where line segments begin disappearing, saw-tooth-style", min: 0, max: 1000, step: 1, default: 0},
     expansionhoriexp: {letter: "E", description: "exponential factor added to horizontal rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
     expansionvertiexp: {letter: "E", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
@@ -72,7 +72,7 @@ Object.keys(options).forEach(n => {
 });
 
 const optionSections = {
-    "": ["shape", "radius", "horicenter", "vericenter"],
+    "": ["shape", "radius", "horicenter", "vericenter", "iterations"],
     "expansion": ["expansionhori", "expansionverti", "expansionhoriexp", "expansionvertiexp"],
     "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod", "rotationuntil"],
     "movement": ["translationhori", "translationverti"],
@@ -80,7 +80,7 @@ const optionSections = {
     "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
     "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
-    "nitpicky details": ["fps", "iterations"],
+    "nitpicky details": ["fps"],
 };
 
 const defaults = Object.fromEntries(Object.entries(options).map(([n, o]) => [n, o.default]));
@@ -158,7 +158,7 @@ const presets = {
     "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37canva0.04",
     "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav2200",
     "ⵅ": "s2r100ro-1e1.01ex1.01t0.3se10000sk0.5i259ho0.56v0.46c13ca13can51l238li243lin230fa302tr1tra1rotat500j0.1",
-    "ⵙ": "r10ro2.55rot0.51rota0e1.05ex1.05t0.2se5000w1342h1342ho1v0c177ca63can32l227li173lin99rotat100wa47wavi8j0.1canva0.08",
+    "ⵙ": "r10ro2.55rot0.51rota0e1.05ex1.05t0.2se5000i100w1342h1342ho1v0c177ca63can32l227li173lin99rotat100wa47wavi8j0.1canva0.08",
     "ⵢ": "r2550ro-3.2rot0.19rota0.53e0.97ex0.97t0.4se5700sk0.27i48w2300h2218ho0.89v0.43c194ca248can190canv0l254li218lin66line0.8tr0.5tra2j8sa0exp48expa-13",
     "ⵉ": "s2r300ro-0.2e1.002ex0.995t0.5se5000i460c42ca47can72l158li180lin212line0.25b3tra0.9rotat100wav576wavin0.1j1.3sa100saw53canva0.04",
     "ⵚ": "r250ro1.9e1.007ex1.01se10000i402w2560h2560c77ca89can167l183li173lin194b3tr2.2rotat201wa4615wav2932wavi0.5j0.1",
@@ -183,7 +183,7 @@ const presets = {
     "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07",
     "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6fa658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15",
     "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat600wa18wav47wavi0.1wavin0.1",
-    "ⵁ": "s2r250ro5rot0rota0e0.995ex0.995t3se100i316w500h500c0ca0can64l255li255b10j0",
+    "ⵁ": "r200e1.002ex1.002t0.5se10000sk0.5i470w1920h1280ho0.3canv0li10lin66line0.1fa33tr0.6j0.5fad420",
     "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6fa225re25wa816wav336wavi3.2sa140saw48canva0.05",
     "⌘": "",
 };
@@ -347,6 +347,10 @@ function copyShareLink() {
 
         showShareStatus(text);
     }
+}
+function openShareLink() {
+    const caring = document.querySelector(".caring");
+    window.location = caring.value;
 }
 async function shareShareLink() {
     const url = document.querySelector(".caring").value;
@@ -535,10 +539,23 @@ function restartRendering(opts) {
         ctx.shadowBlur = opts.shadowblur;
     }
 
+    const iterationsMeter = document.querySelector(".iterations i");
+    let lastIterationsMeterUpdate = Date.now();
+
     // thing goes brr
     let n = 0;
     inter = setInterval(() => {
-        if (n++ > opts.iterations) clearInterval(inter);
+
+        // update iterations meter every 200ms (frequent dom updates are performance poison!), "transition: 0.2s linear" takes care of making to look smooth
+        if (Date.now() >= lastIterationsMeterUpdate + 200) {
+            iterationsMeter.style.width = `${100 * n / opts.iterations}%`;
+            lastIterationsMeterUpdate = Date.now();
+        }
+
+        if (++n > opts.iterations) {
+            clearInterval(inter);
+            iterationsMeter.style.width = "0";
+        }
 
         ctx.beginPath();
 

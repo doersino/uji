@@ -151,11 +151,18 @@
         .value {
             display: inline-block;
             position: absolute;
-            width: 7em;
-            pointer-events: none;
+            font: inherit;
+            color: inherit;
+            border: 0;
+            width: 4em;
             text-align: right;
-            margin-left: -7em;
-            padding: 0.1em 0.2em;
+            margin-left: -4em;
+            padding: 0.05em 0.15em 0 0;
+            outline: none;
+            background-color: transparent;
+        }
+        .value:focus {
+            filter: drop-shadow(0 0 0.5em white);
         }
         .description {
             display: none;
@@ -173,7 +180,7 @@
         .letter:hover ~ .description {
             display: block;
         }
-        input[type="range"] {
+        .slider {
             vertical-align: top;
             display: inline-block;
             -webkit-appearance: none;
@@ -187,13 +194,13 @@
             border-radius: 0 0.2rem 0.2rem 0;
             padding: 0 1px;
         }
-        label:hover input[type="range"] {
+        label:hover .slider {
             background-color: #888;
         }
-        input[type="range"]:active {
+        .slider:active {
             background-color: #999 !important;
         }
-        input[type="range"]::-webkit-slider-thumb {
+        .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 1rem;
@@ -202,7 +209,7 @@
             border-radius: 0.2rem;
             outline: none;
         }
-        input[type="range"]::-moz-range-thumb {
+        .slider::-moz-range-thumb {
             width: 1em;
             height: 2em;
             background: #fff;
@@ -213,34 +220,34 @@
         .red .letter {
             background-color: var(--red);
         }
-        .red input[type="range"]::-webkit-slider-thumb {
+        .red .slider::-webkit-slider-thumb {
             background: var(--red);
         }
-        .red input[type="range"]::-moz-range-thumb {
+        .red .slider::-moz-range-thumb {
             background: var(--red);
         }
         .green .letter {
             background-color: var(--green);
         }
-        .green input[type="range"]::-webkit-slider-thumb {
+        .green .slider::-webkit-slider-thumb {
             background: var(--green);
         }
-        .green input[type="range"]::-moz-range-thumb {
+        .green .slider::-moz-range-thumb {
             background: var(--green);
         }
         .blue .letter {
             background-color: var(--blue);
         }
-        .blue input[type="range"]::-webkit-slider-thumb {
+        .blue .slider::-webkit-slider-thumb {
             background: var(--blue);
         }
-        .blue input[type="range"]::-moz-range-thumb {
+        .blue .slider::-moz-range-thumb {
             background: var(--blue);
         }
-        .halftransparent input[type="range"]::-webkit-slider-thumb {
+        .halftransparent .slider::-webkit-slider-thumb {
             background: #0005;
         }
-        .halftransparent input[type="range"]::-moz-range-thumb {
+        .halftransparent .slider::-moz-range-thumb {
             background: #0005;
         }
 
@@ -370,10 +377,10 @@
             .drawing canvas {
                 max-height: 75vw;
             }
-            input[type="range"]::-webkit-slider-thumb {
+            .slider::-webkit-slider-thumb {
                 width: 4em;
             }
-            input[type="range"]::-moz-range-thumb {
+            .slider::-moz-range-thumb {
                 width: 4em;
             }
         }
@@ -428,6 +435,8 @@
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
             <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover those from there, too.</p>
             <input type="text" class="caring" readonly spellcheck="false" value="test"><button class="share-copy" onclick="copyShareLink()">Copy</button>
+            <button class="share-copy" onclick="copyShareLink()">Share...</button>
+            <button class="share-copy" onclick="copyShareLink()">Tweet...</button>
             <p class="share-status"></p>
         </div>
     </aside>

@@ -14,7 +14,7 @@ const options = {
     rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
     expansionhori: {letter: "𐤗", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
-    expansionverti: {letter: "𐤓", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
+    expansionverti: {letter: "𐤓", description: "vertical rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
     thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1, default: 1},
     segments: {letter: "𐡔", description: "number of line segments the shape is comprised of", min: 100, max: 20000, step: 100, default: 1000},
     skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
@@ -51,6 +51,8 @@ const options = {
     sawtoothfadeoutstart: {letter: "S", description: "iteration where line segments begin disappearing, saw-tooth-style", min: 0, max: 1000, step: 1, default: 0},
     expansionhoriexp: {letter: "E", description: "exponential factor added to horizontal rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
     expansionvertiexp: {letter: "E", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
+    canvasnoise: {letter: "N", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
+    shadowblur: {letter: "B", description: "size of blurry shadow applied to line segments (in pixels, non-zero values might not play well with some blend modes)", min: 0, max: 50, step: 0.1, default: 0},
 
     // See note above when adding more.
 };
@@ -76,8 +78,8 @@ const optionSections = {
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
-    "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode"],
-    "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity"],
+    "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
+    "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
     "nitpicky details": ["fps", "iterations"],
 };
 
@@ -96,7 +98,7 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" oninput="handleOptionInput(this)"><div class="value">${v}</div><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${v}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${v}" name="${n}" class="value" oninput="handleOptionValueInput(this)"><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;
@@ -105,15 +107,32 @@ function setupOptions() {
 function handleOptionInput(e) {
     unselectPreset();
     optionValues[e.name] = parseFloat(e.value);
-    e.parentElement.querySelector(".value").innerText = parseFloat(e.value);
+    e.parentElement.querySelector(".value").value = parseFloat(e.value);
+    refreshShareSheetUrl();
+    restartRendering(optionValues);
+}
+function handleOptionValueInput(e) {
+
+    // return for control characters etc.
+    // TODO === right here?
+    /*if (parseFloat(e.value) === optionValues[e.name]) {
+        return;
+    }*/
+
+
+
+    unselectPreset();
+    optionValues[e.name] = parseFloat(e.value);
+    //e.parentElement.querySelector(".value").value = parseFloat(e.value);
+    e.parentElement.querySelector(".slider").value = parseFloat(e.value);
     refreshShareSheetUrl();
     restartRendering(optionValues);
 }
 function refreshRenderedOption(name) {
-    const e = document.querySelector(`.bitsnbobs [name=${name}]`);
+    const e = document.querySelector(`.bitsnbobs .slider[name=${name}]`);
     const v = optionValues[name];
     e.value = v;
-    e.parentElement.querySelector(".value").innerText = v;
+    e.parentElement.querySelector(".value").value = v;
 }
 function refreshAllRenderedOptions() {
     Object.keys(optionValues).forEach(refreshRenderedOption);
@@ -121,44 +140,44 @@ function refreshAllRenderedOptions() {
 
 const presets = {
     "ⵋ": "s4r320ro-0.2ex1.003t0.5se5000i450v0.13c223ca216can168l201li96lin34line0.25b10fa711re100tra1.1rotat100wav2740wavi0.8wavin0.1sa460saw168",
-    "ⴳ": "s4r550t4se100i335v0c151ca172can207l201li230lin255line0.66b9fa336in180tra-3wa150wav24wavi0.1wavin0.1j0.5",
-    "ⵉ": "s2r300ro-0.2e1.002ex0.995t0.5se5000i460c42ca47can72l158li180lin212line0.25b3tra0.9rotat100wav576wavin0.1j1.3sa100saw53",
-    "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474line0.02fa1000wa398wav268wavi0.1wavin0.1",
-    "ⵞ": "r160ro-0.65e1.005ex1.006t0.5i402w2560h2560c0ca0can17l255li244lin204line0.05fa1000wa300j10",
-    "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav2200",
-    "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0",
-    "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6fa658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5",
-    "ⴻ": "s3r550ro-0.2e0.999ex0.985t0.5se2900i335ho0.36v0.42c26ca22can47l204li181lin145line0.66fa336in238tra-3wa150wav24wavi0.1wavin0.1j0.7",
-    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0",
-    "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6fa225re25wa816wav336wavi3.2sa140saw48",
-    "ⵘ": "s4ro4e0.99ex0.983t0.8i278v0.01c16ca26can27l173li179lin147b8in183tr-3.7wa50wav40j0.2",
-    "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37",
-    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat600wa18wav47wavi0.1wavin0.1",
-    "ⵓ": "s4r390ro0.15e0.994se5000i565w857h1372v0.04c53ca39can48l255li255lin255line0.24b3fa803tra1.8wa6000wav6000wavi0.1wavin0.4j0.1",
-    "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat170wav1300j8",
-    "ⵁ": "s2r250ro5rot0rota0e0.995ex0.995t3se100i316w500h500c0ca0can64l255li255b10j0",
     "ⴼ": "s2r1250ro0.025e0.994ex0.994t0.5se8000sk0.74i1388w2560h2560line0.35wav1300",
-    "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8fa403wav747j3.4sa410",
-    "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can36l130li163lin199b6wa432wav47wavi5wavin5j10",
-    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav2200",
-    "ⵅ": "s2r100ro-1e1.01ex1.01t0.3se10000sk0.5i259ho0.56v0.46c13ca13can51l238li243lin230fa302tr1tra1rotat500j0.1",
-    "ⵆ": "s3r650ro5t2se400sk0.25i77w1995h1995c20ca23can39l227li235lin255b8in41j0",
-    "ⵌ": "r200ro4e1.05ex0.958se5000sk0.8i508w1580h1580ho0.51v0.52c44ca55can96l126li164lin240b2tr10tra10j0.2",
-    "ⵍ": "s4r460ro0.05rot0.68rota1e0.999ex1.05t2se3000sk0.5i201v0.94c0ca34can28l238li169lin54line0.75b3fa196rotat9j0.2",
-    "ⵎ": "s4r630ro0.1t0.3se4000i1206v0c244ca242can222l53lin12line0.3tr-0.1tra1rotat403wav3749wavin0.1j0.4",
-    "ⵐ": "s2r1010ro-0.95rot0.65rota0.2e0.977ex0.969i58w1401h1401ho0.33v0.31fa384re35wa95wav47wavi1.2wavin2j0.1",
-    "ⵒ": "s3r1820ro5rot0.46rota0.22e0.96ex0.965t1.5se4000i297w2560h2560ho0.77v0.52c0ca0can0l233li243lin255b8fa384rotat192wa432wav143wavi1.2wavin0.5j0.1",
-    "ⵖ": "r400ro-0.4rota0.64e1.01ex1.01se10000i192h2560v0.64c229ca210can136l172li102lin194b7fa71tra-1.3rotat201wa1874wav3557wavi1.2wavin0.9j0.2fad82",
-    "ⴵ": "s4r100ro-2.5e0.98ex1.01i1005ho0.22v0.22c7ca10can16l196li219lin255line0.16fa1000rotat384wa287wav576wavi3wavin3j0.2",
-    "ⵙ": "r10ro2.55rot0.51rota0e1.05ex1.05t0.2se5000w1342h1342ho1v0c177ca63can32l227li173lin99rotat100wa47wavi8j0.1",
-    "ⵚ": "r250ro1.9e1.007ex1.01se10000i402w2560h2560c77ca89can167l183li173lin194b3tr2.2rotat201wa4615wav2932wavi0.5j0.1",
     "ⵛ": "s3r1560ro-0.4e0.988ex0.988t0.2se8000i297c170ca181can180l232li255lin222b3tr-0.9wa239wav95wavi0.3wavin2j4.7",
+    "ⵍ": "s4r460ro0.05rot0.68rota1e0.999ex1.05t2se3000sk0.5i201v0.94c0ca34can28l238li169lin54line0.75b3fa196rotat9j0.2",
     "ⵟ": "r170ro-0.4e1.013ex1.01t1.8se9000i192w2560h2560c16ca12can26l159li157lin161b3fa153j2fad77sa170saw58",
-    "ⵠ": "r590ro-0.5e0.995ex0.995t0.8se4000i134w1659h1381c81ca91can103l255li255lin255line0.8fa129in150wa913wav1586wavi0.2wavin0.3j0.5fad14sa70saw34exp15expa183",
-    "ⵡ": "s3r360ro-0.95e0.995ex0.997t1.5i460v0.46c33ca33can89l194li202lin255b8fa105j0.2fad34sa120saw10exp17expa-25",
+    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6fa201re172tr0.9wav2200",
+    "ⵣ": "s2r820ro-0.55e0.996ex0.996t0.8sk0.47i192w2095h2104ho0.46v0.58c0ca0can0l200li233lin255in21re18wav336j1.5sa70saw72exp-10expa58canva0.4",
+    "ⵠ": "r590ro-0.5e0.995ex0.995t0.8se4000i134w1659h1381c81ca91can103l255li255lin255line0.8fa129in150wa913wav1586wavi0.2wavin0.3j0.5fad14sa70saw34exp15expa183sh20",
+    "ⵒ": "s3r1820ro5rot0.46rota0.22e0.96ex0.965t1.5se4000i297w2560h2560ho0.77v0.52c0ca0can0l233li243lin255b8fa384rotat192wa432wav143wavi1.2wavin0.5j0.1",
+    "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02fa1000re37canva0.04",
+    "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6fa201re172tr0.9wav2200",
+    "ⵅ": "s2r100ro-1e1.01ex1.01t0.3se10000sk0.5i259ho0.56v0.46c13ca13can51l238li243lin230fa302tr1tra1rotat500j0.1",
+    "ⵙ": "r10ro2.55rot0.51rota0e1.05ex1.05t0.2se5000w1342h1342ho1v0c177ca63can32l227li173lin99rotat100wa47wavi8j0.1canva0.08",
     "ⵢ": "r2550ro-3.2rot0.19rota0.53e0.97ex0.97t0.4se5700sk0.27i48w2300h2218ho0.89v0.43c194ca248can190canv0l254li218lin66line0.8tr0.5tra2j8sa0exp48expa-13",
-    "ⵣ": "",
-    "ⵤ": "",
+    "ⵉ": "s2r300ro-0.2e1.002ex0.995t0.5se5000i460c42ca47can72l158li180lin212line0.25b3tra0.9rotat100wav576wavin0.1j1.3sa100saw53canva0.04",
+    "ⵚ": "r250ro1.9e1.007ex1.01se10000i402w2560h2560c77ca89can167l183li173lin194b3tr2.2rotat201wa4615wav2932wavi0.5j0.1",
+    "ⴳ": "s4r550t4se100i335v0c151ca172can207l201li230lin255line0.66b9fa336in180tra-3wa150wav24wavi0.1wavin0.1j0.5",
+    "ⵞ": "r160ro-0.65e1.005ex1.006t0.5i402w2560h2560c0ca0can17l255li244lin204line0.05fa1000wa300j10",
+    "ⵓ": "s4r390ro0.15e0.994se5000i565w857h1372v0.04c53ca39can48l255li255lin255line0.24b3fa803tra1.8wa6000wav6000wavi0.1wavin0.4j0.1",
+    "ⵘ": "s4ro4e0.99ex0.983t0.8i278v0.01c16ca26can27l173li179lin147b8in183tr-3.7wa50wav40j0.2",
+    "ⵆ": "s3r650ro5t2se400sk0.25i77w1995h1995c20ca23can39l227li235lin255b8in41j0sh5",
+    "ⵐ": "s2r1010ro-0.95rot0.65rota0.2e0.977ex0.969i58w1401h1401ho0.33v0.31fa384re35wa95wav47wavi1.2wavin2j0.1",
+    "ⵖ": "r400ro-0.4rota0.64e1.01ex1.01se10000i192h2560v0.64c229ca210can136l172li102lin194b7fa71tra-1.3rotat201wa1874wav3557wavi1.2wavin0.9j0.2fad82",
+    "ⵤ": "s4r330ro-0.45ex1.022t0.3se4000sk0.2i316w1679h2164ho0.29v0.97c66ca69can71l218li223lin218line0.7in3re66tr2.5tra-5rotat33wa1634wav864wavi0.1wavin0.2j0.4rotati220sa120saw183expa-6canva0.05sh10",
+    "ⴵ": "s4r100ro-2.5e0.98ex1.01i1005ho0.22v0.22c7ca10can16l196li219lin255line0.16fa1000rotat384wa287wav576wavi3wavin3j0.2",
+    "ⴻ": "s3r550ro-0.2e0.999ex0.985t0.5se2900i335ho0.36v0.42c26ca22can47l204li181lin145line0.66fa336in238tra-3wa150wav24wavi0.1wavin0.1j0.7",
+    "ⵡ": "s3r360ro-0.95e0.995ex0.997t1.5i460v0.46c33ca33can89l194li202lin255b8fa105j0.2fad34sa120saw10exp17expa-25",
+    "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8fa403wav747j3.4sa410",
+    "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat170wav1300j8",
+    "ⵌ": "r200ro4e1.05ex0.958se5000sk0.8i508w1580h1580ho0.51v0.52c44ca55can96l126li164lin240b2tr10tra10j0.2",
+    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0canva0.1sh30",
+    "ⵎ": "s4r630ro0.1t0.3se4000i1206v0c244ca242can222l53lin12line0.3tr-0.1tra1rotat403wav3749wavin0.1j0.4",
+    "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can60l130li163lin199b6wa432wav47wavi5wavin5j10canva0.3sh7.5",
+    "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474canv0line0.02fa1000wa398wav268wavi0.1wavin0.1",
+    "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07",
+    "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6fa658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15",
+    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6fa1000rotat600wa18wav47wavi0.1wavin0.1",
+    "ⵁ": "s2r250ro5rot0rota0e0.995ex0.995t3se100i316w500h500c0ca0can64l255li255b10j0",
+    "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6fa225re25wa816wav336wavi3.2sa140saw48canva0.05",
     "⌘": "",
 };
 
@@ -192,7 +211,9 @@ function applyOptions(opts) {
     restartRendering(optionValues);
 }
 function applyRandomPreset() {
-    const i = Math.floor(Math.random() * Object.keys(presets).length);
+
+    // exclude last preset since it's empty on purpose
+    const i = Math.floor(Math.random() * (Object.keys(presets).length - 1));
     const l = Object.keys(presets)[i];
     const p = presets[l];
     applyPreset(p);
@@ -369,51 +390,13 @@ const blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "l
 function restartRendering(opts) {
     clearInterval(inter);
 
+    // reset canvas
     const w = opts.width;
     const h = opts.height;
     canvas.setAttribute("width", w);
     canvas.setAttribute("height", h);
 
     ctx.clearRect(0, 0, w, h);
-
-    // TODO keep this but cooooooment out
-    ctx.fillStyle = `rgba(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue},${opts.canvasopacity})`;
-    //ctx.fillRect(0, 0, w, h);
-
-    ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
-    //ctx.globalCompositeOperation = blendModes[opts.blendmode];
-
-    //ctx.globalCompositeOperation = "source-over";
-
-    // based on https://www.cssscript.com/create-noise-background-javascript-canvas/
-    // TODO control this very finely, respect background opacity somehow
-    //      => take bg color (with transparency etc.), permute brightness randomly, draw? replaced fillRect!
-    if (true) {
-        //value.toString(16).padStart(2, '0');
-
-        let imageData = ctx.createImageData(w, h);
-
-        for (let i = 0; i < imageData.data.length; i += 4) {
-            /*if (Math.random() < 0.5) {
-            } else {
-                buffer32[i] = 0x11ffffff;
-            }
-            //if (Math.random() < 0.00001) console.log(buffer32[i], 0x11ffffff, 255 + 256 * 255 + 256 * 256 * 255 + 256 * 256 * 256 * 17);
-            buffer32[i] = parseInt(opts.canvasblue + opts.canvasgreen * 256 + opts.canvasblue * 256 * 256 + opts.canvasopacity * 256 * 256 * 256);
-            if (Math.random() < 0.00001) console.log(buffer32[i]);
-            */
-            imageData.data[i] = parseInt(opts.canvasred);
-            imageData.data[i+1] = parseInt(opts.canvasgreen);
-            imageData.data[i+2] = parseInt(opts.canvasblue);
-            imageData.data[i+3] = parseInt(opts.canvasopacity * 255);
-        }
-        ctx.putImageData(imageData, 0, 0);
-    }
-    //ctx.globalCompositeOperation = "overlay";
-    //ctx.fillRect(0, 0, w, h);
-
-    //ctx.globalCompositeOperation = blendModes[opts.blendmode];
-
 
     // generate initial line
     const center = [w * opts.horicenter, h * opts.vericenter];
@@ -462,6 +445,61 @@ function restartRendering(opts) {
         line = line.map(p => {
             return rotate([w / 2, h / 2], p, opts.initialrotation * (Math.PI / 180));
         });
+    }
+
+    // draw background
+    if (opts.canvasnoise > 0) {
+
+        // get some pixels for making noise (this tile size has proven a good
+        // compromise between performance and non-repetitiveness)
+        let tileSize = 512;
+        let imageData = ctx.createImageData(tileSize, tileSize);
+
+        // prepare for light and dark pixels: linear interpolation between
+        // canonical color and halfway to black/white
+        const dark = [
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasred),
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasgreen),
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasblue),
+        ];
+        const light = [
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasred + opts.canvasnoise / 2 * 255),
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasgreen + opts.canvasnoise / 2 * 255),
+            parseInt((1 - opts.canvasnoise / 2) * opts.canvasblue + opts.canvasnoise / 2 * 255),
+        ];
+
+        // make noise
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            if (r() < 0.5) {
+                imageData.data[i] = dark[0];
+                imageData.data[i+1] = dark[1];
+                imageData.data[i+2] = dark[2];
+            } else {
+                imageData.data[i] = light[0];
+                imageData.data[i+1] = light[1];
+                imageData.data[i+2] = light[2];
+            }
+            imageData.data[i+3] = parseInt(opts.canvasopacity * 255);
+        }
+
+        // apply to image
+        for (let x = 0; x < w; x += tileSize) {
+            for (let y = 0; y < h; y += tileSize) {
+                ctx.putImageData(imageData, x, y);
+            }
+        }
+    } else {
+        ctx.fillStyle = `rgba(${opts.canvasred},${opts.canvasgreen},${opts.canvasblue},${opts.canvasopacity})`;
+        ctx.fillRect(0, 0, w, h);
+    }
+
+    // setup line drawing settings
+    ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
+    ctx.globalCompositeOperation = blendModes[opts.blendmode];
+
+    if (opts.shadowblur > 0) {
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.shadowBlur = opts.shadowblur;
     }
 
     // thing goes brr

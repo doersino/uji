@@ -12,7 +12,7 @@ The interface is designed (or, rather, deliberately *not designed*) for **explor
 
 The **tiled buttons at the top are presets** – use them as jumping-off points, or click your way through them to see what's possible before starting afresh by yourself. The <kbd>⌘</kbd> preset has all options set to their defaults, so it's a good starting point once you've played around a bit.
 
-The **sliders control all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does.
+The **sliders determine all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does. You can also edit the option values directly through the text inputs next to the sliders.
 
 #### [🎨 Play around with the various options at `doersino.github.io/uji/`!](https://doersino.github.io/uji/)
 

@@ -109,7 +109,6 @@ function handleOptionInput(e) {
     refreshRenderedOptionValue(e.name);
     refreshShareSheetUrl();
     restartRendering(optionValues);
-    // TODO history
 }
 function handleOptionValueInput(e) {
     unselectPreset();
@@ -119,7 +118,6 @@ function handleOptionValueInput(e) {
     e.parentElement.querySelector(".slider").value = v;
     refreshShareSheetUrl();
     restartRendering(optionValues);
-    // TODO history
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.bitsnbobs .value[name=${name}]`);
@@ -201,7 +199,6 @@ function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
     e.classList.add("selected");
-    // TODO history
 }
 function applyPreset(preset) {
     const opts = parseShareHash(preset);
@@ -236,8 +233,10 @@ function unselectPreset() {
     }
 }
 
-function randomize() {
-    // TODO exclude fps/iterations/size/etc.? only randomize a few sliders at a time?
+// commented-out since it only very rarely produces interesting results – the
+// space is just way too n-dimensional. also, would need to deal with floating
+// point stringification stuff, which ugh
+/*function randomize() {
     let randomized = JSON.parse(JSON.stringify(defaults));
     Object.keys(options).forEach(n => {
         const o = options[n];
@@ -246,14 +245,13 @@ function randomize() {
         const minScaled = o.min / o.step;
         const maxScaled = o.max / o.step;
         let rand = parseInt(minScaled + Math.random() * (maxScaled - minScaled)) * o.step;
-        // TODO deal with dumb floating point stringification stuff
         if (!o.step.toString().includes(".")) {
             rand = parseInt(rand);
         }
         randomized[n] = rand;
     });
     applyOptions(randomized);
-}
+}*/
 
 function downloadFile(hrefData, filename) {
     const a = document.createElement("a");
@@ -600,9 +598,7 @@ window.addEventListener('load', e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
-        // TODO history
     } else {
         applyRandomPreset();
-        // TODO history
     }
 });

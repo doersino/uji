@@ -6,7 +6,7 @@ The interface is designed (or, rather, deliberately *not designed*) for **explor
 
 ![It's not desktop-only, by the way!](example-laptop.jpg)
 
-The **tiled buttons at the top are presets** – use them as jumping-off points, or click your way through them to see what's possible before starting afresh by yourself. The "⌘" preset has all options set to their defaults, so it's a good starting point once you've played around a bit.
+The **tiled buttons at the top are presets** – use them as jumping-off points, or click your way through them to see what's possible before starting afresh by yourself. The <kbd>⌘</kbd> preset has all options set to their defaults, so it's a good starting point once you've played around a bit.
 
 The **sliders control every aspect of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does.
 

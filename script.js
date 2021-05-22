@@ -9,50 +9,49 @@ const options = {
     // options must not modify the behavior of existing presets or shared links.
 
     shape: {letter: "𐡎", description: "shape (1: circle, 2: square, 3: triangle, 4: line)", min: 1, max: 4, step: 1, default: 1},
-    radius: {letter: "𐡀", description: "radius of shape", min: 0, max: 3000, step: 10, default: 500},
+    radius: {letter: "𐤕", description: "radius of shape", min: 0, max: 3000, step: 10, default: 500},
     rotationspeed: {letter: "𐤒", description: "rotation speed (in degrees per iteration)", min: -5, max: 5, step: 0.05, default: 0},
-    rotationoriginhori: {letter: "𐤈", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
+    rotationoriginhori: {letter: "𐡄", description: "horizontal origin of rotation as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
     rotationoriginverti: {letter: "𐤊", description: "vertical origin of rotation as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
     expansionhori: {letter: "𐤗", description: "horizontal rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
     expansionverti: {letter: "𐤓", description: "vertical rate of expansion or contraction per iteration", min: 0.95, max: 1.05, step: 0.001, default: 1},
     thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1, default: 1},
     segments: {letter: "𐡔", description: "number of line segments the shape is comprised of", min: 100, max: 20000, step: 100, default: 1000},
-    skipchance: {letter: "𐡜", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
-    fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},
+    skipchance: {letter: "𐡛", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
+    /*fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},*/
     iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1, default: 500},
-    width: {letter: "𐡏", description: "canvas width in pixels", min: 500, max: 2560, step: 1, default: 1024},
+    width: {letter: "𐤑", description: "canvas width in pixels", min: 500, max: 2560, step: 1, default: 1024},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1, default: 1024},
     horicenter: {letter: "𐤔", description: "horizontal center as a fraction of the canvas width", min: 0, max: 1, step: 0.01, default: 0.5},
     vericenter: {letter: "𐤘", description: "vertical center as a fraction of the canvas height", min: 0, max: 1, step: 0.01, default: 0.5},
     canvasred: {letter: "𐤏", description: "red component of background color", min: 0, max: 255, step: 1, default: 255, class: "red"},
     canvasgreen: {letter: "𐤏", description: "green component of background color", min: 0, max: 255, step: 1, default: 255, class: "green"},
     canvasblue: {letter: "𐤏", description: "blue component of background color", min: 0, max: 255, step: 1, default: 255, class: "blue"},
-    canvasopacity: {letter: "𐤑", description: "opacity of background color", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
+    canvasopacity: {letter: "𐡈", description: "opacity of background color", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
     linered: {letter: "𐤟", description: "red component of line color", min: 0, max: 255, step: 1, default: 0, class: "red"},
     linegreen: {letter: "𐤟", description: "green component of line color", min: 0, max: 255, step: 1, default: 0, class: "green"},
     lineblue: {letter: "𐤟", description: "blue component of line color", min: 0, max: 255, step: 1, default: 0, class: "blue"},
-    lineopacity: {letter: "𐤑", description: "opacity of line segments", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
+    lineopacity: {letter: "𐡈", description: "opacity of line segments", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
     blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1, default: 0},
     fadeoutspeed: {letter: "𐡞", description: "rate at which line segments disappear in later iterations (-1 to disable)", min: -1, max: 1000, step: 1, default: -1},
-    initialrotation:  {letter: "I", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1, default: 0},
-    revealspeed: {letter: "R", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 500, step: 1, default: -1},
-    translationhori: {letter: "H", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
-    translationverti: {letter: "V", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
-    rotationperiod: {letter: "P", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
-    wavinessphori: {letter: "W", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
-    wavinesspverti: {letter: "V", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
-    wavinessahori: {letter: "X", description: "amplitude of horizontal sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
-    wavinessaverti: {letter: "X", description: "amplitude of vertical sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
-    jitter: {letter: "J", description: "jitter added to the shape in each iteration", min: 0, max: 10, step: 0.1, default: 1},
-    rotationuntil: {letter: "U", description: "until which iteration should the rotation fade to zero? (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
-    rotationuntil: {letter: "U", description: "until which iteration should the rotation fade to zero? (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
-    fadeoutstart: {letter: "S", description: "iteration where line segments begin disappearing", min: 0, max: 1000, step: 1, default: 0},
-    sawtoothfadeoutsize: {letter: "T", description: "size of \"saw teeth\" that disappear (in line segments, -1 to disable)", min: -1, max: 5000, step: 10, default: -1},
-    sawtoothfadeoutstart: {letter: "S", description: "iteration where line segments begin disappearing, saw-tooth-style", min: 0, max: 1000, step: 1, default: 0},
-    expansionhoriexp: {letter: "E", description: "exponential factor added to horizontal rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
-    expansionvertiexp: {letter: "E", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
-    canvasnoise: {letter: "N", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
-    shadowblur: {letter: "B", description: "size of blurry shadow applied to line segments (in pixels, non-zero values might not play well with some blend modes)", min: 0, max: 50, step: 0.1, default: 0},
+    initialrotation:  {letter: "𐤈", description: "initial rotation of shape (in degrees)", min: 0, max: 359, step: 1, default: 0},
+    revealspeed: {letter: "𐡗", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 500, step: 1, default: -1},
+    translationhori: {letter: "𐡝", description: "horizontal rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
+    translationverti: {letter: "𐡍", description: "vertical rate of linear movement per iteration (in pixels)", min: -10, max: 10, step: 0.1, default: 0},
+    rotationperiod: {letter: "𐤙", description: "period of sinusoidal rotation variance (in iterations, -1 to disable)", min: -1, max: 1000, step: 1, default: -1},
+    wavinessphori: {letter: "𐤉", description: "period of horizontal sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
+    wavinesspverti: {letter: "𐡇", description: "period of vertical sinusoidal expansion variance (in line segments, -1 to disable)", min: -1, max: 10000, step: 1, default: -1},
+    wavinessahori: {letter: "𐡒", description: "amplitude of horizontal sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
+    wavinessaverti: {letter: "𐡅", description: "amplitude of vertical sinusoidal expansion variance", min: 0, max: 10, step: 0.1, default: 1},
+    jitter: {letter: "𐡕", description: "jitter added to the shape in each iteration", min: 0, max: 10, step: 0.1, default: 1},
+    rotationuntil: {letter: "𐡐", description: "until which iteration should the rotation fade to zero? (-1 to disable)", min: -1, max: 2000, step: 1, default: -1},
+    fadeoutstart: {letter: "𐡂", description: "iteration where line segments begin disappearing", min: 0, max: 1000, step: 1, default: 0},
+    sawtoothfadeoutsize: {letter: "𐡚", description: "size of \"saw teeth\" that disappear (in line segments, -1 to disable)", min: -1, max: 5000, step: 10, default: -1},
+    sawtoothfadeoutstart: {letter: "𐤋", description: "iteration where line segments begin disappearing, saw-tooth-style", min: 0, max: 1000, step: 1, default: 0},
+    expansionhoriexp: {letter: "𐡜", description: "exponential factor added to horizontal rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
+    expansionvertiexp: {letter: "𐡙", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
+    canvasnoise: {letter: "𐡀", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
+    shadowblur: {letter: "𐤎", description: "size of blurry shadow applied to line segments (in pixels, non-zero values might not play well with some blend modes)", min: 0, max: 50, step: 0.1, default: 0},
 
     // See note above when adding more.
 };
@@ -80,7 +79,7 @@ const optionSections = {
     "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
     "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
-    "nitpicky details": ["fps"],
+    /*"nitpicky details": ["fps"],*/
 };
 
 const defaults = Object.fromEntries(Object.entries(options).map(([n, o]) => [n, o.default]));
@@ -110,6 +109,7 @@ function handleOptionInput(e) {
     refreshRenderedOptionValue(e.name);
     refreshShareSheetUrl();
     restartRendering(optionValues);
+    // TODO history
 }
 function handleOptionValueInput(e) {
     unselectPreset();
@@ -119,6 +119,7 @@ function handleOptionValueInput(e) {
     e.parentElement.querySelector(".slider").value = v;
     refreshShareSheetUrl();
     restartRendering(optionValues);
+    // TODO history
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.bitsnbobs .value[name=${name}]`);
@@ -200,6 +201,7 @@ function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
     e.classList.add("selected");
+    // TODO history
 }
 function applyPreset(preset) {
     const opts = parseShareHash(preset);
@@ -588,7 +590,7 @@ function restartRendering(opts) {
         ctx.lineWidth = opts.thickness;
         ctx.stroke();
 
-    }, 1000 / opts.fps);
+    }, 1000 / 60/*opts.fps*/);
 }
 
 window.addEventListener('load', e => {
@@ -598,7 +600,9 @@ window.addEventListener('load', e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
+        // TODO history
     } else {
         applyRandomPreset();
+        // TODO history
     }
 });

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>uji</title>
+    <title>UJI</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="stylesheet" href="fonts/iosevka-aile/3.4.6/webfont.css">
     <link rel="stylesheet" href="fonts/noto-sans/2017-10-24/webfonts.css">
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@doersino" />
-    <meta name="twitter:title" content="uji" />
+    <meta name="twitter:title" content="UJI" />
     <meta name="twitter:description" content="A minimalist generative art thing – play with the sliders and press the buttons." />
     <meta name="twitter:image" content="https://doersino.github.io/uji/icon.png" />
     <style>
@@ -23,6 +24,8 @@
             --red: #e67;
             --green: #5b6;
             --blue: #89f;
+
+            --text-color: #eee;
         }
 
         * {
@@ -36,7 +39,7 @@
             font-family: var(--font);
             line-height: 1.2;
             background-color: #111;
-            color: #eee;
+            color: var(--text-color);
         }
         .sidebar {
             width: var(--sidebar-width);
@@ -415,7 +418,7 @@
 <body>
     <aside class="sidebar">
         <div class="introduction">
-            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: #eee; fill: none;" viewBox="0 0 52 52">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: var(--text-color); fill: none;" viewBox="0 0 52 52">
                 <g transform="translate(2, 2)">
                     <path d="M 0,0 L 0,16"></path>
                     <path d="M 32,0 L 32,16"></path>
@@ -468,11 +471,8 @@
             <p class="share-status"></p>
         </div>
     </aside>
-    <div class="iterations">
-        <i></i>
-    </div>
-    <div class="drawing">
-        <canvas></canvas>
-    </div>
+    <div class="iterations"><i></i></div>
+    <div class="drawing"><canvas></canvas></div>
     <script src="script.js"></script>
 </body>
+</html>

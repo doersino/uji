@@ -20,7 +20,7 @@ If you find that changing a slider slightly modifies some behavior you'd expect 
 
 ![This is how your apartment could look with one simple trick! (The trick is: Makin' stuff with this tool.)](example-frames.jpg)
 
-*About the name:* I could pretend that it's referring to the concept of [*uji* in Zen Buddhism](https://en.wikipedia.org/wiki/Uji_(Being-Time)), but really, the letters just lend themselves to a pretty logo, an [initial iteration](https://github.com/doersino/brachiosaurus/blob/24fb60c86e037053ed1003a356a7ca1d8135c5fd/examples.py#L413) of which I had previously cobbled together with my pen plotting tool [Brachiosaurus](https://github.com/doersino/brachiosaurus/) and later made the [final logo](https://gist.github.com/doersino/c2c4e3f110b75ac8eef3b46a8ee30d36) using the [Markdeep Diagram Drafting Board](https://github.com/doersino/markdeep-diagram-drafting-board).
+*About the name:* I could pretend that it's referring to the concept of [*uji* in Zen Buddhism](https://en.wikipedia.org/wiki/Uji_(Being-Time)), but really, the letters just lend themselves to a pretty logo, an [initial iteration](https://github.com/doersino/brachiosaurus/blob/24fb60c86e037053ed1003a356a7ca1d8135c5fd/examples.py#L413) of which I had previously cobbled together with my pen plotting tool [Brachiosaurus](https://github.com/doersino/brachiosaurus/) and later made the [final logo](https://gist.github.com/doersino/c2c4e3f110b75ac8eef3b46a8ee30d36) (along with the *download* and *share* icons) using the [Markdeep Diagram Drafting Board](https://github.com/doersino/markdeep-diagram-drafting-board).
 
 
 ## Notes
@@ -56,6 +56,6 @@ However, the subdirectory `fonts/` contains **third-party webfonts with their ow
 * Renzhi Li's **Iosevka Aile**, the typeface used throughout the interface, is licensed under the *SIL Open Font License Version 1.1*, see [here](https://github.com/be5invis/Iosevka/blob/master/LICENSE.md).
 * Google's **Noto Sans**, which provides the glyphs of the ancient scripts used for presets and slider labels, is also used in accordance with its *SIL Open Font License Version 1.1*, see [here](https://github.com/googlefonts/noto-fonts/blob/main/LICENSE).
 
-Further, the **general layout has been adapted from [Markdeep Diagram Drafting Board](https://github.com/doersino/markdeep-diagram-drafting-board) and [Crop Circles](https://github.com/doersino/cropcircles)**, both are previous projects of mine.
+Further, the **stock photo** of the laptop was taken by [Howard Bouchevereau](https://unsplash.com/photos/RSCirJ70NDM), the one showing the chair and the picture frames was captured by [Christopher Burns](https://unsplash.com/photos/BdVQU-NDtA8), and both have been sourced from [Unsplash](https://unsplash.com/).
 
-Finally, the **stock photo** of the laptop was taken by [Howard Bouchevereau](https://unsplash.com/photos/RSCirJ70NDM), the one showing the chair and the picture frames was captured by [Christopher Burns](https://unsplash.com/photos/BdVQU-NDtA8), and both have been sourced from [Unsplash](https://unsplash.com/).
+Finally – this isn't relevant of licensing but I'd like to mention it – the **general layout has been adapted from [Markdeep Diagram Drafting Board](https://github.com/doersino/markdeep-diagram-drafting-board) and [Crop Circles](https://github.com/doersino/cropcircles)**, both are previous projects of mine.

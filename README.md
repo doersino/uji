@@ -1,6 +1,6 @@
 # UJI
 
-*A minimalist generative art thing – press the buttons and play with the sliders.*
+*A minimalist generative art thing – press the buttons and play with the sliders!*
 
 The interface is designed (or, rather, deliberately *not designed*) for **exploration through play** – both for you, as the user, and me, as the person who made the weird-ass interface. It's intended to facilitate a vaguely meditative and creative environment.
 

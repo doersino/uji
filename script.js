@@ -18,7 +18,6 @@ const options = {
     thickness: {letter: "𐤇", description: "line thiccness in pixels", min: 0.1, max: 4, step: 0.1, default: 1},
     segments: {letter: "𐡔", description: "number of line segments the shape is comprised of", min: 100, max: 20000, step: 100, default: 1000},
     skipchance: {letter: "𐡛", description: "chance each line segment will be skipped during drawing in each iteration", min: 0, max: 1, step: 0.01, default: 0},
-    /*fps: {letter: "𐡚", description: "frames/iterations per second (probably limited by your system at the high end of the scale)", min: 1, max: 240, step: 1, default: 60},*/
     iterations: {letter: "𐡘", description: "iterations before stopping", min: 10, max: 2000, step: 1, default: 500},
     width: {letter: "𐤑", description: "canvas width in pixels", min: 500, max: 2560, step: 1, default: 1024},
     height: {letter: "𐡉", description: "canvas height in pixels", min: 500, max: 2560, step: 1, default: 1024},
@@ -79,7 +78,6 @@ const optionSections = {
     "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
     "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
-    /*"nitpicky details": ["fps"],*/
 };
 
 const defaults = Object.fromEntries(Object.entries(options).map(([n, o]) => [n, o.default]));
@@ -588,7 +586,7 @@ function restartRendering(opts) {
         ctx.lineWidth = opts.thickness;
         ctx.stroke();
 
-    }, 1000 / 60/*opts.fps*/);
+    }, 1000 / 60);
 }
 
 window.addEventListener('load', e => {

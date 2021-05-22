@@ -8,11 +8,11 @@ The interface is designed (or, rather, deliberately *not designed*) for **explor
 
 The **tiled buttons at the top are presets** – use them as jumping-off points, or click your way through them to see what's possible before starting afresh by yourself. The <kbd>⌘</kbd> preset has all options set to their defaults, so it's a good starting point once you've played around a bit.
 
-The **sliders control every aspect of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does.
+The **sliders control all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does.
 
 #### [🎨 Play around with the various options at `doersino.github.io/uji/`!](https://doersino.github.io/uji/)
 
-If you find that changing a slider slightly modifies some behavior you'd expect to be the domain of other sliders: Let's just say that's a constraint designed to send your creativity down fresh paths (and not lazy implementation details).
+If you find that changing a slider slightly modifies some behavior you'd expect to be the domain of other sliders: Let's just say that's a constraint designed to send your creativity down fresh paths (and not a result of lazy implementation details).
 
 ![This is how your apartment could look with one simple trick! (The trick is: Makin' stuff with this tool.)](example-frames.jpg)
 

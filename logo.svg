@@ -1,0 +1,12 @@
+<svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: black; fill: none;" viewBox="0 0 52 52">
+    <g transform="translate(2, 2)">
+        <path d="M 0,0 L 0,16"></path>
+        <path d="M 32,0 L 32,16"></path>
+        <path d="M 40,0 L 40,32"></path>
+        <path d="M 48,0 L 48,48"></path>
+        <path d="M 0,48 L 24,48"></path>
+        <path d="M 16,32 C -0.8,32 0,16 0,16"></path>
+        <path d="M 16,32 C 32.8,32 32,16 32,16"></path>
+        <path d="M 24,48 C 40.8,48 40,32 40,32"></path>
+    </g>
+</svg>

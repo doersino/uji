@@ -51,6 +51,7 @@ const options = {
     expansionvertiexp: {letter: "𐡙", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
     canvasnoise: {letter: "𐡀", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
     shadowblur: {letter: "𐤎", description: "size of blurry shadow applied to line segments (in pixels, non-zero values might not play well with some blend modes)", min: 0, max: 50, step: 0.1, default: 0},
+    linecap: {letter: "𐤂", description: "line cap (1: butt, 2: round, 3: squre)", min: 1, max: 3, step: 1, default: 1},
 
     // See note above when adding more.
 };
@@ -76,7 +77,7 @@ const optionSections = {
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
-    "line": ["segments", "skipchance", "thickness", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
+    "line": ["segments", "skipchance", "thickness", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
 };
 
@@ -173,11 +174,11 @@ const presets = {
     "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8f403wav747j3.4sa410",
     "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat170wav1300j8",
     "ⵌ": "r200ro4e1.05ex0.958se5000sk0.8i508w1580h1580ho0.51v0.52c44ca55can96l126li164lin240b2tr10tra10j0.2",
-    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0canva0.1sh30",
+    "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0canva0.1sh30linec2",
     "ⵎ": "s4r630ro0.1t0.3se4000i1206v0c244ca242can222l53lin12line0.3tr-0.1tra1rotat403wav3749wavin0.1j0.4",
     "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can60l130li163lin199b6wa432wav47wavi5wavin5j10canva0.3sh7.5",
     "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474canv0line0.02f1000wa398wav268wavi0.1wavin0.1",
-    "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07",
+    "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07linec3",
     "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6f658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15",
     "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1",
     "ⵁ": "r200e1.002ex1.002t0.5se10000sk0.5i470w1920h1280ho0.3canv0li10lin66line0.1f33tr0.6j0.5fa420",
@@ -267,7 +268,7 @@ function download() {
     // poor man's async
     setTimeout(() => {
         downloadFile(canvas.toDataURL(), filename);
-    }, 0);
+    }, 1);
 }
 
 function generateShareHash(opts) {
@@ -424,7 +425,6 @@ let inter = null;
 let line = null;
 
 const r = Math.random;
-const blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
 
 function restartRendering(opts) {
     clearInterval(inter);
@@ -534,7 +534,12 @@ function restartRendering(opts) {
 
     // setup line drawing settings
     ctx.strokeStyle = `rgba(${opts.linered},${opts.linegreen},${opts.lineblue},${opts.lineopacity})`;
+
+    const blendModes = ["source-over", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion"];
     ctx.globalCompositeOperation = blendModes[opts.blendmode];
+
+    const lineCaps = ["butt", "round", "square"];
+    ctx.lineCap = lineCaps[opts.linecap - 1];
 
     if (opts.shadowblur > 0) {
         ctx.shadowColor = ctx.strokeStyle;

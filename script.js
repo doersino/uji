@@ -263,7 +263,11 @@ function download() {
     const date = new Date().toISOString().replace(/\:/g, ".");
     const hash = generateShareHash(optionValues);
     const filename = `uji_${date}_${hash}.png`;
-    downloadFile(canvas.toDataURL(), filename);
+
+    // poor man's async
+    setTimeout(() => {
+        downloadFile(canvas.toDataURL(), filename);
+    }, 0);
 }
 
 function generateShareHash(opts) {

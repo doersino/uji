@@ -127,14 +127,21 @@
             margin-left: -0.4em;
             position: absolute;
         }
-        .presets button:hover {
-            background-color: #aaa;
+        .presets button:hover,
+        .presets button.diverged:hover {
+            background-color: #999;
+            box-shadow: -0.1em 0.1em 0.4em #0002 inset;
             transform: rotate(-30deg) scale(0.9);
         }
         .presets button.selected {
             background-color: #aaa;
             box-shadow: -0.1em 0.1em 0.4em #0004 inset;
             transform: rotate(45deg);
+        }
+        .presets button.diverged {
+            background-color: #bbb;
+            box-shadow: -0.1em 0.1em 0.4em #0003 inset;
+            transform: rotate(-45deg);
         }
         .presets + hr {
             margin-top: 0.5em;

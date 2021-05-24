@@ -102,7 +102,7 @@ function setupOptions() {
 }
 
 function handleOptionInput(e) {
-    unselectPreset();
+    divergePreset();
     const v = parseFloat(e.value);
     optionValues[e.name] = v;
     refreshRenderedOptionValue(e.name);
@@ -110,7 +110,7 @@ function handleOptionInput(e) {
     restartRendering(optionValues);
 }
 function handleOptionValueInput(e) {
-    unselectPreset();
+    divergePreset();
     const v = parseFloat(e.value);
     optionValues[e.name] = v;
     refreshRenderedOptionValue(e.name);
@@ -230,6 +230,17 @@ function unselectPreset() {
     if (selectedPreset) {
         selectedPreset.classList.remove("selected");
     }
+    const divergedPreset = document.querySelector(".presets .diverged");
+    if (divergedPreset) {
+        divergedPreset.classList.remove("diverged");
+    }
+}
+function divergePreset() {
+    const selectedPreset = document.querySelector(".presets .selected");
+    if (selectedPreset) {
+        selectedPreset.classList.remove("selected");
+        selectedPreset.classList.add("diverged");
+    }
 }
 
 // commented-out since it only very rarely produces interesting results – the
@@ -313,7 +324,7 @@ function parseShareHash(hash) {
     return opts;
 }
 function parseShareURL(url) {
-    const hash = url.split('#')[1];
+    const hash = url.split("#")[1];
     if (!hash) return false;
     return parseShareHash(hash);
 }
@@ -598,7 +609,7 @@ function restartRendering(opts) {
     }, 1000 / 60);
 }
 
-window.addEventListener('load', e => {
+window.addEventListener("load", e => {
     setupPresets();
     setupOptions();
 

@@ -564,7 +564,7 @@ function restartRendering(opts) {
     let n = 0;
     inter = setInterval(() => {
 
-        // update iterations meter every 200ms (frequent dom updates are performance poison!), "transition: 0.2s linear" takes care of making to look smooth
+        // update iterations meter every 200ms (frequent dom updates are performance poison!), "transition: 0.2s linear" takes care of making things look smooth
         if (Date.now() >= lastIterationsMeterUpdate + 200) {
             iterationsMeter.style.width = `${100 * n / opts.iterations}%`;
             lastIterationsMeterUpdate = Date.now();

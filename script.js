@@ -96,10 +96,10 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}" name="${n}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
         });
     });
-    document.querySelector(".bitsnbobs").innerHTML = rendered;
+    document.querySelector(".options").innerHTML = rendered;
 }
 
 function handleOptionInput(e) {
@@ -121,7 +121,7 @@ function handleOptionValueInput(e) {
     restartRendering(optionValues);
 }
 function refreshRenderedOptionValue(name) {
-    const e = document.querySelector(`.bitsnbobs .value[name=${name}]`);
+    const e = document.querySelector(`.options .value[name=${name}]`);
     const v = optionValues[name];
 
     // avoid possibly making the cursor jump to the end
@@ -136,13 +136,74 @@ function refreshRenderedOptionValue(name) {
     }
 }
 function refreshRenderedOption(name) {
-    const e = document.querySelector(`.bitsnbobs .slider[name=${name}]`);
+    const e = document.querySelector(`.options .slider[name=${name}]`);
     const v = optionValues[name];
     e.value = v;
     refreshRenderedOptionValue(name);
 }
 function refreshAllRenderedOptions() {
     Object.keys(optionValues).forEach(refreshRenderedOption);
+}
+
+let hoveredOption = null;
+
+function handleOptionHover(e) {
+    const optionLabel = e.target.closest("label");
+
+    // reset if not hovering over a label (or not even over .options)
+    if (!optionLabel || !e.target.closest(".options")) {
+        hoveredOption = null;
+        return;
+    }
+    hoveredOption = optionLabel.getAttribute("name");
+}
+function handleKeyboardIncrement(e) {
+    // disregard the key press we're not hovering over an option, or if the
+    // focus is on the value input field, or if a modifier other than shift is
+    // pressed
+    if (!hoveredOption || e.target.matches("input.value") || e.ctrlKey || e.altKey || e.metaKey) {
+        return;
+    }
+
+    let increment = options[hoveredOption].step;
+    if (e.shiftKey) increment *= 10;
+
+    switch (e.key) {
+        case "ArrowRight":
+        case "ArrowUp":
+        case "+":
+        case "*":  // "shift +" on the German keyboard layout i use
+            e.preventDefault();
+            incrementOption(hoveredOption, increment);
+            break;
+        case "ArrowLeft":
+        case "ArrowDown":
+        case "-":
+        case "_":  // "shift -" on the German keyboard layout i use
+            e.preventDefault();
+            incrementOption(hoveredOption, -increment);
+            break;
+    }
+}
+function incrementOption(name, increment) {
+    divergePreset();
+    let v = optionValues[name] + increment;
+
+    // clean up float addition artifacts by determining how many decimal places
+    // it's supposed to have, then stringifying it accordingly, than parsing it
+    // again – this is terrible but it works
+    const step = options[name].step.toString();
+    const decimalPlaces = step.substring(step.indexOf(".") + 1).length;
+    v = parseFloat(v.toFixed(decimalPlaces));
+
+    // make sure the new value is within bounds
+    v = Math.min(Math.max(v, options[name].min), options[name].max);
+
+    optionValues[name] = v;
+    refreshRenderedOptionValue(name);
+    document.querySelector(`.options .slider[name=${name}]`).value = v;
+    refreshShareSheetUrl();
+    restartRendering(optionValues);
 }
 
 const presets = {
@@ -566,7 +627,9 @@ function restartRendering(opts) {
     let n = 0;
     inter = setInterval(() => {
 
-        // update iterations meter every 200ms (frequent dom updates are performance poison!), "transition: 0.2s linear" takes care of making things look smooth
+        // update iterations meter every 200ms (frequent dom updates are
+        // performance poison!), "transition: 0.2s linear" takes care of making
+        // things look smooth
         if (Date.now() >= lastIterationsMeterUpdate + 200) {
             iterationsMeter.style.width = `${100 * n / opts.iterations}%`;
             lastIterationsMeterUpdate = Date.now();
@@ -622,3 +685,6 @@ window.addEventListener("load", e => {
         applyRandomPreset();
     }
 });
+
+window.addEventListener("mousemove", handleOptionHover);
+window.addEventListener("keydown", handleKeyboardIncrement);

@@ -12,7 +12,7 @@ The interface is designed (or, rather, deliberately *not designed*) for **explor
 
 The **tiled buttons at the top are presets** – use them as jumping-off points, or click your way through them to see what's possible before starting afresh by yourself. The <kbd>⌘</kbd> preset has all options set to their defaults, so it's a good starting point once you've played around a bit.
 
-The **sliders determine all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does. You can also edit the option values directly through the text inputs next to the sliders.
+The **sliders determine all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does. You can also edit the options directly through the text inputs next to the sliders, which you're able to conveniently <kbd>tab</kbd> through. And pressing <kbd>+</kbd>, <kbd>→</kbd>, or <kbd>↑</kbd> while your mouse pointer's hovering over a slider will increase its value (<kbd>-</kbd>, <kbd>←</kbd>, or <kbd>↓</kbd> will *de*crease it instead). Press <kbd>shift</kbd> at the same time to adjust in 10× larger increments.
 
 #### [🎨 Play around with the various options at `doersino.github.io/uji/`!](https://doersino.github.io/uji/)
 
@@ -34,7 +34,6 @@ It's just some HTML, JavaScript, an image, and a few webfonts – so no setup is
 
 Perhaps I'll knock some of those down at some point if motivation strikes. In the meantime, feel free to [file an issue](http://github.com/doersino/uji/issues) if you really want one of them to be implemented (or do it yourself and send a pull request!).
 
-* Allowing fine-grained adjustment of the options via keyboard shortcuts – when hovering over a slider, press <kbd>+</kbd> or <kbd>-</kbd> to increment and decrement its value according to its `step` attribute, perhaps with <kbd>shift</kbd> for a 10× larger change.
 * Maintaining an *undo*/*redo* history. I think keeping the *current* action along with the *last* instance of `optionValues` should suffice? If a user keeps adjusting the same value, the history would stay constant, then. The thinking needs to a be a bit more fleshed out than this, though.
 * Keeping option values in local storage and restoring them on load if no URL hash present.
 * WebGL rendering (although blend modes and blurring might not be so easy there).

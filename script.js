@@ -112,6 +112,7 @@ function handleOptionInput(e) {
 function handleOptionValueInput(e) {
     divergePreset();
     const v = parseFloat(e.value);
+    if (isNaN(v)) return;  // this can occur when the value is, say, -1, and the user presses backspace to replace the "1" with a "2" – just "-" counts as NaN
     optionValues[e.name] = v;
     refreshRenderedOptionValue(e.name);
     e.parentElement.querySelector(".slider").value = v;

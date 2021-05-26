@@ -87,6 +87,7 @@ let optionValues = JSON.parse(JSON.stringify(defaults));
 
 function setupOptions() {
     let rendered = "";
+    let tindex = 1;
     Object.keys(optionSections).forEach(s => {
         rendered += `<hr><h2>${s}</h2>`;
         optionSections[s].forEach(n => {
@@ -95,7 +96,7 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)"><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".bitsnbobs").innerHTML = rendered;

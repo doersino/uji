@@ -53,7 +53,7 @@ const options = {
     shadowblur: {letter: "𐤎", description: "size of blurry shadow applied to line segments (non-zero values might not play well with some blend modes) <i>in pixels</i>", min: 0, max: 50, step: 0.1, default: 0},
     linecap: {letter: "𐤂", description: "line cap (1: butt, 2: round, 3: square)", min: 1, max: 3, step: 1, default: 1},
     fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
-    hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0},
+    hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
 
     // See note above when adding more.
 };
@@ -214,7 +214,7 @@ const presets = {
     "ⵛ": "s3r1560ro-0.4e0.988ex0.988t0.2se8000i297c170ca181can180l232li255lin222b3tr-0.9wa239wav95wavi0.3wavin2j4.7",
     "ⵍ": "s4r460ro0.05rot0.68rota1e0.999ex1.05t2se3000sk0.5i201v0.94c0ca34can28l238li169lin54line0.75b3f196rotat9j0.2",
     "ⵟ": "r170ro-0.4e1.013ex1.01t1.8se9000i192w2560h2560c16ca12can26l159li157lin161b3f153j2fa77sa170saw58",
-    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6f201re172tr0.9wav2200",
+    "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6f201re172tr0.9wav2200hu0.4",
     "ⵣ": "s2r820ro-0.55e0.996ex0.996t0.8sk0.47i192w2095h2104ho0.46v0.58c0ca0can0l200li233lin255in21re18wav336j1.5sa70saw72exp-10expa58canva0.4",
     "ⵠ": "r590ro-0.5e0.995ex0.995t0.8se4000i134w1659h1381c81ca91can103l255li255lin255line0.8f129in150wa913wav1586wavi0.2wavin0.3j0.5fa14sa70saw34exp15expa183sh20",
     "ⵒ": "s3r1820ro5rot0.46rota0.22e0.96ex0.965t1.5se4000i297w2560h2560ho0.77v0.52c0ca0can0l233li243lin255b8f384rotat192wa432wav143wavi1.2wavin0.5j0.1",
@@ -222,7 +222,7 @@ const presets = {
     "ⴶ": "r1080ro-0.9e0.999ex0.997t0.5se5600sk0.31i201w2560h2560c44ca55can78l192li183lin201b6f201re172tr0.9wav2200",
     "ⵅ": "s2r100ro-1e1.01ex1.01t0.3se10000sk0.5i259ho0.56v0.46c13ca13can51l238li243lin230f302tr1tra1rotat500j0.1",
     "ⵙ": "r10ro2.55rot0.51rota0e1.05ex1.05t0.2se5000i100w1342h1342ho1v0c177ca63can32l227li173lin99rotat100wa47wavi8j0.1canva0.08",
-    "ⵢ": "r2550ro-3.2rot0.19rota0.53e0.97ex0.97t0.4se5700sk0.27i48w2300h2218ho0.89v0.43c194ca248can190canv0l254li218lin66line0.8tr0.5tra2j8sa0exp48expa-13",
+    "ⵢ": "r2550ro-3.2rot0.19rota0.53e0.97ex0.97t0.4se5700sk0.27i48w2300h2218ho0.89v0.43c194ca248can190canv0l254li218lin66line0.8tr0.5tra2j8sa0exp48expa-13hu10",
     "ⵉ": "s2r300ro-0.2e1.002ex0.995t0.5se5000i460c42ca47can72l158li180lin212line0.25b3tra0.9rotat100wav576wavin0.1j1.3sa100saw53canva0.04",
     "ⵚ": "r250ro1.9e1.007ex1.01se10000i402w2560h2560c77ca89can167l183li173lin194b3tr2.2rotat201wa4615wav2932wavi0.5j0.1",
     "ⴳ": "s4r550t4se100i335v0c151ca172can207l201li230lin255line0.66b9f336in180tra-3wa150wav24wavi0.1wavin0.1j0.5",
@@ -244,7 +244,7 @@ const presets = {
     "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can60l130li163lin199b6wa432wav47wavi5wavin5j10canva0.3sh7.5",
     "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474canv0line0.02f1000wa398wav268wavi0.1wavin0.1",
     "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07linec3",
-    "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6f658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15fad50",
+    "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6f658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15fad50hu-5",
     "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1",
     "ⵁ": "r200e1.002ex1.002t0.5se10000sk0.5i470w1920h1280ho0.3canv0li10lin66line0.1f33tr0.6j0.5fa420",
     "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6f225re25wa816wav336wavi3.2sa140saw48canva0.05",
@@ -495,9 +495,9 @@ function rotate(o, p, angle) {
     return p;
 }
 
-// changeHue adapted from here https://stackoverflow.com/a/17433060
-function changeHue(rgb, degree) {
-    var hsl = rgbToHSL(rgb);
+// via https://stackoverflow.com/a/17433060
+function shiftHue(rgb, degree) {
+    let hsl = rgbToHSL(rgb);
     hsl.h += degree;
     if (hsl.h > 360) {
         hsl.h -= 360;
@@ -507,11 +507,10 @@ function changeHue(rgb, degree) {
     }
     return hslToRGB(hsl);
 }
-
 function rgbToHSL(rgb) {
-    var r = rgb.linered / 255,
-        g = rgb.linegreen / 255,
-        b = rgb.lineblue / 255,
+    let r = rgb.r / 255,
+        g = rgb.g / 255,
+        b = rgb.b / 255,
         cMax = Math.max(r, g, b),
         cMin = Math.min(r, g, b),
         delta = cMax - cMin,
@@ -536,23 +535,18 @@ function rgbToHSL(rgb) {
         s = 0;
     }
     else {
-        s = (delta/(1-Math.abs(2*l - 1)))
+        s = (delta / (1 - Math.abs(2 * l - 1)));
     }
 
-    return {
-        h: h,
-        s: s,
-        l: l
-    }
+    return {h: h, s: s, l: l};
 }
-
 function hslToRGB(hsl) {
-    var h = hsl.h,
+    let h = hsl.h,
         s = hsl.s,
         l = hsl.l,
         c = (1 - Math.abs(2*l - 1)) * s,
-        x = c * ( 1 - Math.abs((h / 60 ) % 2 - 1 )),
-        m = l - c/ 2,
+        x = c * ( 1 - Math.abs((h / 60 ) % 2 - 1)),
+        m = l - c / 2,
         r, g, b;
 
     if (h < 60) {
@@ -586,23 +580,11 @@ function hslToRGB(hsl) {
         b = x;
     }
 
-    r = normalize_rgb_value(r, m);
-    g = normalize_rgb_value(g, m);
-    b = normalize_rgb_value(b, m);
+    r = Math.max(0, Math.floor((r + m) * 255));
+    g = Math.max(0, Math.floor((g + m) * 255));
+    b = Math.max(0, Math.floor((b + m) * 255));
 
-    return {
-        linered: r,
-        linegreen: g,
-        lineblue: b
-    }
-}
-
-function normalize_rgb_value(color, m) {
-    color = Math.floor((color + m) * 255);
-    if (color < 0) {
-        color = 0;
-    }
-    return color;
+    return {r: r, g: g, b: b};
 }
 
 const canvas = document.getElementsByTagName("canvas")[0];
@@ -753,11 +735,10 @@ function restartRendering(opts) {
         }
 
         if (opts.hueshiftspeed != 0) {
-            var strokeColor = changeHue(opts, (opts.hueshiftspeed * n) % 360);
-            // setup line drawing settings
-            ctx.strokeStyle = `rgba(${strokeColor.linered},${strokeColor.linegreen},${strokeColor.lineblue},${opts.lineopacity})`;
+            let shifted = shiftHue({r: opts.linered, g: opts.linegreen, b: opts.lineblue}, (opts.hueshiftspeed * n) % 360);
+            ctx.strokeStyle = `rgba(${shifted.r},${shifted.g},${shifted.b},${opts.lineopacity})`;
         }
-        
+
         ctx.beginPath();
 
         line = line.map((p, i) => {

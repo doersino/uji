@@ -50,7 +50,7 @@ const options = {
     expansionhoriexp: {letter: "𐡜", description: "exponential factor added to horizontal rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
     expansionvertiexp: {letter: "𐡙", description: "exponential factor added to vertical rate of expansion or contraction", min: -100, max: 300, step: 1, default: 0},
     canvasnoise: {letter: "𐡀", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
-    shadowblur: {letter: "𐤎", description: "size of blurry shadow applied to line segments (non-zero values might not play well with some blend modes) <i>in pixels</i>", min: 0, max: 50, step: 0.1, default: 0},
+    shadowblur: {letter: "𐤎", description: "extent of blurry shadow applied to line segments (non-zero values might not play well with some blend modes) <i>in pixels</i>", min: 0, max: 50, step: 0.1, default: 0},
     linecap: {letter: "𐤂", description: "line cap (1: butt, 2: round, 3: square)", min: 1, max: 3, step: 1, default: 1},
     fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
@@ -737,6 +737,7 @@ function restartRendering(opts) {
         if (opts.hueshiftspeed != 0) {
             let shifted = shiftHue({r: opts.linered, g: opts.linegreen, b: opts.lineblue}, (opts.hueshiftspeed * n) % 360);
             ctx.strokeStyle = `rgba(${shifted.r},${shifted.g},${shifted.b},${opts.lineopacity})`;
+            if (opts.shadowblur > 0) ctx.shadowColor = ctx.strokeStyle;
         }
 
         ctx.beginPath();

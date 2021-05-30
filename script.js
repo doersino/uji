@@ -32,9 +32,9 @@ const options = {
     lineblue: {letter: "𐤟", description: "blue component of line color", min: 0, max: 255, step: 1, default: 0, class: "blue"},
     lineopacity: {letter: "𐡈", description: "opacity of line segments", min: 0, max: 1, step: 0.01, default: 1, class: "halftransparent"},
     blendmode: {letter: "𐤀", description: "blend mode used during line drawing (0: source-over, 1: multiply, 2: screen, 3: overlay, 4: darken, 5: lighten, 6: color-dodge, 7: color-burn, 8: hard-light, 9: soft-light, 10: difference, 11: exclusion)", min: 0, max: 11, step: 1, default: 0},
-    fadeoutspeed: {letter: "𐡞", description: "rate at which line segments disappear (-1 to disable) <i>in iterations</i>", min: -1, max: 1000, step: 1, default: -1},
+    fadeoutspeed: {letter: "𐡞", description: "rate at which line segments randomly disappear (-1 to disable) <i>in iterations</i>", min: -1, max: 1000, step: 1, default: -1},
     initialrotation:  {letter: "𐤈", description: "initial rotation of shape <i>in degrees</i>", min: 0, max: 359, step: 1, default: 0},
-    revealspeed: {letter: "𐡗", description: "rate at which line segments are added (-1 to disable)", min: -1, max: 500, step: 1, default: -1},
+    revealspeed: {letter: "𐡗", description: "rate at which line segments are added along the shape's edge (-1 to disable) <i>in line segments per iteration</i>", min: -1, max: 500, step: 1, default: -1},
     translationhori: {letter: "𐡝", description: "horizontal rate of linear movement per iteration <i>in pixels</i>", min: -10, max: 10, step: 0.1, default: 0},
     translationverti: {letter: "𐡍", description: "vertical rate of linear movement per iteration <i>in pixels</i>", min: -10, max: 10, step: 0.1, default: 0},
     rotationperiod: {letter: "𐤙", description: "period of sinusoidal rotation variance (-1 to disable) <i>in iterations</i>", min: -1, max: 1000, step: 1, default: -1},
@@ -52,6 +52,7 @@ const options = {
     canvasnoise: {letter: "𐡀", description: "intensity of salt-and-pepper noise applied to canvas", min: 0, max: 1, step: 0.01, default: 0},
     shadowblur: {letter: "𐤎", description: "size of blurry shadow applied to line segments (non-zero values might not play well with some blend modes) <i>in pixels</i>", min: 0, max: 50, step: 0.1, default: 0},
     linecap: {letter: "𐤂", description: "line cap (1: butt, 2: round, 3: squre)", min: 1, max: 3, step: 1, default: 1},
+    fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
 
     // See note above when adding more.
 };
@@ -76,7 +77,7 @@ const optionSections = {
     "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod", "rotationuntil"],
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
-    "fade": ["revealspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
+    "fade": ["revealspeed", "fadeinspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
     "line": ["segments", "skipchance", "thickness", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
 };
@@ -648,9 +649,10 @@ function restartRendering(opts) {
 
             if (   i == 0
                 || r() < opts.skipchance
+                || (opts.revealspeed > -1 && i / opts.revealspeed > n)
+                || (opts.fadeinspeed > 0 && n < r() * opts.fadeinspeed)
                 || (opts.fadeoutspeed > -1 && n - opts.fadeoutstart > i % r() * opts.fadeoutspeed)
                 || (opts.sawtoothfadeoutsize > -1 && n - opts.sawtoothfadeoutstart > i % opts.sawtoothfadeoutsize)
-                || (opts.revealspeed > -1 && i / opts.revealspeed > n)
                 ) {
                 ctx.moveTo(x, y);
             } else {

@@ -38,6 +38,7 @@ Perhaps I'll knock some of those down at some point if motivation strikes. In th
 * Keeping option values in local storage and restoring them on load if no URL hash present.
 * WebGL rendering (although blend modes and blurring might not be so easy there).
 * Video export, see [here](https://stackoverflow.com/questions/19235286/convert-html5-canvas-sequence-to-a-video-file/62065826#62065826) – this might be worth revisiting later since it's only been made possible at all somewhat recently.
+* In a similar vein, "meta sliders" that enable the generation of [short animations like this one](https://www.reddit.com/r/generative/comments/nozv1a/one_way_portal_made_with_uji/). But that seems too complex from a user-interface perspective (and *prohibitively* slow to render all the frames for even just a preview).
 * The possibility to export the result as a minimal JavaScript file with all `opts.*` references in the render loop substituted? That might help folks adapt their results for, say, pen plotting.
 
 

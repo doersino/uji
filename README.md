@@ -34,12 +34,12 @@ It's just some HTML, JavaScript, an image, and a few webfonts – so no setup is
 
 Perhaps I'll knock some of those down at some point if motivation strikes. In the meantime, feel free to [file an issue](http://github.com/doersino/uji/issues) if you really want one of them to be implemented (or do it yourself and send a pull request!).
 
-* Maintaining an *undo*/*redo* history. I think keeping the *current* action along with the *last* instance of `optionValues` should suffice? If a user keeps adjusting the same value, the history would stay constant, then. The thinking needs to a be a bit more fleshed out than this, though.
 * Keeping option values in local storage and restoring them on load if no URL hash present.
-* WebGL rendering (although blend modes and blurring might not be so easy there).
+* Maintaining an *undo*/*redo* history. I think (but am not sure) that keeping a list of actions along with the *previous* instances of `optionValues` should suffice, plus the current `optionValues`, and with special cases for preset clicks and the initial page load? If a user keeps adjusting the same value, the history would stay constant, then. The last *n* history entries could be kept in local storage, which would also tackle the previous point in this list. If the local storage contains a history but the user loads UJI with an URL hash, that could be added to the history similarly to a preset.
+* WebGL rendering for performance (although blend modes and blurring might not be so easy there).
+* The possibility to export a minimal JavaScript file with all `opts.*` references in the render loop substituted? That might help folks adapt their results for, say, pen plotting. Alternatively, the option to export the computed line segments as JSON (or G-code).
 * Video export, see [here](https://stackoverflow.com/questions/19235286/convert-html5-canvas-sequence-to-a-video-file/62065826#62065826) – this might be worth revisiting later since it's only been made possible at all somewhat recently.
-* In a similar vein, "meta sliders" that enable the generation of [short animations like this one](https://www.reddit.com/r/generative/comments/nozv1a/one_way_portal_made_with_uji/). But that seems too complex from a user-interface perspective (and *prohibitively* slow to render all the frames for even just a preview).
-* The possibility to export the result as a minimal JavaScript file with all `opts.*` references in the render loop substituted? That might help folks adapt their results for, say, pen plotting.
+* In a similar vein, "meta sliders" that enable the generation of [short animations like this one](https://www.reddit.com/r/generative/comments/nozv1a/one_way_portal_made_with_uji/). But that seems too complex from a user-interface perspective (and *prohibitively* slow to render all the frames for even just a preview), so this is really just a pipe dream.
 
 
 ### Known bugs

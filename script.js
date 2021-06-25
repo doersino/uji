@@ -110,6 +110,7 @@ function handleOptionInput(e) {
     optionValues[e.name] = v;
     refreshRenderedOptionValue(e.name);
     refreshShareSheetUrl();
+    refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
 }
 function handleOptionValueInput(e) {
@@ -120,6 +121,7 @@ function handleOptionValueInput(e) {
     refreshRenderedOptionValue(e.name);
     e.parentElement.querySelector(".slider").value = v;
     refreshShareSheetUrl();
+    refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
 }
 function refreshRenderedOptionValue(name) {
@@ -205,6 +207,7 @@ function incrementOption(name, increment) {
     refreshRenderedOptionValue(name);
     document.querySelector(`.options .slider[name=${name}]`).value = v;
     refreshShareSheetUrl();
+    refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
 }
 
@@ -278,6 +281,7 @@ function applyOptions(opts) {
 
     refreshAllRenderedOptions();
     refreshShareSheetUrl();
+    refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
 }
 function applyRandomPreset() {
@@ -328,24 +332,97 @@ function divergePreset() {
     applyOptions(randomized);
 }*/
 
-function downloadFile(hrefData, filename) {
-    const a = document.createElement("a");
-    a.href = hrefData;
-    a.setAttribute("download", filename);
-    document.body.appendChild(a);
-    a.click();
-    a.outerHTML = "";
+function closeSheets() {
+    document.querySelector(".share").classList.remove("active");
+    document.querySelector(".share-sheet").style.display = "none";
+
+    document.querySelector(".download").classList.remove("active");
+    document.querySelector(".download-sheet").style.display = "none";
 }
-function download() {
-    const date = new Date().toISOString().replace(/\:/g, ".");
-    const hash = generateShareHash(optionValues);
-    const filename = `uji_${date}_${hash}.png`;
+
+function downloadFile(dataUrl, filename) {
 
     // poor man's async
     setTimeout(() => {
-        downloadFile(canvas.toDataURL(), filename);
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.setAttribute("download", filename);
+        document.body.appendChild(a);
+        a.click();
+        a.outerHTML = "";
     }, 1);
 }
+function generateFilename(extension) {
+    const date = new Date().toISOString().replace(/\:/g, ".");
+    const hash = generateShareHash(optionValues);
+    const filename = `uji_${date}_${hash}.${extension}`;
+    return filename;
+}
+function downloadPNG() {
+    const dataUrl = canvas.toDataURL();
+    const filename = generateFilename("png");
+    downloadFile(dataUrl, filename);
+}
+function downloadJPEG() {
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+    const filename = generateFilename("jpg");
+    downloadFile(dataUrl, filename);
+}
+function downloadSVG() {
+    const paths = svgData.paths.map(path => {
+
+        // we could try and cull stuff outside the drawing area, but there's a
+        // lot of edge cases, so we're not going to bother – instead, the only
+        // optimization we'll do is rounding the coordinates to two decimal
+        // places to reduce file size (100ths of pixels are, visually, plenty
+        // accurate!)
+        formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
+
+        return `<path d="${formattedPath}" />`;
+    }).join("\n");
+
+    let svg = `<?xml version="1.0" standalone="no"?>
+<svg width="${svgData.width}px" height="${svgData.height}px" style="stroke: black; stroke-width: ${svgData.strokeWidth}px; fill: none;" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${svgData.width} ${svgData.height}">
+<g>
+${paths}
+</g>
+</svg>`;
+
+    // turn the svg into a data url, this approach is ~6x faster than the
+    // semantically-equivalent ...utf-8,${encodeURIComponent(svg)}...
+    const dataUrl = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+    const filename = generateFilename("svg");
+    downloadFile(dataUrl, filename);
+}
+function refreshSvgFilesizeEstimate() {
+    const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * 15) / (1000 * 1000));
+    if (estimate < 5) {
+        svgFilesizeEstimate.innerHTML = "";
+    } else {
+        svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at ~${estimate} MB</strong>. The export might take a couple of seconds.`;
+    }
+}
+function download(e) {
+    const downloadButton = document.querySelector(".download");
+    const downloadSheet = document.querySelector(".download-sheet");
+    const downloadSheetWasOpen = downloadSheet.style.display == "block";
+
+    // download png directly if alt key pressed
+    if (e.altKey) {
+        downloadPNG();
+        return;
+    }
+
+    closeSheets();
+    if (!downloadSheetWasOpen) {
+        refreshSvgFilesizeEstimate();
+        downloadSheet.style.display = "block";
+        downloadButton.classList.add("active");
+    }
+}
+document.querySelector(".download").addEventListener("click", download);
 
 function generateShareHash(opts) {
     let hash = "";
@@ -456,20 +533,34 @@ function refreshShareSheetUrl() {
     document.querySelector(".caring").value = shareUrl;
     clearShareStatus();
 }
-function share() {
+function share(e) {
     const shareButton = document.querySelector(".share");
     const shareSheet = document.querySelector(".share-sheet");
+    const shareSheetWasOpen = shareSheet.style.display == "block";
 
-    if (shareSheet.style.display == "block") {
+    // copy directly if alt key pressed
+    if (e.altKey) {
+        refreshShareSheetUrl();
+        clearShareStatus();
+
+        // since the text of invisible elements can't be copied, we need to do
+        // silly stuff like this – the browser won't actually redraw during this
+        // time, so the user won't notice
+        shareSheet.style.display = "block";
+        copyShareLink();
         shareSheet.style.display = "none";
-        shareButton.classList.remove("active");
-    } else {
+        return;
+    }
+
+    closeSheets();
+    if (!shareSheetWasOpen) {
         refreshShareSheetUrl();
         clearShareStatus();
         shareSheet.style.display = "block";
         shareButton.classList.add("active");
     }
 }
+document.querySelector(".share").addEventListener("click", share);
 
 // out-of-place rotation of p = [x₁,y₁] around o = [x₂,y₂], based on
 // http://stackoverflow.com/a/2259502
@@ -591,6 +682,13 @@ const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
 let inter = null;
 let line = null;
+
+let svgData = {
+    paths: null,
+    width: null,
+    height: null,
+    strokeWidth: null
+};
 
 const r = Math.random;
 
@@ -717,6 +815,12 @@ function restartRendering(opts) {
     const iterationsMeter = document.querySelector(".iterations i");
     let lastIterationsMeterUpdate = Date.now();
 
+    // setup svg data
+    svgData.paths = [];
+    svgData.width = opts.width;
+    svgData.height = opts.height;
+    svgData.strokeWidth = opts.thickness;
+
     // thing goes brr
     let n = 0;
     inter = setInterval(() => {
@@ -742,6 +846,8 @@ function restartRendering(opts) {
 
         ctx.beginPath();
 
+        let svgCurrentPath = [];
+
         line = line.map((p, i) => {
             let x = p[0];
             let y = p[1];
@@ -754,8 +860,10 @@ function restartRendering(opts) {
                 || (opts.sawtoothfadeoutsize > -1 && n - opts.sawtoothfadeoutstart > i % opts.sawtoothfadeoutsize)
                 ) {
                 ctx.moveTo(x, y);
+                svgCurrentPath.push({type: "M", x: x, y: y});
             } else {
                 ctx.lineTo(x, y);
+                svgCurrentPath.push({type: "L", x: x, y: y});
             }
 
             x = center[0] + (x - center[0] + (r() - 0.5) * opts.jitter) * opts.expansionhori ** (1 + opts.expansionhoriexp * n / 1000) + opts.translationhori + ((opts.wavinessphori > -1) ? (opts.wavinessahori * Math.sin(2 * Math.PI * i / opts.wavinessphori)) : 0);
@@ -768,6 +876,8 @@ function restartRendering(opts) {
 
             return p;
         });
+
+        svgData.paths.push(svgCurrentPath);
 
         ctx.lineWidth = opts.thickness;
         ctx.stroke();

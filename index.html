@@ -328,19 +328,25 @@
             transform: translateY(-1rem);
         }
 
-        .share-sheet {
+        .sheet {
             display: none;
             text-align: left;
             padding-bottom: 1em;
         }
-        .share-sheet p {
-            margin-bottom: 1em;
+        .sheet p {
+            margin-bottom: 0.5rem;
+        }
+        .sheet button + p {
+            margin-top: 1rem;
+        }
+        .svg-filesize-estimate {
+            font-size: 0.8rem;
         }
         .caring {  /* share-link, share-text, and share-button seem to trip some ad blockers, and sharing is caring, hence this class name */
             background-color: #999;
             border: 0;
             height: 3em;
-            margin-top: 1em;
+            margin-top: 0.5rem;
             font: inherit;
             color: #111;
             line-height: 1;
@@ -349,7 +355,8 @@
             padding: 0 1em;
             border-radius: 0.2em 0.2em 0.2em 0;
         }
-        .caring-button {
+        .caring-button,
+        .download-button {
             background: none;
             border: none;
             font: inherit;
@@ -358,13 +365,28 @@
             cursor: pointer;
             vertical-align: bottom;
             text-transform: uppercase;
-            border-radius: 0 0 0.2em 0.2em;
+            border-radius: 0 0 0.2rem 0.2rem;
             transition: 0.1s;
         }
-        .caring-button:hover {
+        .download-button {
+            font-size: 1.2em;
+            border-radius: 0.2rem;
+            padding: 0 1rem;
+            width: 100%;
+            margin-top: 0.5em;
+            text-transform: none;
+            text-align: left;
+        }
+        .download-button em {
+            float: right;
+            color: #666;
+        }
+        .caring-button:hover,
+        .download-button:hover {
             background-color: #aaa;
         }
-        .caring-button:active {
+        .caring-button:active,
+        .download-button:active {
             background-color: #aaa;
         }
         .share-sheet .share-status {
@@ -455,7 +477,7 @@
     </aside>
     <aside class="actions">
         <div class="buttons">
-            <button class="download" onclick="download()">
+            <button class="download">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
                     <g transform="translate(2, -6)">
                         <path d="M 16,8 L 16,48"></path>
@@ -465,7 +487,7 @@
                 </svg>
                 download
             </button>
-            <button class="share" onclick="share()">
+            <button class="share">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
                     <g transform="translate(8, 8)">
                         <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
@@ -477,10 +499,18 @@
                 share
             </button>
         </div>
-        <div class="share-sheet">
+        <div class="sheet download-sheet">
+            <p>You can download your drawing in the form of PNG or JPEG images.</p>
+            <button class="download-button" onclick="downloadPNG()">PNG <em>lossless</em></button>
+            <button class="download-button" onclick="downloadJPEG()">JPEG <em>90% quality</em></button>
+            <p>Alternatively, you can export the line geometry as an SVG file – for, say, pen plotting. This'll be a black line on a transparent background – no colors, blend modes, or blurry shadows.</p>
+            <p class="svg-filesize-estimate"></p>
+            <button class="download-button" onclick="downloadSVG()">SVG <em>line geometry only</em></button>
+        </div>
+        <div class="sheet share-sheet">
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
             <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover them from there, too.</p>
-            <input type="text" class="caring" readonly spellcheck="false" value="test">
+            <input type="text" class="caring" readonly spellcheck="false" value="">
             <button class="caring-button" onclick="copyShareLink()">Copy</button>
             <button class="caring-button" onclick="openShareLink()">Open</button>
             <button class="caring-button" onclick="shareShareLink()">Share…</button>

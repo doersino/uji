@@ -496,9 +496,9 @@ function rotate(o, p, angle) {
 }
 
 // via https://stackoverflow.com/a/17433060
-function shiftHue(rgb, degree) {
+function shiftHue(rgb, degrees) {
     let hsl = rgbToHSL(rgb);
-    hsl.h += degree;
+    hsl.h += degrees;
     if (hsl.h > 360) {
         hsl.h -= 360;
     }
@@ -544,8 +544,8 @@ function hslToRGB(hsl) {
     let h = hsl.h,
         s = hsl.s,
         l = hsl.l,
-        c = (1 - Math.abs(2*l - 1)) * s,
-        x = c * ( 1 - Math.abs((h / 60 ) % 2 - 1)),
+        c = (1 - Math.abs(2 * l - 1)) * s,
+        x = c * (1 - Math.abs((h / 60 ) % 2 - 1)),
         m = l - c / 2,
         r, g, b;
 

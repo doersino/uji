@@ -368,8 +368,152 @@ function downloadJPEG() {
     const filename = generateFilename("jpg");
     downloadFile(dataUrl, filename);
 }
+function clipSvgDataToCanvasBounds(svgData) {
+
+    // cohen-sutherland algorithm, based on (but heavily customized):
+    // https://en.wikipedia.org/wiki/Cohen–Sutherland_algorithm
+    // https://github.com/mapbox/lineclip/blob/master/index.js
+    const INSIDE = 0;
+    const LEFT = 1;
+    const RIGHT = 2;
+    const BOTTOM = 4;
+    const TOP = 8;
+
+    // bit code computation
+    const code = p => {
+        let code = INSIDE;
+        if (p.x < 0) code |= LEFT;
+        else if (p.x > svgData.width - 1) code |= RIGHT;
+        if (p.y < 0) code |= TOP;
+        else if (p.y > svgData.height - 1) code |= BOTTOM;
+        return code;
+    };
+
+    // returns the type-less point at which the line between the two input
+    // points intersect the specified edge
+    const intersect = (a, b, edge) => {
+        if (edge & BOTTOM) return {x: a.x + (b.x - a.x) * (svgData.height - a.y) / (b.y - a.y), y: svgData.height - 1};
+        if (edge & TOP)    return {x: a.x + (b.x - a.x) * (0              - a.y) / (b.y - a.y), y: 0};
+        if (edge & RIGHT)  return {x: svgData.width - 1, y: a.y + (b.y - a.y) * (svgData.width - a.x) / (b.x - a.x)};
+        if (edge & LEFT)   return {x: 0,                 y: a.y + (b.y - a.y) * (0             - a.x) / (b.x - a.x)};
+        return null;
+    };
+
+    const cohenSutherland = path => {
+        let a = null;
+        let codeA = code(path[0]);
+        let b = null;
+        let codeB = null;
+
+        let lastCode = null;
+
+        let result = [];
+
+        for (let i = 1; i < path.length; i++) {
+            a = path[i - 1];
+            b = path[i];
+            codeB = code(b);
+            lastCode = codeB;
+
+            while (true) {
+                if (!(codeA | codeB)) {
+
+                    // if at least part of the line between a (which we know is
+                    // inside from information gathered in the previous
+                    // iteration) and b is inside, accept a...
+                    result.push(a);
+
+                    // ...and if b has been recalculated (in the bottom-most
+                    // case of this if-elseif-else construct) or we've reached
+                    // the end of the line, accept b (if it *hasn't* been
+                    // recalculated, it'll be a in the next iteration)
+                    if (codeB !== lastCode || i === path.length - 1) {
+                        result.push(b);
+                    }
+
+                    // advance to the next iteration
+                    break;
+
+                } else if (codeA & codeB) {
+
+                    // both outside on the same side, so that's a trivial reject
+                    break;
+
+                } else if (codeA) {
+
+                    // if a is outside, compute a new in-bounds variant of it by
+                    // computing the intersection point of the line between a
+                    // and b with the relevant clip edge
+                    let tempA = intersect(a, b, codeA);
+                    a = {type: "M", x: tempA.x, y: tempA.y};
+                    codeA = code(a);
+
+                } else {
+
+                    // ditto if b is outside
+                    let tempB = intersect(a, b, codeB);
+                    b = {type: b.type, x: tempB.x, y: tempB.y};
+                    codeB = code(b);
+                }
+            }
+
+            codeA = lastCode;
+        }
+
+        return result;
+    };
+
+    // preserve separation of iterations
+    const clippedPaths = svgData.paths.map(cohenSutherland);
+
+    return {
+        paths: clippedPaths,
+        width: svgData.width,
+        height: svgData.height,
+        strokeWidth: svgData.strokeWidth
+    };
+}
+function cullRedundantSvgDataMoves(svgData) {
+    const culledPaths = svgData.paths.map(path => {
+        let lastMove = path[0];
+        let result = [];
+
+        for (let i = 1; i < path.length; i++) {
+            a = path[i - 1];
+            b = path[i];
+
+            if (b.type == "L") {
+
+                // if we're dealing with a line end point, push the most recent
+                // move and the line end point
+                if (lastMove) {
+                    result.push(lastMove);
+                    lastMove = null;
+                }
+                result.push(b);
+            } else {
+
+                // else, update the most recent move
+                lastMove = b;
+            }
+        }
+
+        return result;
+    });
+
+    return {
+        paths: culledPaths,
+        width: svgData.width,
+        height: svgData.height,
+        strokeWidth: svgData.strokeWidth
+    };
+}
 function downloadSVG() {
-    const paths = svgData.paths.map(path => {
+    const clippedSvgData = clipSvgDataToCanvasBounds(svgData);
+    const culledSvgData = cullRedundantSvgDataMoves(clippedSvgData);
+    const processedSvgData = culledSvgData;
+
+    const paths = processedSvgData.paths.map(path => {
 
         // we could try and cull stuff outside the drawing area, but there's a
         // lot of edge cases, so we're not going to bother – instead, the only
@@ -382,7 +526,7 @@ function downloadSVG() {
     }).join("\n");
 
     let svg = `<?xml version="1.0" standalone="no"?>
-<svg width="${svgData.width}px" height="${svgData.height}px" style="stroke: black; stroke-width: ${svgData.strokeWidth}px; fill: none;" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${svgData.width} ${svgData.height}">
+<svg width="${processedSvgData.width}px" height="${processedSvgData.height}px" style="stroke: black; stroke-width: ${processedSvgData.strokeWidth}px; fill: none;" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${processedSvgData.width - 1} ${processedSvgData.height - 1}">
 <g>
 ${paths}
 </g>
@@ -401,7 +545,7 @@ function refreshSvgFilesizeEstimate() {
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {
-        svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at ~${estimate} MB</strong>. The export might take a couple of seconds.`;
+        svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export might take a couple of seconds.`;
     }
 }
 function download(e) {

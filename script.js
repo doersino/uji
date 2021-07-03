@@ -392,10 +392,10 @@ function clipSvgDataToCanvasBounds(svgData) {
     // returns the type-less point at which the line between the two input
     // points intersect the specified edge
     const intersect = (a, b, edge) => {
-        if (edge & BOTTOM) return {x: a.x + (b.x - a.x) * (svgData.height - a.y) / (b.y - a.y), y: svgData.height - 1};
-        if (edge & TOP)    return {x: a.x + (b.x - a.x) * (0              - a.y) / (b.y - a.y), y: 0};
-        if (edge & RIGHT)  return {x: svgData.width - 1, y: a.y + (b.y - a.y) * (svgData.width - a.x) / (b.x - a.x)};
-        if (edge & LEFT)   return {x: 0,                 y: a.y + (b.y - a.y) * (0             - a.x) / (b.x - a.x)};
+        if (edge & BOTTOM) return {x: a.x + (b.x - a.x) * (svgData.height - 1 - a.y) / (b.y - a.y), y: svgData.height - 1};
+        if (edge & TOP)    return {x: a.x + (b.x - a.x) * (0                  - a.y) / (b.y - a.y), y: 0};
+        if (edge & RIGHT)  return {x: svgData.width - 1, y: a.y + (b.y - a.y) * (svgData.width - 1 - a.x) / (b.x - a.x)};
+        if (edge & LEFT)   return {x: 0,                 y: a.y + (b.y - a.y) * (0                 - a.x) / (b.x - a.x)};
         return null;
     };
 

@@ -538,7 +538,7 @@ ${paths}
 }
 function refreshSvgFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
-    const estimate = parseInt((optionValues.segments * optionValues.iterations * optionValues.skipchance * 15) / (1000 * 1000));
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * (1 - optionValues.skipchance) * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {

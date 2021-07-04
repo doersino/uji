@@ -515,11 +515,8 @@ function downloadSVG() {
 
     const paths = processedSvgData.paths.map(path => {
 
-        // we could try and cull stuff outside the drawing area, but there's a
-        // lot of edge cases, so we're not going to bother – instead, the only
-        // optimization we'll do is rounding the coordinates to two decimal
-        // places to reduce file size (100ths of pixels are, visually, plenty
-        // accurate!)
+        // round the coordinates to two decimal places to reduce file size
+        // (100ths of pixels are, visually, plenty accurate!)
         formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
 
         return `<path d="${formattedPath}" />`;
@@ -541,7 +538,7 @@ ${paths}
 }
 function refreshSvgFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
-    const estimate = parseInt((optionValues.segments * optionValues.iterations * 15) / (1000 * 1000));
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * optionValues.skipchance * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {

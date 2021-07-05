@@ -522,11 +522,14 @@ function downloadSVG() {
         return `<path d="${formattedPath}" />`;
     }).join("\n");
 
+    const shareUrl = generateShareURL(optionValues);
+
     let svg = `<?xml version="1.0" standalone="no"?>
 <svg width="${processedSvgData.width}px" height="${processedSvgData.height}px" style="stroke: black; stroke-width: ${processedSvgData.strokeWidth}px; fill: none;" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 ${processedSvgData.width - 1} ${processedSvgData.height - 1}">
 <g>
 ${paths}
 </g>
+<metadata>${shareUrl}</metadata>
 </svg>`;
 
     // turn the svg into a data url, this approach is ~6x faster than the

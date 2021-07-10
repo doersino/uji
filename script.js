@@ -54,6 +54,7 @@ const options = {
     linecap: {letter: "𐤂", description: "line cap (1: butt, 2: round, 3: square)", min: 1, max: 3, step: 1, default: 1},
     fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
+    segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
 
     // See note above when adding more.
 };
@@ -75,7 +76,7 @@ Object.keys(options).forEach(n => {
 const optionSections = {
     "": ["shape", "radius", "horicenter", "vericenter", "iterations"],
     "expansion": ["expansionhori", "expansionverti", "expansionhoriexp", "expansionvertiexp"],
-    "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod", "rotationuntil"],
+    "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod", "rotationuntil", "segmentrotation"],
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeinspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
@@ -218,7 +219,7 @@ const presets = {
     "ⵍ": "s4r460ro0.05rot0.68rota1e0.999ex1.05t2se3000sk0.5i201v0.94c0ca34can28l238li169lin54line0.75b3f196rotat9j0.2",
     "ⵟ": "r170ro-0.4e1.013ex1.01t1.8se9000i192w2560h2560c16ca12can26l159li157lin161b3f153j2fa77sa170saw58",
     "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6f201re172tr0.9wav2200hu0.4",
-    "ⵣ": "s2r820ro-0.55e0.996ex0.996t0.8sk0.47i192w2095h2104ho0.46v0.58c0ca0can0l200li233lin255in21re18wav336j1.5sa70saw72exp-10expa58canva0.4",
+    "ⵣ": "s2r820ro-0.55e0.996ex0.996t0.8sk0.47i192w2095h2104ho0.46v0.58c0ca0can0l200li233lin255in21re18wav336j1.5sa70saw72exp-10expa58canva0.4seg90",
     "ⵠ": "r590ro-0.5e0.995ex0.995t0.8se4000i134w1659h1381c81ca91can103l255li255lin255line0.8f129in150wa913wav1586wavi0.2wavin0.3j0.5fa14sa70saw34exp15expa183sh20",
     "ⵒ": "s3r1820ro5rot0.46rota0.22e0.96ex0.965t1.5se4000i297w2560h2560ho0.77v0.52c0ca0can0l233li243lin255b8f384rotat192wa432wav143wavi1.2wavin0.5j0.1",
     "ⴱ": "s2r320ro0.15e0.997ex0.997se10510i1474line0.02f1000re37canva0.04",
@@ -248,7 +249,7 @@ const presets = {
     "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474canv0line0.02f1000wa398wav268wavi0.1wavin0.1",
     "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07linec3",
     "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6f658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15fad50hu-5",
-    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1",
+    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1seg30",
     "ⵁ": "r200e1.002ex1.002t0.5se10000sk0.5i470w1920h1280ho0.3canv0li10lin66line0.1f33tr0.6j0.5fa420",
     "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6f225re25wa816wav336wavi3.2sa140saw48canva0.05",
     "⌘": "",
@@ -541,7 +542,7 @@ ${paths}
 }
 function refreshSvgFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
-    const estimate = parseInt((optionValues.segments * optionValues.iterations * (1 - optionValues.skipchance) * 15) / (1000 * 1000));
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * (1 + (optionValues.segmentrotation > 0)) * (1 - optionValues.skipchance) * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {
@@ -992,6 +993,7 @@ function restartRendering(opts) {
 
         let svgCurrentPath = [];
 
+        let preceding = null;
         line = line.map((p, i) => {
             let x = p[0];
             let y = p[1];
@@ -1006,9 +1008,20 @@ function restartRendering(opts) {
                 ctx.moveTo(x, y);
                 svgCurrentPath.push({type: "M", x: x, y: y});
             } else {
-                ctx.lineTo(x, y);
-                svgCurrentPath.push({type: "L", x: x, y: y});
+                if (opts.segmentrotation > 0) {
+                    let mid = [(x + preceding[0]) / 2, (y + preceding[1]) / 2];
+                    let start = rotate(mid, preceding, opts.segmentrotation * (Math.PI / 180));
+                    let end = rotate(mid, p, opts.segmentrotation * (Math.PI / 180));
+                    ctx.moveTo(start[0], start[1]);
+                    ctx.lineTo(end[0], end[1]);
+                    svgCurrentPath.push({type: "M", x: start[0], y: start[1]});
+                    svgCurrentPath.push({type: "L", x: end[0], y: end[1]});
+                } else {
+                    ctx.lineTo(x, y);
+                    svgCurrentPath.push({type: "L", x: x, y: y});
+                }
             }
+            preceding = p;
 
             x = center[0] + (x - center[0] + (r() - 0.5) * opts.jitter) * opts.expansionhori ** (1 + opts.expansionhoriexp * n / 1000) + opts.translationhori + ((opts.wavinessphori > -1) ? (opts.wavinessahori * Math.sin(2 * Math.PI * i / opts.wavinessphori)) : 0);
             y = center[1] + (y - center[1] + (r() - 0.5) * opts.jitter) * opts.expansionverti ** (1 + opts.expansionvertiexp * n / 1000) + opts.translationverti + ((opts.wavinesspverti > -1) ? (opts.wavinessaverti * Math.sin(2 * Math.PI * i / opts.wavinesspverti)) : 0);

@@ -1296,3 +1296,5 @@ window.addEventListener("keydown", handleKeyboardIncrement);
 /*window.addEventListener("keydown", handleKeyboardUndoRedo);*/
 
 // TODO see also todo in index.html
+// TODO remove any stray console.log statements
+// TODO document undo/redo in readme

@@ -362,6 +362,7 @@ function sameOptionHasChangedAgainByTheSameMethod(historyFrame1, historyFrame2, 
 }
 function historize(newOptionValues, method, preset = null) {
     // TODO idea: keep preliminary history variable that's adjusted on drag, etc., and "commit" it on dragend OR when the action changes – this should get rid of dumb extra history frames issues when very quickly changing options
+    // => use onchange event, who cares about ie11. maybe try to provide fallback: different slider, different action
 
     if (historyPosition > 0) console.log(changedOptions(history[historyPosition - 1].optionValues, history[historyPosition].optionValues));
     if (historyPosition > -1) console.log(changedOptions(history[historyPosition].optionValues, newOptionValues));
@@ -473,6 +474,7 @@ function redo() {
 
 // commented-out since it's going to feel non-native everywhere due to inherent
 // limitations in keyboard events – there should really be undo/redo events
+// TODO just use key values instead of codes, maybe test with korean
 /*function handleKeyboardUndoRedo(e) {
 
     // disregard the key press the focus is on the value input field

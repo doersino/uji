@@ -55,6 +55,7 @@ const options = {
     fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
     segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
+    // TODO option for lengthening/shortening line segments, similar to angle, also integrate into svg size estimate
 
     // See note above when adding more.
 };
@@ -113,6 +114,7 @@ function handleOptionInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize(optionValues, "drag");  // TODO hist
 }
 function handleOptionValueInput(e) {
     divergePreset();
@@ -124,6 +126,7 @@ function handleOptionValueInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize(optionValues, "typing");  // TODO hist
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.options .value[name=${name}]`);
@@ -210,6 +213,7 @@ function incrementOption(name, increment) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize(optionValues, "keyboard");  // TODO hist
 }
 
 const presets = {
@@ -266,6 +270,7 @@ function setupPresets() {
 function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
+    historize(optionValues, "preset", e.name);
     e.classList.add("selected");
 }
 function applyPreset(preset) {
@@ -284,6 +289,7 @@ function applyOptions(opts) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    // historization should have been done by the caller if desired
 }
 function applyRandomPreset() {
 
@@ -292,6 +298,7 @@ function applyRandomPreset() {
     const l = Object.keys(presets)[i];
     const p = presets[l];
     applyPreset(p);
+    historize(optionValues, "preset", l);
     const e = document.querySelector(`.presets button[name=${l}]`)
     e.classList.add("selected");
 }
@@ -333,12 +340,168 @@ function divergePreset() {
     applyOptions(randomized);
 }*/
 
+let history = [];
+let historyPosition = -1;
+function changedOptions(optionValues1, optionValues2) {
+    let changedNames = [];
+    Object.keys(optionValues1).forEach(name => {
+        if (optionValues1[name] != optionValues2[name]) {
+            changedNames.push(name);
+        }
+    });
+    return changedNames;
+}
+function sameOptionHasChangedAgainByTheSameMethod(historyFrame1, historyFrame2, historyFrame3) {
+    const changedNames12 = changedOptions(historyFrame1.optionValues, historyFrame2.optionValues);
+    const changedNames23 = changedOptions(historyFrame2.optionValues, historyFrame3.optionValues);
+    console.log(changedNames12, changedNames23);
+    return changedNames12.length == 1 &&
+           changedNames23.length == 1 &&
+           changedNames12[0] == changedNames23[0] &&
+           historyFrame2.method == historyFrame3.method;
+}
+function historize(newOptionValues, method, preset = null) {
+    // TODO idea: keep preliminary history variable that's adjusted on drag, etc., and "commit" it on dragend OR when the action changes – this should get rid of dumb extra history frames issues when very quickly changing options
+
+    if (historyPosition > 0) console.log(changedOptions(history[historyPosition - 1].optionValues, history[historyPosition].optionValues));
+    if (historyPosition > -1) console.log(changedOptions(history[historyPosition].optionValues, newOptionValues));
+    if (historyPosition > -1 && changedOptions(history[historyPosition].optionValues, newOptionValues).length == 0) {
+        return;
+    }
+
+    // assemble new history frame...
+    newHistoryFrame = {
+        optionValues: JSON.parse(JSON.stringify(newOptionValues)),
+        method: method,
+        selectedPreset: preset,
+        divergedPreset: null,
+    };
+
+    // ...and, if relevant, propagate preset from previous history state
+    if (historyPosition > -1 && preset == null) {
+        if (history[historyPosition].selectedPreset != null) {
+            newHistoryFrame.divergedPreset = history[historyPosition].selectedPreset;
+        } else if (history[historyPosition].divergedPreset != null) {
+            newHistoryFrame.divergedPreset = history[historyPosition].divergedPreset;
+        }
+    }
+
+    // if the user has performed some undos before changing an option, overwrite
+    // the undone part of history
+    history = history.slice(0, historyPosition + 1);
+    document.querySelector(".redo").setAttribute("disabled", "");
+
+    // if the same single option has changed multiple times in a row via the
+    // same method (e.g. dragging the slider more than one position, or
+    // pressing the right arrow key multiple times in succession, or typing in
+    // the value directly), amend the most recent history frame, otherwise
+    // simply add the new history frame
+    // TODO this sometimes thinke the difference between the first two is zero, idk why – probably because this is called on each input and might not be done by the time the next input rolls around?
+    if (historyPosition > 0 && sameOptionHasChangedAgainByTheSameMethod(history[historyPosition - 1], history[historyPosition], newHistoryFrame)) {
+
+        /*
+        // collapse with second-to-last history frame if new option values identical to that – this is done to avoid identical adjacent history frames (caused by sameOptionHasChangedAgain)
+        if (changedOptions(history[historyPosition - 1].optionValues, newOptionValues).length == 0) {
+            // TODO also guard against cases where option 1 is changed, then option 2, then option 2 set back to its original value, then option 1 set back also
+            // TODO => only enable this when we've added a new history frame since the last time we did this?
+            history = history.slice(0, historyPosition + 1 - 1);
+            historyPosition--;
+        }
+        */
+
+        history[historyPosition] = newHistoryFrame;
+        if (historyPosition == 0) {
+            document.querySelector(".undo").setAttribute("disabled", "");
+        }
+    } else {
+        history.push(newHistoryFrame);
+        historyPosition++;
+    }
+
+    // enable undo button if this wasn't the first action of the session
+    if (historyPosition == 1) {
+        document.querySelector(".undo").removeAttribute("disabled");
+    }
+}
+function applyHistory(i) {
+    console.log(i);
+    document.querySelectorAll(`.flashed`).forEach(e => {
+        e.classList.remove("flashed");
+    });
+
+    // wait until the .flashed class has been cleared before potentially adding
+    // it again to make sure the visual behavior is as expected
+    // TODO doesn't really work in firefox and sometimes also gives up in other browsers, ugh, fix somehow!
+    setTimeout(() => {
+        const changedNames = changedOptions(optionValues, history[i].optionValues);
+        changedNames.forEach(name => {
+            const e = document.querySelector(`.options label[name=${name}]`);
+            e.classList.add("flashed");
+        });
+
+        applyOptions(history[i].optionValues);
+
+        // (un)select relevant preset (whether diverged or not)
+        unselectPreset();
+        if (history[i].selectedPreset != null) {
+            const e = document.querySelector(`.presets button[name=${history[i].selectedPreset}]`);
+            e.classList.add("selected");
+            //e.classList.add("flashed");
+        } else if (history[i].divergedPreset != null) {
+            const e = document.querySelector(`.presets button[name=${history[i].divergedPreset}]`);
+            e.classList.add("diverged");
+            //e.classList.add("flashed");
+        }
+    }, 1);
+}
+function undo() {
+    // TODO undo on load to restore previous session, with tooltip? maybe different icon?
+
+    applyHistory(--historyPosition);
+    document.querySelector(".redo").removeAttribute("disabled");
+    if (historyPosition == 0) {
+        document.querySelector(".undo").setAttribute("disabled", "");
+    }
+}
+function redo() {
+    applyHistory(++historyPosition);
+    document.querySelector(".undo").removeAttribute("disabled");
+    if (historyPosition == history.length - 1) {
+        document.querySelector(".redo").setAttribute("disabled", "");
+    }
+}
+
+// commented-out since it's going to feel non-native everywhere due to inherent
+// limitations in keyboard events – there should really be undo/redo events
+/*function handleKeyboardUndoRedo(e) {
+
+    // disregard the key press the focus is on the value input field
+    if (e.target.matches("input.value")) {
+        return;
+    }
+
+    // i would've like to do ctrl+Y for redo, but since y and z are switched on
+    // german keyboards, i'd have to try and detect the locale and that's just
+    // not worth the effort
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.code == "KeyZ" || e.key == "z")) {
+        e.preventDefault();
+        if (historyPosition < history.length - 1) {
+            redo();
+        }
+    } else if ((e.metaKey || e.ctrlKey) && (e.code == "KeyZ" || e.key == "z")) {
+        e.preventDefault();
+        if (historyPosition > 0) {
+            undo();
+        }
+    }
+}*/
+
 function closeSheets() {
     document.querySelector(".share").classList.remove("active");
     document.querySelector(".share-sheet").style.display = "none";
 
-    document.querySelector(".download").classList.remove("active");
-    document.querySelector(".download-sheet").style.display = "none";
+    document.querySelector(".export").classList.remove("active");
+    document.querySelector(".export-sheet").style.display = "none";
 }
 
 function downloadFile(dataUrl, filename) {
@@ -549,10 +712,10 @@ function refreshSvgFilesizeEstimate() {
         svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export might take a couple of seconds.`;
     }
 }
-function download(e) {
-    const downloadButton = document.querySelector(".download");
-    const downloadSheet = document.querySelector(".download-sheet");
-    const downloadSheetWasOpen = downloadSheet.style.display == "block";
+function exportDrawing(e) {  // not just "export" because that's a keyword
+    const exportButton = document.querySelector(".export");
+    const exportSheet = document.querySelector(".export-sheet");
+    const exportSheetWasOpen = exportSheet.style.display == "block";
 
     // download png directly if alt key pressed
     if (e.altKey) {
@@ -561,13 +724,13 @@ function download(e) {
     }
 
     closeSheets();
-    if (!downloadSheetWasOpen) {
+    if (!exportSheetWasOpen) {
         refreshSvgFilesizeEstimate();
-        downloadSheet.style.display = "block";
-        downloadButton.classList.add("active");
+        exportSheet.style.display = "block";
+        exportButton.classList.add("active");
     }
 }
-document.querySelector(".download").addEventListener("click", download);
+document.querySelector(".export").addEventListener("click", exportDrawing);
 
 function generateShareHash(opts) {
     let hash = "";
@@ -1049,6 +1212,7 @@ window.addEventListener("load", e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
+        historize(optionValues, "url");
     } else {
         applyRandomPreset();
     }
@@ -1056,3 +1220,4 @@ window.addEventListener("load", e => {
 
 window.addEventListener("mousemove", handleOptionHover);
 window.addEventListener("keydown", handleKeyboardIncrement);
+/*window.addEventListener("keydown", handleKeyboardUndoRedo);*/

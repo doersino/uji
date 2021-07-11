@@ -401,14 +401,19 @@ function historize(newOptionValues, method, commit=false, preset=null) {
         preliminaryHistoryFrame = null;
     } else {
         if (preliminaryHistoryFrame) {
-            console.log(history[historyPosition].optionValues["shape"], preliminaryHistoryFrame.optionValues["shape"])
+            // TODO here, why dealing with prelim and not new? that's where that "delay" is coming from!
+            console.log(history[historyPosition].optionValues["shape"], preliminaryHistoryFrame.optionValues["shape"], newHistoryFrame.optionValues["shape"])
             let changedOptions1 = changedOptions(history[historyPosition].optionValues, preliminaryHistoryFrame.optionValues);
-            console.log(previouslyChangedOptions, changedOptions1);
-            let test = previouslyChangedOptions.length == 1 && changedOptions1.length == 1 && previouslyChangedOptions[0] === changedOptions1[0];
-            // TODO this still doesn't work, same problem, sometimes oninput seems to provide the previous value of a slider? same problem that plagued the previous implementation attempt?!?
-            if ((changedOptions1.length != 0 && !test) || method != preliminaryHistoryFrame.method) {
-                commitHistoryFrame(preliminaryHistoryFrame);
-                preliminaryHistoryFrame = null;
+            if (changedOptions1.length == 0) {
+
+            } else {
+                console.log(previouslyChangedOptions, changedOptions1);
+                let test = previouslyChangedOptions.length == 1 && changedOptions1.length == 1 && previouslyChangedOptions[0] === changedOptions1[0];
+                // TODO this still doesn't work, same problem, sometimes oninput seems to provide the previous value of a slider? same problem that plagued the previous implementation attempt?!?
+                if ((changedOptions1.length != 0 && !test) || method != preliminaryHistoryFrame.method) {
+                    commitHistoryFrame(preliminaryHistoryFrame);
+                    preliminaryHistoryFrame = null;
+                }
             }
         }
 

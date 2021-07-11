@@ -100,13 +100,13 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}" name="${n}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}" name="${n}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)" onchange="handleOptionInput(this, true)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" onchange="handleOptionValueInput(this, true)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".options").innerHTML = rendered;
 }
 
-function handleOptionInput(e) {
+function handleOptionInput(e, commit=false) {
     divergePreset();
     const v = parseFloat(e.value);
     optionValues[e.name] = v;
@@ -114,9 +114,9 @@ function handleOptionInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "drag");  // TODO hist
+    historize(optionValues, "drag", commit);  // TODO hist
 }
-function handleOptionValueInput(e) {
+function handleOptionValueInput(e, commit=false) {
     divergePreset();
     const v = parseFloat(e.value);
     if (isNaN(v)) return;  // this can occur when the value is, say, -1, and the user presses backspace to replace the "1" with a "2" – just "-" counts as NaN
@@ -126,7 +126,7 @@ function handleOptionValueInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "typing");  // TODO hist
+    historize(optionValues, "typing", commit);  // TODO hist
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.options .value[name=${name}]`);
@@ -213,7 +213,7 @@ function incrementOption(name, increment) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "keyboard");  // TODO hist
+    historize(optionValues, "keyboard", false);  // TODO hist
 }
 
 const presets = {
@@ -270,7 +270,7 @@ function setupPresets() {
 function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
-    historize(optionValues, "preset", e.name);
+    historize(optionValues, "preset", true, e.name);
     e.classList.add("selected");
 }
 function applyPreset(preset) {
@@ -298,7 +298,7 @@ function applyRandomPreset() {
     const l = Object.keys(presets)[i];
     const p = presets[l];
     applyPreset(p);
-    historize(optionValues, "preset", l);
+    historize(optionValues, "preset", true, l);
     const e = document.querySelector(`.presets button[name=${l}]`)
     e.classList.add("selected");
 }
@@ -342,28 +342,88 @@ function divergePreset() {
 
 let history = [];
 let historyPosition = -1;
+let preliminaryHistoryFrame = null;
 function changedOptions(optionValues1, optionValues2) {
     let changedNames = [];
     Object.keys(optionValues1).forEach(name => {
-        if (optionValues1[name] != optionValues2[name]) {
+        if (optionValues1[name] !== optionValues2[name]) {
             changedNames.push(name);
         }
     });
     return changedNames;
 }
-function sameOptionHasChangedAgainByTheSameMethod(historyFrame1, historyFrame2, historyFrame3) {
+function sameOptionHasChangedAgain(historyFrame1, historyFrame2, historyFrame3) {
     const changedNames12 = changedOptions(historyFrame1.optionValues, historyFrame2.optionValues);
     const changedNames23 = changedOptions(historyFrame2.optionValues, historyFrame3.optionValues);
     console.log(changedNames12, changedNames23);
     return changedNames12.length == 1 &&
            changedNames23.length == 1 &&
-           changedNames12[0] == changedNames23[0] &&
-           historyFrame2.method == historyFrame3.method;
+           changedNames12[0] === changedNames23[0];
 }
-function historize(newOptionValues, method, preset = null) {
+function commitHistoryFrame(historyFrame) {
+    if (historyPosition > -1) previouslyChangedOptions = changedOptions(history[historyPosition].optionValues, historyFrame.optionValues);
+    history.push(historyFrame);
+    historyPosition++;
+}
+let previouslyChangedOptions = [];
+function historize(newOptionValues, method, commit=false, preset=null) {
+
+    // assemble new history frame...
+    newHistoryFrame = {
+        optionValues: JSON.parse(JSON.stringify(newOptionValues)),
+        method: method,
+        selectedPreset: preset,
+        divergedPreset: null,
+    };
+
+    // ...and, if relevant, propagate preset from preliminary history frame or
+    // previous history state
+    let historyFrame = history[historyPosition];
+    if (preliminaryHistoryFrame) {
+        historyFrame = preliminaryHistoryFrame;
+    }
+    if (historyPosition > -1 && preset == null) {
+        if (historyFrame.selectedPreset != null) {
+            newHistoryFrame.divergedPreset = historyFrame.selectedPreset;
+        } else if (historyFrame.divergedPreset != null) {
+            newHistoryFrame.divergedPreset = historyFrame.divergedPreset;
+        }
+    }
+
+    // if the user has performed some undos before changing an option, overwrite
+    // the undone part of history
+    history = history.slice(0, historyPosition + 1);
+    document.querySelector(".redo").setAttribute("disabled", "");
+
+    // TODO if method is different than of preliminary history frame, commit that
+    if (commit) {
+        commitHistoryFrame(newHistoryFrame);
+        preliminaryHistoryFrame = null;
+    } else {
+        if (preliminaryHistoryFrame) {
+            console.log(history[historyPosition].optionValues["shape"], preliminaryHistoryFrame.optionValues["shape"])
+            let changedOptions1 = changedOptions(history[historyPosition].optionValues, preliminaryHistoryFrame.optionValues);
+            console.log(previouslyChangedOptions, changedOptions1);
+            let test = previouslyChangedOptions.length == 1 && changedOptions1.length == 1 && previouslyChangedOptions[0] === changedOptions1[0];
+            // TODO this still doesn't work, same problem, sometimes oninput seems to provide the previous value of a slider? same problem that plagued the previous implementation attempt?!?
+            if ((changedOptions1.length != 0 && !test) || method != preliminaryHistoryFrame.method) {
+                commitHistoryFrame(preliminaryHistoryFrame);
+                preliminaryHistoryFrame = null;
+            }
+        }
+
+        preliminaryHistoryFrame = newHistoryFrame;
+    }
+
+    // enable undo button if this wasn't the first action of the session
+    if (historyPosition == 1) {
+        document.querySelector(".undo").removeAttribute("disabled");
+    }
+
     // TODO idea: keep preliminary history variable that's adjusted on drag, etc., and "commit" it on dragend OR when the action changes – this should get rid of dumb extra history frames issues when very quickly changing options
     // => use onchange event, who cares about ie11. maybe try to provide fallback: different slider, different action
 
+    /*
     if (historyPosition > 0) console.log(changedOptions(history[historyPosition - 1].optionValues, history[historyPosition].optionValues));
     if (historyPosition > -1) console.log(changedOptions(history[historyPosition].optionValues, newOptionValues));
     if (historyPosition > -1 && changedOptions(history[historyPosition].optionValues, newOptionValues).length == 0) {
@@ -376,8 +436,9 @@ function historize(newOptionValues, method, preset = null) {
         method: method,
         selectedPreset: preset,
         divergedPreset: null,
-    };
+    };*/
 
+    /*
     // ...and, if relevant, propagate preset from previous history state
     if (historyPosition > -1 && preset == null) {
         if (history[historyPosition].selectedPreset != null) {
@@ -386,12 +447,16 @@ function historize(newOptionValues, method, preset = null) {
             newHistoryFrame.divergedPreset = history[historyPosition].divergedPreset;
         }
     }
+    */
 
+    /*
     // if the user has performed some undos before changing an option, overwrite
     // the undone part of history
     history = history.slice(0, historyPosition + 1);
     document.querySelector(".redo").setAttribute("disabled", "");
+    */
 
+    /*
     // if the same single option has changed multiple times in a row via the
     // same method (e.g. dragging the slider more than one position, or
     // pressing the right arrow key multiple times in succession, or typing in
@@ -408,7 +473,7 @@ function historize(newOptionValues, method, preset = null) {
             history = history.slice(0, historyPosition + 1 - 1);
             historyPosition--;
         }
-        */
+        //
 
         history[historyPosition] = newHistoryFrame;
         if (historyPosition == 0) {
@@ -417,7 +482,7 @@ function historize(newOptionValues, method, preset = null) {
     } else {
         history.push(newHistoryFrame);
         historyPosition++;
-    }
+    }*/
 
     // enable undo button if this wasn't the first action of the session
     if (historyPosition == 1) {
@@ -457,6 +522,12 @@ function applyHistory(i) {
 }
 function undo() {
     // TODO undo on load to restore previous session, with tooltip? maybe different icon?
+
+    // if preliminary frame exists, first commit it, only then undo
+    if (preliminaryHistoryFrame) {
+        commitHistoryFrame(preliminaryHistoryFrame);
+        preliminaryHistoryFrame = null;
+    }
 
     applyHistory(--historyPosition);
     document.querySelector(".redo").removeAttribute("disabled");
@@ -1214,7 +1285,7 @@ window.addEventListener("load", e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
-        historize(optionValues, "url");
+        historize(optionValues, "url", true);
     } else {
         applyRandomPreset();
     }
@@ -1223,3 +1294,5 @@ window.addEventListener("load", e => {
 window.addEventListener("mousemove", handleOptionHover);
 window.addEventListener("keydown", handleKeyboardIncrement);
 /*window.addEventListener("keydown", handleKeyboardUndoRedo);*/
+
+// TODO see also todo in index.html

@@ -114,7 +114,7 @@ function handleOptionInput(e, commit=false) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "drag", commit);  // TODO hist
+    historize({modifiedOption: e.name, method: "drag", commit: commit});  // TODO hist
 }
 function handleOptionValueInput(e, commit=false) {
     divergePreset();
@@ -126,7 +126,7 @@ function handleOptionValueInput(e, commit=false) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "typing", commit);  // TODO hist
+    historize({modifiedOption: e.name, method: "typing", commit: commit});  // TODO hist
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.options .value[name=${name}]`);
@@ -213,7 +213,7 @@ function incrementOption(name, increment) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
-    historize(optionValues, "keyboard", false);  // TODO hist
+    historize({modifiedOption: name, method: "keyboard"});
 }
 
 const presets = {
@@ -270,7 +270,7 @@ function setupPresets() {
 function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
-    historize(optionValues, "preset", true, e.name);
+    historize({method: "preset", commit: true, selectedPreset: e.name});
     e.classList.add("selected");
 }
 function applyPreset(preset) {
@@ -298,7 +298,7 @@ function applyRandomPreset() {
     const l = Object.keys(presets)[i];
     const p = presets[l];
     applyPreset(p);
-    historize(optionValues, "preset", true, l);
+    historize({method: "preset", commit: true, selectedPreset: l});
     const e = document.querySelector(`.presets button[name=${l}]`)
     e.classList.add("selected");
 }
@@ -361,32 +361,33 @@ function sameOptionHasChangedAgain(historyFrame1, historyFrame2, historyFrame3) 
            changedNames12[0] === changedNames23[0];
 }
 function commitHistoryFrame(historyFrame) {
-    if (historyPosition > -1) previouslyChangedOptions = changedOptions(history[historyPosition].optionValues, historyFrame.optionValues);
     history.push(historyFrame);
     historyPosition++;
 }
-let previouslyChangedOptions = [];
-function historize(newOptionValues, method, commit=false, preset=null) {
+function historize(newHistoryFrame) {
 
     // assemble new history frame...
-    newHistoryFrame = {
-        optionValues: JSON.parse(JSON.stringify(newOptionValues)),
-        method: method,
-        selectedPreset: preset,
+    let historyFrame = {
+        optionValues: JSON.parse(JSON.stringify(optionValues)),
+        modifiedOption: null,
+        method: null,
+        selectedPreset: null,
         divergedPreset: null,
+        commit: false,
     };
+    historyFrame = Object.assign(historyFrame, newHistoryFrame);
 
     // ...and, if relevant, propagate preset from preliminary history frame or
     // previous history state
-    let historyFrame = history[historyPosition];
+    let previousHistoryFrame = history[historyPosition];
     if (preliminaryHistoryFrame) {
-        historyFrame = preliminaryHistoryFrame;
+        previousHistoryFrame = preliminaryHistoryFrame;
     }
-    if (historyPosition > -1 && preset == null) {
-        if (historyFrame.selectedPreset != null) {
-            newHistoryFrame.divergedPreset = historyFrame.selectedPreset;
-        } else if (historyFrame.divergedPreset != null) {
-            newHistoryFrame.divergedPreset = historyFrame.divergedPreset;
+    if (historyPosition > -1 && historyFrame.selectedPreset == null) {
+        if (previousHistoryFrame.selectedPreset != null) {
+            historyFrame.divergedPreset = previousHistoryFrame.selectedPreset;
+        } else if (previousHistoryFrame.divergedPreset != null) {
+            historyFrame.divergedPreset = previousHistoryFrame.divergedPreset;
         }
     }
 
@@ -395,99 +396,47 @@ function historize(newOptionValues, method, commit=false, preset=null) {
     history = history.slice(0, historyPosition + 1);
     document.querySelector(".redo").setAttribute("disabled", "");
 
+    console.log(historyFrame);
+
     // TODO if method is different than of preliminary history frame, commit that
-    if (commit) {
-        commitHistoryFrame(newHistoryFrame);
+    if (historyFrame.commit || !historyFrame.modifiedOption) {
+        // TODO requires that anything setting or modifying a preliminary frame sends a commit upon conclusion
+        if (preliminaryHistoryFrame) {
+            const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
+            const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
+            if (differentModifiedOption || differentMethod) {
+                commitHistoryFrame(preliminaryHistoryFrame);
+            }
+        }
+        commitHistoryFrame(historyFrame);
         preliminaryHistoryFrame = null;
     } else {
         if (preliminaryHistoryFrame) {
-            // TODO here, why dealing with prelim and not new? that's where that "delay" is coming from!
-            console.log(history[historyPosition].optionValues["shape"], preliminaryHistoryFrame.optionValues["shape"], newHistoryFrame.optionValues["shape"])
-            let changedOptions1 = changedOptions(history[historyPosition].optionValues, preliminaryHistoryFrame.optionValues);
-            if (changedOptions1.length == 0) {
-
-            } else {
-                console.log(previouslyChangedOptions, changedOptions1);
-                let test = previouslyChangedOptions.length == 1 && changedOptions1.length == 1 && previouslyChangedOptions[0] === changedOptions1[0];
-                // TODO this still doesn't work, same problem, sometimes oninput seems to provide the previous value of a slider? same problem that plagued the previous implementation attempt?!?
-                if ((changedOptions1.length != 0 && !test) || method != preliminaryHistoryFrame.method) {
-                    commitHistoryFrame(preliminaryHistoryFrame);
-                    preliminaryHistoryFrame = null;
-                }
+            const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
+            const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
+            if (differentModifiedOption || differentMethod) {
+                commitHistoryFrame(preliminaryHistoryFrame);
+                preliminaryHistoryFrame = null;
             }
         }
 
-        preliminaryHistoryFrame = newHistoryFrame;
+        preliminaryHistoryFrame = historyFrame;
     }
 
     // enable undo button if this wasn't the first action of the session
-    if (historyPosition == 1) {
+    if (historyPosition == 1 || preliminaryHistoryFrame) {
         document.querySelector(".undo").removeAttribute("disabled");
     }
 
-    // TODO idea: keep preliminary history variable that's adjusted on drag, etc., and "commit" it on dragend OR when the action changes – this should get rid of dumb extra history frames issues when very quickly changing options
-    // => use onchange event, who cares about ie11. maybe try to provide fallback: different slider, different action
-
     /*
-    if (historyPosition > 0) console.log(changedOptions(history[historyPosition - 1].optionValues, history[historyPosition].optionValues));
-    if (historyPosition > -1) console.log(changedOptions(history[historyPosition].optionValues, newOptionValues));
-    if (historyPosition > -1 && changedOptions(history[historyPosition].optionValues, newOptionValues).length == 0) {
-        return;
-    }
-
-    // assemble new history frame...
-    newHistoryFrame = {
-        optionValues: JSON.parse(JSON.stringify(newOptionValues)),
-        method: method,
-        selectedPreset: preset,
-        divergedPreset: null,
-    };*/
-
-    /*
-    // ...and, if relevant, propagate preset from previous history state
-    if (historyPosition > -1 && preset == null) {
-        if (history[historyPosition].selectedPreset != null) {
-            newHistoryFrame.divergedPreset = history[historyPosition].selectedPreset;
-        } else if (history[historyPosition].divergedPreset != null) {
-            newHistoryFrame.divergedPreset = history[historyPosition].divergedPreset;
-        }
+    // collapse with second-to-last history frame if new option values identical to that – this is done to avoid identical adjacent history frames (caused by sameOptionHasChangedAgain)
+    if (changedOptions(history[historyPosition - 1].optionValues, newOptionValues).length == 0) {
+        // TODO also guard against cases where option 1 is changed, then option 2, then option 2 set back to its original value, then option 1 set back also
+        // TODO => only enable this when we've added a new history frame since the last time we did this?
+        history = history.slice(0, historyPosition + 1 - 1);
+        historyPosition--;
     }
     */
-
-    /*
-    // if the user has performed some undos before changing an option, overwrite
-    // the undone part of history
-    history = history.slice(0, historyPosition + 1);
-    document.querySelector(".redo").setAttribute("disabled", "");
-    */
-
-    /*
-    // if the same single option has changed multiple times in a row via the
-    // same method (e.g. dragging the slider more than one position, or
-    // pressing the right arrow key multiple times in succession, or typing in
-    // the value directly), amend the most recent history frame, otherwise
-    // simply add the new history frame
-    // TODO this sometimes thinke the difference between the first two is zero, idk why – probably because this is called on each input and might not be done by the time the next input rolls around?
-    if (historyPosition > 0 && sameOptionHasChangedAgainByTheSameMethod(history[historyPosition - 1], history[historyPosition], newHistoryFrame)) {
-
-        /*
-        // collapse with second-to-last history frame if new option values identical to that – this is done to avoid identical adjacent history frames (caused by sameOptionHasChangedAgain)
-        if (changedOptions(history[historyPosition - 1].optionValues, newOptionValues).length == 0) {
-            // TODO also guard against cases where option 1 is changed, then option 2, then option 2 set back to its original value, then option 1 set back also
-            // TODO => only enable this when we've added a new history frame since the last time we did this?
-            history = history.slice(0, historyPosition + 1 - 1);
-            historyPosition--;
-        }
-        //
-
-        history[historyPosition] = newHistoryFrame;
-        if (historyPosition == 0) {
-            document.querySelector(".undo").setAttribute("disabled", "");
-        }
-    } else {
-        history.push(newHistoryFrame);
-        historyPosition++;
-    }*/
 
     // enable undo button if this wasn't the first action of the session
     if (historyPosition == 1) {
@@ -1290,7 +1239,7 @@ window.addEventListener("load", e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
-        historize(optionValues, "url", true);
+        historize({method: "url", commit: true});
     } else {
         applyRandomPreset();
     }

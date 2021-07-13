@@ -352,21 +352,17 @@ function changedOptions(optionValues1, optionValues2) {
     });
     return changedNames;
 }
-function sameOptionHasChangedAgain(historyFrame1, historyFrame2, historyFrame3) {
-    const changedNames12 = changedOptions(historyFrame1.optionValues, historyFrame2.optionValues);
-    const changedNames23 = changedOptions(historyFrame2.optionValues, historyFrame3.optionValues);
-    console.log(changedNames12, changedNames23);
-    return changedNames12.length == 1 &&
-           changedNames23.length == 1 &&
-           changedNames12[0] === changedNames23[0];
-}
 function commitHistoryFrame(historyFrame) {
+    history = history.slice(0, historyPosition + 1);
+    document.querySelector(".redo").setAttribute("disabled", "");
     history.push(historyFrame);
     historyPosition++;
 }
 function historize(newHistoryFrame) {
+    // TODO fix onchange event handlers, don't redraw (if value actually unchanged), just commit!
 
     // assemble new history frame...
+    // TODO document what must be specified (method), what may not be specified (divergedpreset), that optionValues must not be changed after passing into this, that modifiedOption must be just one, etc.
     let historyFrame = {
         optionValues: JSON.parse(JSON.stringify(optionValues)),
         modifiedOption: null,
@@ -379,11 +375,12 @@ function historize(newHistoryFrame) {
 
     // ...and, if relevant, propagate preset from preliminary history frame or
     // previous history state
-    let previousHistoryFrame = history[historyPosition];
-    if (preliminaryHistoryFrame) {
-        previousHistoryFrame = preliminaryHistoryFrame;
-    }
     if (historyPosition > -1 && historyFrame.selectedPreset == null) {
+        let previousHistoryFrame = history[historyPosition];
+        if (preliminaryHistoryFrame) {
+            previousHistoryFrame = preliminaryHistoryFrame;
+        }
+
         if (previousHistoryFrame.selectedPreset != null) {
             historyFrame.divergedPreset = previousHistoryFrame.selectedPreset;
         } else if (previousHistoryFrame.divergedPreset != null) {
@@ -392,54 +389,70 @@ function historize(newHistoryFrame) {
     }
 
     // if the user has performed some undos before changing an option, overwrite
-    // the undone part of history
-    history = history.slice(0, historyPosition + 1);
+    // the undone part of history (it'd be neat to keep this around and display
+    // it as a sort of tree, but that's a whole different project!)
+    //history = history.slice(0, historyPosition + 1);
+    //document.querySelector(".redo").setAttribute("disabled", "");
+    // TODO the actual history deletion is done in the commit function (since the currently-being-modified option may still be dragged/manipulated back to its original value), but hide the redo button here
     document.querySelector(".redo").setAttribute("disabled", "");
 
-    console.log(historyFrame);
-
-    // TODO if method is different than of preliminary history frame, commit that
-    if (historyFrame.commit || !historyFrame.modifiedOption) {
-        // TODO requires that anything setting or modifying a preliminary frame sends a commit upon conclusion
+    // TODO comment well!
+    if (historyFrame.commit || !historyFrame.modifiedOption) {  // TODO with "!historyFrame.modifiedOption", need no commit on preset etc.
+        // commit any uncommitted preliminary history frame (slider drag and direct field changes do usually commit (but might not if something weird happens), but importantly keyboard left/right don't!)
         if (preliminaryHistoryFrame) {
+
+            // TODO dedup (1)
             const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
             const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
             if (differentModifiedOption || differentMethod) {
                 commitHistoryFrame(preliminaryHistoryFrame);
             }
         }
-        commitHistoryFrame(historyFrame);
+
+        // TODO is this condition required (since on unchanged slider and field values no onchange event is sent)
+        if (historyPosition == -1 || (historyPosition > -1 && changedOptions(historyFrame.optionValues, history[historyPosition].optionValues).length)) {
+            commitHistoryFrame(historyFrame);
+        }
         preliminaryHistoryFrame = null;
     } else {
         if (preliminaryHistoryFrame) {
+
+            // TODO dedup (1)
             const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
             const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
             if (differentModifiedOption || differentMethod) {
+                // if a preliminary frame exists but now a different option is changed or the same option but with a different method, commit the prelim frame!
                 commitHistoryFrame(preliminaryHistoryFrame);
-                preliminaryHistoryFrame = null;
+                preliminaryHistoryFrame = historyFrame;
+            } else {
+                // if it's the same option and method but it hasn't changed from the most recent commit (!, not prelim), discard it
+
+                if (!changedOptions(historyFrame.optionValues, history[historyPosition].optionValues).length) {
+
+                    // TODO dedup (2)?
+                    preliminaryHistoryFrame = null;
+                    if (historyPosition == 0) {
+                        document.querySelector(".undo").setAttribute("disabled", "");
+                    }
+                    // show the redo button again if it was previously visible before changing this option
+                    if (historyPosition < history.length - 1) {
+                        document.querySelector(".redo").removeAttribute("disabled");
+                    }
+                } else {
+
+                    // update prelim hist frame
+                    preliminaryHistoryFrame = historyFrame;
+                }
             }
+        } else {
+
+            // if this isn't a commit but also no prelim hist frame exists yet, set it!
+            preliminaryHistoryFrame = historyFrame;
         }
-
-        preliminaryHistoryFrame = historyFrame;
     }
 
-    // enable undo button if this wasn't the first action of the session
+    // enable undo button if this wasn't the first action of the session or TODO
     if (historyPosition == 1 || preliminaryHistoryFrame) {
-        document.querySelector(".undo").removeAttribute("disabled");
-    }
-
-    /*
-    // collapse with second-to-last history frame if new option values identical to that – this is done to avoid identical adjacent history frames (caused by sameOptionHasChangedAgain)
-    if (changedOptions(history[historyPosition - 1].optionValues, newOptionValues).length == 0) {
-        // TODO also guard against cases where option 1 is changed, then option 2, then option 2 set back to its original value, then option 1 set back also
-        // TODO => only enable this when we've added a new history frame since the last time we did this?
-        history = history.slice(0, historyPosition + 1 - 1);
-        historyPosition--;
-    }
-    */
-
-    // enable undo button if this wasn't the first action of the session
-    if (historyPosition == 1) {
         document.querySelector(".undo").removeAttribute("disabled");
     }
 }
@@ -478,9 +491,19 @@ function undo() {
     // TODO undo on load to restore previous session, with tooltip? maybe different icon?
 
     // if preliminary frame exists, first commit it, only then undo
+    // TODO make sure this is right
     if (preliminaryHistoryFrame) {
-        commitHistoryFrame(preliminaryHistoryFrame);
-        preliminaryHistoryFrame = null;
+        if (!changedOptions(preliminaryHistoryFrame.optionValues, history[historyPosition].optionValues).length) {
+
+            // TODO dedup (2)?
+            preliminaryHistoryFrame = null;
+            if (historyPosition == 0) {
+                document.querySelector(".undo").setAttribute("disabled", "");
+            }
+        } else {
+            commitHistoryFrame(preliminaryHistoryFrame);
+            preliminaryHistoryFrame = null;
+        }
     }
 
     applyHistory(--historyPosition);

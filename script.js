@@ -56,7 +56,6 @@ const options = {
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
     segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
     segmentlengthening: {letter:"𐡑", description: "length of individual line segments <i>in % of their nominal length</i>", min: 10, max: 500, step: 10, default: 100},
-    // TODO option for lengthening/shortening line segments, similar to angle, also integrate into svg size estimate
 
     // See note above when adding more.
 };
@@ -520,7 +519,6 @@ function applyHistory(i) {
     }, 1);
 }
 function undo() {
-    // TODO undo on load to restore previous session, with tooltip? maybe different icon?
 
     // if preliminary frame exists and the value of the relevant option isn't
     // identical to the most recently committed history frame, first commit it,
@@ -761,7 +759,7 @@ function downloadSVG() {
 
         // round the coordinates to two decimal places to reduce file size
         // (100ths of pixels are, visually, plenty accurate!)
-        formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
+        const formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
 
         return `<path d="${formattedPath}" />`;
     }).join("\n");
@@ -785,12 +783,39 @@ ${paths}
 }
 function refreshSvgFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
-    const estimate = parseInt((optionValues.segments * optionValues.iterations * ((optionValues.segmentrotation != 0 || optionValues.segmentlengthening != 100) ? 2 : 1) * (1 - optionValues.skipchance) * 15) / (1000 * 1000));
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * ((optionValues.segmentrotation != 0 || optionValues.segmentlengthening != 100) ? 2 : 1) * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {
         svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export might take a couple of seconds.`;
     }
+}
+function downloadJSON() {
+
+    // same preprocessing as for svg
+    const clippedSvgData = clipSvgDataToCanvasBounds(svgData);
+    const culledSvgData = cullRedundantSvgDataMoves(clippedSvgData);
+    const processedSvgData = culledSvgData;
+
+    let processedJsonData = [];
+    let currentLine = [];
+    processedSvgData.paths.flat().forEach(p => {
+        if (p.type == "M") {
+            if (currentLine.length > 1) {  // > 1 instead of 0 to account for potential multiple subsequent moves
+                processedJsonData.push(currentLine);
+            }
+            currentLine = [];
+        }
+        currentLine.push([parseFloat(p.x.toFixed(2)), parseFloat(p.y.toFixed(2))]);
+    });
+    if (currentLine.length > 1) {
+        processedJsonData.push(currentLine);
+    }
+
+    const dataUrl = `data:application/json;base64,${btoa(JSON.stringify(processedJsonData))}`;
+
+    const filename = generateFilename("json");
+    downloadFile(dataUrl, filename);
 }
 function exportDrawing(e) {  // not just "export" because that's a keyword
     const exportButton = document.querySelector(".export");
@@ -1309,7 +1334,3 @@ window.addEventListener("load", e => {
 window.addEventListener("mousemove", handleOptionHover);
 window.addEventListener("keydown", handleKeyboardIncrement);
 window.addEventListener("keydown", handleKeyboardUndoRedo);
-
-// TODO see also todos in index.html
-// TODO document undo/redo in readme
-// TODO test in all browsers

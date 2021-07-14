@@ -208,6 +208,7 @@
             transform-origin: bottom left;
             border-radius: 0.2em;
             max-width: 30em;
+            pointer-events: none;
         }
         .description i {
             font-size: 0.8em;
@@ -332,7 +333,6 @@
             height: 0.95em;
             vertical-align: bottom;
             padding-bottom: 0.2em;
-            stroke: #111;
         }
         .actions .buttons button:hover,
         .actions .buttons button.active {
@@ -354,10 +354,8 @@
         }
         .actions .buttons button[disabled] {
             background-color: #bbb !important;
+            color: #777;
             cursor: not-allowed;
-        }
-        .actions .buttons button[disabled] svg {
-            stroke: #777;
         }
         .actions .buttons button.undo:hover,
         .actions .buttons button.redo:hover,
@@ -497,7 +495,7 @@
 <body>
     <aside class="sidebar">
         <div class="introduction">
-            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: var(--text-color); fill: none;" viewBox="0 0 52 52">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 52 52">
                 <g transform="translate(2, 2)">
                     <path d="M 0,0 L 0,16"></path>
                     <path d="M 32,0 L 32,16"></path>
@@ -519,13 +517,13 @@
         <div class="buttons">
             <div class="buttons-group">
                 <button class="undo" disabled onclick="undo()">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; fill: none;" viewBox="0 0 18 54">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; stroke: currentColor; fill: none;" viewBox="0 0 18 54">
                         <g transform="translate(7,3)">
                             <path d="M 8,0 L -4,24 L 8,48"></path>
                         </g>
                     </svg>
                 </button><button class="redo" disabled onclick="redo()">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; fill: none;" viewBox="0 0 18 54">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; stroke: currentColor; fill: none;" viewBox="0 0 18 54">
                         <g transform="translate(3,3)">
                             <path d="M 0,0 L 12,24 L 0,48"></path>
                         </g>
@@ -534,7 +532,7 @@
             </div>
             <div class="buttons-group">
                 <button class="export">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 36 44">
                         <g transform="translate(2, -6)">
                             <path d="M 16,8 L 16,48"></path>
                             <path d="M 0,16 L 16,48"></path>
@@ -546,7 +544,7 @@
             </div>
             <div class="buttons-group">
                 <button class="share">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 40 48">
                         <g transform="translate(8, 8)">
                             <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
                             <circle cx="0" cy="16" r="6" style="fill: var(--red);"></circle>
@@ -565,8 +563,8 @@
             <p>Alternatively, you can export the line geometry as an SVG file – for, say, pen plotting. This'll be a black line on a transparent background – no colors, blend modes, or blurry shadows.</p>
             <p class="svg-filesize-estimate"></p>
             <button class="export-button" onclick="downloadSVG()">SVG <em>line geometry only</em></button>
-            <!-- TODO maybe json export: list of generations, which is list of lines, or even simpler just as a list of lines, with or without size estimate? either way check if height of export modal still ok on mobile => say that it's sort of like a MultiLineString in geojson, if you're familiar with that -->
-            <!-- TODO use currentColor for icons -->
+            <p>For your <a href="https://github.com/doersino/brachiosaurus">homebrew</a> pen plotter needs, you can export the line geometry in easily digestible JSON form: as a list of line segments, where each line segment is a list of points, and each point is a 2-ary list of x and y coordinates.</p>
+            <button class="export-button" onclick="downloadJSON()">JSON <em>nerdy line geometry</em></button>
         </div>
         <div class="sheet share-sheet">
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>

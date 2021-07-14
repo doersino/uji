@@ -34,7 +34,7 @@ It's just some HTML, JavaScript, an image, and a few webfonts – so no setup is
 
 ### Features I wanted to add but didn't because I would've gotten bored of it and never released this thing in the first place
 
-Perhaps I'll knock some of those down at some point if motivation strikes. In the meantime, feel free to [file an issue](http://github.com/doersino/uji/issues) if you really want one of them to be implemented (or do it yourself and send a pull request!).
+Perhaps I'll knock some of those down at some point if motivation strikes. (Update: Done quite a few, but there's always more!) In the meantime, feel free to [file an issue](http://github.com/doersino/uji/issues) if you really want one of them to be implemented (or do it yourself and send a pull request!).
 
 * Keeping option values in local storage and restoring them on load if no URL hash present. The undo button could be repurposed for this, displaying a tooltip or different icon on load if option values are found in local storage.
 * Some way of randomizing options without constantly generating junk, see [here](https://github.com/doersino/uji/issues/1).

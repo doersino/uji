@@ -151,6 +151,17 @@
             display: block;
             margin: 1em 0;
         }
+        .flashed {
+            animation: flash 0.5s linear;
+        }
+        @keyframes flash {
+            from {
+                filter: brightness(1.4) blur(0.1em) sepia(0.2);
+            }
+            to {
+                filter: none;
+            }
+        }
         .letter {
             font-family: var(--options-font);
             display: inline-block;
@@ -163,6 +174,7 @@
             line-height: 1;
             vertical-align: top;
             border-radius: 0.2rem 0 0 0.2rem;
+            cursor: help;
         }
         .value {
             display: inline-block;
@@ -196,6 +208,7 @@
             transform-origin: bottom left;
             border-radius: 0.2em;
             max-width: 30em;
+            pointer-events: none;
         }
         .description i {
             font-size: 0.8em;
@@ -219,12 +232,14 @@
             transition: 0.1s;
             border-radius: 0 0.2rem 0.2rem 0;
             padding: 0 1px;
+            cursor: grab;
         }
         label:hover .slider {
             background-color: #888;
         }
         .slider:active {
             background-color: #999 !important;
+            cursor: grabbing;
         }
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -290,6 +305,15 @@
             background: linear-gradient(to bottom, transparent, #0004 1em, #505050 1em, #444 100%);
             text-align: center;
         }
+        .actions .buttons-group {
+            display: inline-block;
+            box-shadow: 0 -0.6rem 1rem #0004;
+            transform: translateY(-1rem);
+            margin-right: 0.3em;
+        }
+        .actions .buttons .buttons-group:last-child {
+            margin-right: 0;
+        }
         .actions .buttons button {
             font: inherit;
             font-size: 1.2em;
@@ -301,31 +325,42 @@
             border: none;
             display: inline-block;
             cursor: pointer;
-            padding: 0 1em;
+            padding: 0 0.8em;
             transition: 0.2s;
-            transform: translateY(-1rem);
-            box-shadow: 0 -0.5rem 1rem #0003;
             padding-bottom: 0.1em;
-            margin-right: 0.5em;
-        }
-        .actions .buttons button:last-child {
-            margin-right: 0;
         }
         .actions .buttons button svg {
             height: 0.95em;
             vertical-align: bottom;
             padding-bottom: 0.2em;
-            stroke: #111;
         }
         .actions .buttons button:hover,
         .actions .buttons button.active {
             background-color: #aaa;
-            transform: translateY(-1rem) rotate(-3deg);
+            transform: rotate(-3deg);
             transform-origin: bottom left;
         }
         .actions .buttons button.active:hover {
             background-color: #ddd;
-            transform: translateY(-1rem);
+            transform: none;
+        }
+        .actions .buttons button.undo {
+            border-radius: 0.2rem 0 0 0.2rem;
+            border-right: 1px solid #aaa;
+            margin-right: 0;
+        }
+        .actions .buttons button.redo {
+            border-radius: 0 0.2rem 0.2rem 0;
+        }
+        .actions .buttons button[disabled] {
+            background-color: #bbb !important;
+            color: #777;
+            cursor: not-allowed;
+        }
+        .actions .buttons button.undo:hover,
+        .actions .buttons button.redo:hover,
+        .actions .buttons button[disabled]:hover {
+            transform: none;
         }
 
         .sheet {
@@ -356,7 +391,7 @@
             border-radius: 0.2em 0.2em 0.2em 0;
         }
         .caring-button,
-        .download-button {
+        .export-button {
             background: none;
             border: none;
             font: inherit;
@@ -368,7 +403,10 @@
             border-radius: 0 0 0.2rem 0.2rem;
             transition: 0.1s;
         }
-        .download-button {
+        .caring-button.copy {
+            cursor: copy;
+        }
+        .export-button {
             font-size: 1.2em;
             border-radius: 0.2rem;
             padding: 0 1rem;
@@ -377,16 +415,16 @@
             text-transform: none;
             text-align: left;
         }
-        .download-button em {
+        .export-button em {
             float: right;
             color: #666;
         }
         .caring-button:hover,
-        .download-button:hover {
+        .export-button:hover {
             background-color: #aaa;
         }
         .caring-button:active,
-        .download-button:active {
+        .export-button:active {
             background-color: #aaa;
         }
         .share-sheet .share-status {
@@ -457,7 +495,7 @@
 <body>
     <aside class="sidebar">
         <div class="introduction">
-            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: var(--text-color); fill: none;" viewBox="0 0 52 52">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 52 52">
                 <g transform="translate(2, 2)">
                     <path d="M 0,0 L 0,16"></path>
                     <path d="M 32,0 L 32,16"></path>
@@ -477,41 +515,62 @@
     </aside>
     <aside class="actions">
         <div class="buttons">
-            <button class="download">
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 36 44">
-                    <g transform="translate(2, -6)">
-                        <path d="M 16,8 L 16,48"></path>
-                        <path d="M 0,16 L 16,48"></path>
-                        <path d="M 16,48 L 32,16"></path>
-                    </g>
-                </svg>
-                download
-            </button>
-            <button class="share">
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; fill: none;" viewBox="0 0 40 48">
-                    <g transform="translate(8, 8)">
-                        <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
-                        <circle cx="0" cy="16" r="6" style="fill: var(--red);"></circle>
-                        <circle cx="24" cy="0" r="6" style="fill: var(--green);"></circle>
-                        <circle cx="24" cy="32" r="6" style="fill: var(--blue);"></circle>
-                    </g>
-                </svg>
-                share
-            </button>
+            <div class="buttons-group">
+                <button class="undo" disabled onclick="undo()">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; stroke: currentColor; fill: none;" viewBox="0 0 18 54">
+                        <g transform="translate(7,3)">
+                            <path d="M 8,0 L -4,24 L 8,48"></path>
+                        </g>
+                    </svg>
+                </button><button class="redo" disabled onclick="redo()">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; stroke: currentColor; fill: none;" viewBox="0 0 18 54">
+                        <g transform="translate(3,3)">
+                            <path d="M 0,0 L 12,24 L 0,48"></path>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div class="buttons-group">
+                <button class="export">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 36 44">
+                        <g transform="translate(2, -6)">
+                            <path d="M 16,8 L 16,48"></path>
+                            <path d="M 0,16 L 16,48"></path>
+                            <path d="M 16,48 L 32,16"></path>
+                        </g>
+                    </svg>
+                    export
+                </button>
+            </div>
+            <div class="buttons-group">
+                <button class="share">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 4px; stroke: currentColor; fill: none;" viewBox="0 0 40 48">
+                        <g transform="translate(8, 8)">
+                            <path d="M 16,0 C -4.8,0 -4.8,32 16,32"></path>
+                            <circle cx="0" cy="16" r="6" style="fill: var(--red);"></circle>
+                            <circle cx="24" cy="0" r="6" style="fill: var(--green);"></circle>
+                            <circle cx="24" cy="32" r="6" style="fill: var(--blue);"></circle>
+                        </g>
+                    </svg>
+                    share
+                </button>
+            </div>
         </div>
-        <div class="sheet download-sheet">
+        <div class="sheet export-sheet">
             <p>You can download your drawing in the form of PNG or JPEG images.</p>
-            <button class="download-button" onclick="downloadPNG()">PNG <em>lossless</em></button>
-            <button class="download-button" onclick="downloadJPEG()">JPEG <em>90% quality</em></button>
+            <button class="export-button" onclick="downloadPNG()">PNG <em>lossless</em></button>
+            <button class="export-button" onclick="downloadJPEG()">JPEG <em>90% quality</em></button>
             <p>Alternatively, you can export the line geometry as an SVG file – for, say, pen plotting. This'll be a black line on a transparent background – no colors, blend modes, or blurry shadows.</p>
             <p class="svg-filesize-estimate"></p>
-            <button class="download-button" onclick="downloadSVG()">SVG <em>line geometry only</em></button>
+            <button class="export-button" onclick="downloadSVG()">SVG <em>line geometry only</em></button>
+            <p>For your <a href="https://github.com/doersino/brachiosaurus">homebrew</a> pen plotter needs, you can export the line geometry in easily digestible JSON form: as a list of line segments, where each line segment is a list of points, and each point is a 2-ary list of x and y coordinates.</p>
+            <button class="export-button" onclick="downloadJSON()">JSON <em>nerdy line geometry</em></button>
         </div>
         <div class="sheet share-sheet">
             <p>This link contains the options you've dialled in – anyone who comes here through it will see the same drawing.</p>
             <p><em>Fun fact:</em> The filenames of downloaded images contain your options in the same format, so you can recover them from there, too.</p>
             <input type="text" class="caring" readonly spellcheck="false" value="">
-            <button class="caring-button" onclick="copyShareLink()">Copy</button>
+            <button class="caring-button copy" onclick="copyShareLink()">Copy</button>
             <button class="caring-button" onclick="openShareLink()">Open</button>
             <button class="caring-button" onclick="shareShareLink()">Share…</button>
             <button class="caring-button" onclick="tweetShareLink()">Tweet…</button>

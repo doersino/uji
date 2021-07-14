@@ -55,6 +55,7 @@ const options = {
     fadeinspeed: {letter: "𐤁", description: "rate at which line segments randomly appear <i>in iterations</i>", min: 0, max: 200, step: 1, default: 0},
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
     segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
+    segmentlengthening: {letter:"𐡑", description: "length of individual line segments <i>in % of their nominal length</i>", min: 10, max: 500, step: 10, default: 100},
 
     // See note above when adding more.
 };
@@ -80,7 +81,7 @@ const optionSections = {
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeinspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
-    "line": ["segments", "skipchance", "thickness", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "hueshiftspeed", "blendmode", "shadowblur"],
+    "line": ["segments", "skipchance", "thickness", "segmentlengthening", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "hueshiftspeed", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
 };
 
@@ -99,7 +100,7 @@ function setupOptions() {
             if (o.hasOwnProperty("class")) {
                 c = o.class;
             }
-            rendered += `<label class="${c}" name="${n}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
+            rendered += `<label class="${c}" name="${n}"><div class="letter">${o.letter}</div><input type="range" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.default}" name="${n}" class="slider" oninput="handleOptionInput(this)" onchange="handleOptionCommit(this)"><input type="text" value="${o.default}" name="${n}" class="value" oninput="handleOptionValueInput(this)" onchange="handleOptionValueCommit(this)" tabindex="${tindex}"><div class="description">${o.description}</div></label>`;
         });
     });
     document.querySelector(".options").innerHTML = rendered;
@@ -113,8 +114,18 @@ function handleOptionInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize({modifiedOption: e.name, method: "drag"});
 }
-function handleOptionValueInput(e) {
+function handleOptionCommit(e) {
+
+    // if the value hasn't changed since the last input event (which *should*
+    // always be the case, but you never know), skip redrawing and all that
+    if (parseFloat(e.value) != optionValues[e.name]) {
+        handleOptionInput(e);
+    }
+    historize({modifiedOption: e.name, method: "drag", commit: true});
+}
+function handleOptionValueInput(e, commit=false) {
     divergePreset();
     const v = parseFloat(e.value);
     if (isNaN(v)) return;  // this can occur when the value is, say, -1, and the user presses backspace to replace the "1" with a "2" – just "-" counts as NaN
@@ -124,6 +135,16 @@ function handleOptionValueInput(e) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize({modifiedOption: e.name, method: "typing"});
+}
+function handleOptionValueCommit(e) {
+
+    // if the value hasn't changed since the last input event (which *should*
+    // always be the case, but you never know), skip redrawing and all that
+    if (parseFloat(e.value) != optionValues[e.name]) {
+        handleOptionValueInput(e);
+    }
+    historize({modifiedOption: e.name, method: "typing", commit: true});
 }
 function refreshRenderedOptionValue(name) {
     const e = document.querySelector(`.options .value[name=${name}]`);
@@ -210,6 +231,7 @@ function incrementOption(name, increment) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    historize({modifiedOption: name, method: "keyboard"});
 }
 
 const presets = {
@@ -249,7 +271,7 @@ const presets = {
     "ⵄ": "s2r520ro0.15e0.996ex0.997se10510i1474canv0line0.02f1000wa398wav268wavi0.1wavin0.1",
     "ⵇ": "s4r980ro-4.65e0.995ex0.995t4se100sk0.5i240w2372h1708c89ca107can72l255li255lin255line0.66b3rotat730j0canva0.07linec3",
     "ⴾ": "r200ro0.3rota0.4e1.007ex1.007t0.8se8000i508w2560ho0.14c4ca4can12l196li174lin211line0.8b6f658in357tr4rotat66wa1970wav2643wavi0.2wavin0.2j0.5sh15fad50hu-5",
-    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1seg30",
+    "ⴴ": "s2r1280ro-0.35rot0.12rota0.13e0.989ex0.989t4se100sk0.67i450w2560h2560c38ca18can10l188li72b6f1000rotat600wa18wav47wavi0.1wavin0.1seg30segm500",
     "ⵁ": "r200e1.002ex1.002t0.5se10000sk0.5i470w1920h1280ho0.3canv0li10lin66line0.1f33tr0.6j0.5fa420",
     "ⵃ": "s2r130ro-0.1t0.4i259w1698c44ca44can44l179li179lin179b6f225re25wa816wav336wavi3.2sa140saw48canva0.05",
     "⌘": "",
@@ -266,6 +288,7 @@ function setupPresets() {
 function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
+    historize({method: "preset", selectedPreset: e.name});
     e.classList.add("selected");
 }
 function applyPreset(preset) {
@@ -284,6 +307,7 @@ function applyOptions(opts) {
     refreshShareSheetUrl();
     refreshSvgFilesizeEstimate();
     restartRendering(optionValues);
+    // historization should have been done by the caller if desired
 }
 function applyRandomPreset() {
 
@@ -292,6 +316,7 @@ function applyRandomPreset() {
     const l = Object.keys(presets)[i];
     const p = presets[l];
     applyPreset(p);
+    historize({method: "preset", selectedPreset: l});
     const e = document.querySelector(`.presets button[name=${l}]`)
     e.classList.add("selected");
 }
@@ -313,32 +338,248 @@ function divergePreset() {
     }
 }
 
-// commented-out since it only very rarely produces interesting results – the
-// space is just way too n-dimensional. also, would need to deal with floating
-// point stringification stuff, which ugh
-/*function randomize() {
-    let randomized = JSON.parse(JSON.stringify(defaults));
-    Object.keys(options).forEach(n => {
-        const o = options[n];
-        const v = optionValues[n];
-
-        const minScaled = o.min / o.step;
-        const maxScaled = o.max / o.step;
-        let rand = parseInt(minScaled + Math.random() * (maxScaled - minScaled)) * o.step;
-        if (!o.step.toString().includes(".")) {
-            rand = parseInt(rand);
+let history = [];
+let historyPosition = -1;
+let preliminaryHistoryFrame = null;
+function changedOptions(optionValues1, optionValues2) {
+    let changedNames = [];
+    Object.keys(optionValues1).forEach(name => {
+        if (optionValues1[name] !== optionValues2[name]) {
+            changedNames.push(name);
         }
-        randomized[n] = rand;
     });
-    applyOptions(randomized);
-}*/
+    return changedNames;
+}
+function commitHistoryFrame(historyFrame) {
+
+    // if the user has performed some undos before changing an option, overwrite
+    // the undone part of history (it'd be neat to keep this around and display
+    // it as a sort of tree, but that's a whole different project!)
+    history = history.slice(0, historyPosition + 1);
+    document.querySelector(".redo").setAttribute("disabled", "");
+
+    // store the new history frame
+    history.push(historyFrame);
+    historyPosition++;
+}
+function historize(newHistoryFrame) {
+
+    // assemble new history frame...
+    let historyFrame = {
+        optionValues: JSON.parse(JSON.stringify(optionValues)),  // may not change after passing to this function, hence making a copy for this default value
+        modifiedOption: null,                                    // which *single* option/slider (its name, not letter) has been manipulated? leave null for preset applys etc.
+        method: null,                                            // mandatory: by which method has this change been performed (drag, typing, keyboard, preset, url)?
+        selectedPreset: null,                                    // if method = preset, which preset (its letter) has been selected?
+        divergedPreset: null,                                    // leave as null, filled automatically below based on previous history
+        commit: false,                                           // whether to directly commit the change to history, bypassing preliminary history frame creation. used when letting go of a slider, for example, and implicit for actions where there isn't a single modified option
+    };
+    historyFrame = Object.assign(historyFrame, newHistoryFrame);
+
+    // ...and, if relevant, propagate preset from preliminary or previous
+    // history frame
+    if (historyPosition > -1 && historyFrame.selectedPreset == null) {
+        let previousHistoryFrame = history[historyPosition];
+        if (preliminaryHistoryFrame) {
+            previousHistoryFrame = preliminaryHistoryFrame;
+        }
+
+        if (previousHistoryFrame.selectedPreset != null) {
+            historyFrame.divergedPreset = previousHistoryFrame.selectedPreset;
+        } else if (previousHistoryFrame.divergedPreset != null) {
+            historyFrame.divergedPreset = previousHistoryFrame.divergedPreset;
+        }
+    }
+
+    // make the implicit explicit
+    if (!historyFrame.modifiedOption) {
+        historyFrame.commit = true;
+    }
+
+    // if the user has performed some undos before changing an option, disable
+    // the redo button (but do not delete that part of history yet since, say,
+    // the relevant slider may yet be dragged back to its original position)
+    document.querySelector(".redo").setAttribute("disabled", "");
+
+    // if we're gonna commit the new history frame...
+    if (historyFrame.commit) {
+
+        // ...first commit any uncommitted preliminary history frame (slider
+        // drag and direct field changes do usually commit, but might not if
+        // something weird happens, but importantly, pressing the left/right
+        // arrow keys to adjust an option has no way of sending a commit) if
+        // it's describing an option modification that's unrelated to the new
+        // history frame (i.e. don't implicitly commit a preliminary history
+        // frame if we're explicitly committing it right now)
+        if (preliminaryHistoryFrame) {
+            const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
+            const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
+            if (differentModifiedOption || differentMethod) {
+                commitHistoryFrame(preliminaryHistoryFrame);
+            }
+        }
+
+        // if this is the first history frame to be added this session, do so
+        // unconditionally – otherwise, check if the options differ at all from
+        // the most recent history frame and only commit if they do (this should
+        // not strictly be required since grabbing a slider but returning to the
+        // original value before letting go does not send an onchange event (and
+        // ditto for text inputs), but you never know) or the method differs –
+        // as a side effect, this only creates one history frame when repeatedly
+        // clicking the same preset
+        if (historyPosition == -1 || (historyPosition > -1 && (changedOptions(historyFrame.optionValues, history[historyPosition].optionValues).length) || historyFrame.method != history[historyPosition].method)) {
+            commitHistoryFrame(historyFrame);
+        }
+
+        // any preliminary history frame is now moot
+        preliminaryHistoryFrame = null;
+    } else {
+        if (preliminaryHistoryFrame) {
+
+            // similar logic as above: if there's a preliminary history frame
+            // but we're modifying a different option (or the same by a
+            // different method), commit it before setting our new history frame
+            // as the preliminary one
+            const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
+            const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
+            if (differentModifiedOption || differentMethod) {
+                commitHistoryFrame(preliminaryHistoryFrame);
+                preliminaryHistoryFrame = historyFrame;
+            } else {
+
+                // if the preliminary and new history frame are indeed
+                // describing the same option and method, but the value hasn't
+                // changed from the most recent commit (i.e. the user had
+                // dragged a slider but returned it to its original position
+                // before letting go, or ditto for tabbing out of direct option
+                // input), discard it
+                if (!changedOptions(historyFrame.optionValues, history[historyPosition].optionValues).length) {
+                    preliminaryHistoryFrame = null;
+
+                    if (historyPosition == 0) {
+                        document.querySelector(".undo").setAttribute("disabled", "");
+                    }
+
+                    // show the redo button again if it was previously visible
+                    // before changing this option
+                    if (historyPosition < history.length - 1) {
+                        document.querySelector(".redo").removeAttribute("disabled");
+                    }
+                } else {
+
+                    // else, simply update the preliminary history frame
+                    preliminaryHistoryFrame = historyFrame;
+                }
+            }
+        } else {
+
+            // if this isn't a commit but also no preliminary history frame
+            // exists yet, set it!
+            preliminaryHistoryFrame = historyFrame;
+        }
+    }
+
+    // finally, enable undo button if this wasn't the first action of the
+    // session (or if it is but there's a change "in progres")
+    if (historyPosition == 1 || (historyPosition == 0 && preliminaryHistoryFrame)) {
+        document.querySelector(".undo").removeAttribute("disabled");
+    }
+}
+function applyHistory(i) {
+
+    // clear .flashed class from potential previous undos/redos
+    document.querySelectorAll(`.flashed`).forEach(e => {
+        e.classList.remove("flashed");
+    });
+
+    // wait until the .flashed class has been cleared before potentially adding
+    // it again to make sure the visual behavior is as expected (when
+    // undoing/redoing quickly, browsers, especially firefix, tend to forget
+    // about the flashing entirely, oh well)
+    setTimeout(() => {
+
+        // flash changed options
+        const changedNames = changedOptions(optionValues, history[i].optionValues);
+        changedNames.forEach(name => {
+            const e = document.querySelector(`.options label[name=${name}]`);
+            e.classList.add("flashed");
+        });
+
+        // actually visually change the sliders etc.
+        applyOptions(history[i].optionValues);
+
+        // (un/re)select relevant preset (whether diverged or not)
+        unselectPreset();
+        if (history[i].selectedPreset != null) {
+            const e = document.querySelector(`.presets button[name=${history[i].selectedPreset}]`);
+            e.classList.add("selected");
+        } else if (history[i].divergedPreset != null) {
+            const e = document.querySelector(`.presets button[name=${history[i].divergedPreset}]`);
+            e.classList.add("diverged");
+        }
+    }, 1);
+}
+function undo() {
+
+    // if preliminary frame exists and the value of the relevant option isn't
+    // identical to the most recently committed history frame, first commit it,
+    // only then undo
+    if (preliminaryHistoryFrame) {
+        if (changedOptions(preliminaryHistoryFrame.optionValues, history[historyPosition].optionValues).length) {
+            commitHistoryFrame(preliminaryHistoryFrame);
+        }
+
+        // reset it either way
+        preliminaryHistoryFrame = null;
+    }
+
+    applyHistory(--historyPosition);
+    document.querySelector(".redo").removeAttribute("disabled");
+    if (historyPosition == 0) {
+        document.querySelector(".undo").setAttribute("disabled", "");
+    }
+}
+function redo() {
+    applyHistory(++historyPosition);
+    document.querySelector(".undo").removeAttribute("disabled");
+    if (historyPosition == history.length - 1) {
+        document.querySelector(".redo").setAttribute("disabled", "");
+    }
+}
+
+// i believ using .code instead of .key would be correct here for alternate
+// keyboard layouts such as dvorak, but considering that on german keyboards, y
+// and z are switched, and i'm german, i can sleep soundly after using key .key
+// here (trying to detect the locale or other shenanigans are franky too much
+// work)
+function handleKeyboardUndoRedo(e) {
+
+    // disregard the key press the focus is on the value input field or neither
+    // ctrl nor cmd are pressed
+    if (e.target.matches("input.value") || !(e.metaKey || e.ctrlKey)) {
+        return;
+    }
+
+    // knowing that either ctrl nor cmd are pressed, there's no need to check
+    // for that anymore
+    if (e.key == "y" || (e.shiftKey && e.key == "z")) {
+        e.preventDefault();
+        if (historyPosition < history.length - 1) {
+            redo();
+        }
+    } else if (e.key == "z") {
+        e.preventDefault();
+        if (historyPosition > 0) {
+            undo();
+        }
+    }
+}
 
 function closeSheets() {
     document.querySelector(".share").classList.remove("active");
     document.querySelector(".share-sheet").style.display = "none";
 
-    document.querySelector(".download").classList.remove("active");
-    document.querySelector(".download-sheet").style.display = "none";
+    document.querySelector(".export").classList.remove("active");
+    document.querySelector(".export-sheet").style.display = "none";
 }
 
 function downloadFile(dataUrl, filename) {
@@ -518,7 +759,7 @@ function downloadSVG() {
 
         // round the coordinates to two decimal places to reduce file size
         // (100ths of pixels are, visually, plenty accurate!)
-        formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
+        const formattedPath = path.map(p => `${p.type}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join("");
 
         return `<path d="${formattedPath}" />`;
     }).join("\n");
@@ -542,17 +783,44 @@ ${paths}
 }
 function refreshSvgFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
-    const estimate = parseInt((optionValues.segments * optionValues.iterations * (1 + (optionValues.segmentrotation > 0)) * (1 - optionValues.skipchance) * 15) / (1000 * 1000));
+    const estimate = parseInt((optionValues.segments * optionValues.iterations * ((optionValues.segmentrotation != 0 || optionValues.segmentlengthening != 100) ? 2 : 1) * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
     } else {
         svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export might take a couple of seconds.`;
     }
 }
-function download(e) {
-    const downloadButton = document.querySelector(".download");
-    const downloadSheet = document.querySelector(".download-sheet");
-    const downloadSheetWasOpen = downloadSheet.style.display == "block";
+function downloadJSON() {
+
+    // same preprocessing as for svg
+    const clippedSvgData = clipSvgDataToCanvasBounds(svgData);
+    const culledSvgData = cullRedundantSvgDataMoves(clippedSvgData);
+    const processedSvgData = culledSvgData;
+
+    let processedJsonData = [];
+    let currentLine = [];
+    processedSvgData.paths.flat().forEach(p => {
+        if (p.type == "M") {
+            if (currentLine.length > 1) {  // > 1 instead of 0 to account for potential multiple subsequent moves
+                processedJsonData.push(currentLine);
+            }
+            currentLine = [];
+        }
+        currentLine.push([parseFloat(p.x.toFixed(2)), parseFloat(p.y.toFixed(2))]);
+    });
+    if (currentLine.length > 1) {
+        processedJsonData.push(currentLine);
+    }
+
+    const dataUrl = `data:application/json;base64,${btoa(JSON.stringify(processedJsonData))}`;
+
+    const filename = generateFilename("json");
+    downloadFile(dataUrl, filename);
+}
+function exportDrawing(e) {  // not just "export" because that's a keyword
+    const exportButton = document.querySelector(".export");
+    const exportSheet = document.querySelector(".export-sheet");
+    const exportSheetWasOpen = exportSheet.style.display == "block";
 
     // download png directly if alt key pressed
     if (e.altKey) {
@@ -561,13 +829,13 @@ function download(e) {
     }
 
     closeSheets();
-    if (!downloadSheetWasOpen) {
+    if (!exportSheetWasOpen) {
         refreshSvgFilesizeEstimate();
-        downloadSheet.style.display = "block";
-        downloadButton.classList.add("active");
+        exportSheet.style.display = "block";
+        exportButton.classList.add("active");
     }
 }
-document.querySelector(".download").addEventListener("click", download);
+document.querySelector(".export").addEventListener("click", exportDrawing);
 
 function generateShareHash(opts) {
     let hash = "";
@@ -1008,10 +1276,18 @@ function restartRendering(opts) {
                 ctx.moveTo(x, y);
                 svgCurrentPath.push({type: "M", x: x, y: y});
             } else {
-                if (opts.segmentrotation > 0) {
+                if (opts.segmentrotation != 0 || opts.segmentlengthening != 100) {
                     let mid = [(x + preceding[0]) / 2, (y + preceding[1]) / 2];
-                    let start = rotate(mid, preceding, opts.segmentrotation * (Math.PI / 180));
-                    let end = rotate(mid, p, opts.segmentrotation * (Math.PI / 180));
+                    let start = preceding;
+                    let end = p;
+                    if (opts.segmentlengthening != 100) {
+                        start = [mid[0] + (start[0] - mid[0]) * (opts.segmentlengthening / 100), mid[1] + (start[1] - mid[1]) * (opts.segmentlengthening / 100)];
+                        end = [mid[0] + (end[0] - mid[0]) * (opts.segmentlengthening / 100), mid[1] + (end[1] - mid[1]) * (opts.segmentlengthening / 100)];
+                    }
+                    if (opts.segmentrotation != 0) {
+                        start = rotate(mid, start, opts.segmentrotation * (Math.PI / 180));
+                        end = rotate(mid, end, opts.segmentrotation * (Math.PI / 180));
+                    }
                     ctx.moveTo(start[0], start[1]);
                     ctx.lineTo(end[0], end[1]);
                     svgCurrentPath.push({type: "M", x: start[0], y: start[1]});
@@ -1049,6 +1325,7 @@ window.addEventListener("load", e => {
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {
         applyOptions(opts);
+        historize({method: "url"});
     } else {
         applyRandomPreset();
     }
@@ -1056,3 +1333,4 @@ window.addEventListener("load", e => {
 
 window.addEventListener("mousemove", handleOptionHover);
 window.addEventListener("keydown", handleKeyboardIncrement);
+window.addEventListener("keydown", handleKeyboardUndoRedo);

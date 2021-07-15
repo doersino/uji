@@ -112,7 +112,7 @@ function handleOptionInput(e) {
     optionValues[e.name] = v;
     refreshRenderedOptionValue(e.name);
     refreshShareSheetUrl();
-    refreshSvgFilesizeEstimate();
+    refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: e.name, method: "drag"});
 }
@@ -133,7 +133,7 @@ function handleOptionValueInput(e, commit=false) {
     refreshRenderedOptionValue(e.name);
     e.parentElement.querySelector(".slider").value = v;
     refreshShareSheetUrl();
-    refreshSvgFilesizeEstimate();
+    refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: e.name, method: "typing"});
 }
@@ -229,7 +229,7 @@ function incrementOption(name, increment) {
     refreshRenderedOptionValue(name);
     document.querySelector(`.options .slider[name=${name}]`).value = v;
     refreshShareSheetUrl();
-    refreshSvgFilesizeEstimate();
+    refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: name, method: "keyboard"});
 }
@@ -305,7 +305,7 @@ function applyOptions(opts) {
 
     refreshAllRenderedOptions();
     refreshShareSheetUrl();
-    refreshSvgFilesizeEstimate();
+    refreshFilesizeEstimate();
     restartRendering(optionValues);
     // historization should have been done by the caller if desired
 }
@@ -781,13 +781,16 @@ ${paths}
     const filename = generateFilename("svg");
     downloadFile(dataUrl, filename);
 }
-function refreshSvgFilesizeEstimate() {
+function refreshFilesizeEstimate() {
     const svgFilesizeEstimate = document.querySelector(".svg-filesize-estimate");
+    const jsonFilesizeEstimate = document.querySelector(".json-filesize-estimate");
     const estimate = parseInt((optionValues.segments * optionValues.iterations * ((optionValues.segmentrotation != 0 || optionValues.segmentlengthening != 100) ? 2 : 1) * 15) / (1000 * 1000));
     if (estimate < 5) {
         svgFilesizeEstimate.innerHTML = "";
+        jsonFilesizeEstimate.innerHTML = "";
     } else {
-        svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export might take a couple of seconds.`;
+        svgFilesizeEstimate.innerHTML = `<em>Note:</em> Based on the configured number of line segments and iterations, it looks like <strong>the SVG file will weigh in at up to ~${estimate} MB</strong> (it might be substantially less if much of the geometry is outside the bounds of the canvas, or if there's a lot of skipped line segments). The export <strong>might take a couple of seconds</strong>.`;
+        jsonFilesizeEstimate.innerHTML = `<em>Note:</em> It'll be about as large as the SVG variant.`;
     }
 }
 function downloadJSON() {
@@ -830,7 +833,7 @@ function exportDrawing(e) {  // not just "export" because that's a keyword
 
     closeSheets();
     if (!exportSheetWasOpen) {
-        refreshSvgFilesizeEstimate();
+        refreshFilesizeEstimate();
         exportSheet.style.display = "block";
         exportButton.classList.add("active");
     }

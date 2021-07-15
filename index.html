@@ -374,7 +374,8 @@
         .sheet button + p {
             margin-top: 1rem;
         }
-        .svg-filesize-estimate {
+        .svg-filesize-estimate,
+        .json-filesize-estimate {
             font-size: 0.8rem;
         }
         .caring {  /* share-link, share-text, and share-button seem to trip some ad blockers, and sharing is caring, hence this class name */
@@ -563,7 +564,8 @@
             <p>Alternatively, you can export the line geometry as an SVG file – for, say, pen plotting. This'll be a black line on a transparent background – no colors, blend modes, or blurry shadows.</p>
             <p class="svg-filesize-estimate"></p>
             <button class="export-button" onclick="downloadSVG()">SVG <em>line geometry only</em></button>
-            <p>For your <a href="https://github.com/doersino/brachiosaurus">homebrew</a> pen plotter needs, you can export the line geometry in easily digestible JSON form: as a list of line segments, where each line segment is a list of points, and each point is a 2-ary list of x and y coordinates.</p>
+            <p>The line geometry is also available in <a href="https://github.com/doersino/brachiosaurus">easily</a> disgestible JSON form: as a list of line segments, where each line segment is a list of points, and each point is a 2-ary list of float-valued <em>x</em> and <em>y</em> coordinates.</p>
+            <p class="json-filesize-estimate"></p>
             <button class="export-button" onclick="downloadJSON()">JSON <em>nerdy line geometry</em></button>
         </div>
         <div class="sheet share-sheet">

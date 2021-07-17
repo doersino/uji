@@ -438,7 +438,9 @@ function historize(newHistoryFrame) {
             // similar logic as above: if there's a preliminary history frame
             // but we're modifying a different option (or the same by a
             // different method), commit it before setting our new history frame
-            // as the preliminary one
+            // as the preliminary one (i think it's best to leave this explicit
+            // instead of abstracting to deduplicate the code with the bit
+            // above)
             const differentModifiedOption = !historyFrame.modifiedOption || historyFrame.modifiedOption != preliminaryHistoryFrame.modifiedOption;
             const differentMethod = historyFrame.method != preliminaryHistoryFrame.method;
             if (differentModifiedOption || differentMethod) {
@@ -460,7 +462,8 @@ function historize(newHistoryFrame) {
                     }
 
                     // show the redo button again if it was previously visible
-                    // before changing this option
+                    // before changing this option and subsequently returning it
+                    // to the previous value
                     if (historyPosition < history.length - 1) {
                         document.querySelector(".redo").removeAttribute("disabled");
                     }

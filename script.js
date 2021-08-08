@@ -115,6 +115,7 @@ function handleOptionInput(e) {
     refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: e.name, method: "drag"});
+    updateStorage();
 }
 function handleOptionCommit(e) {
 
@@ -136,6 +137,7 @@ function handleOptionValueInput(e, commit=false) {
     refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: e.name, method: "typing"});
+    updateStorage();
 }
 function handleOptionValueCommit(e) {
 
@@ -232,6 +234,7 @@ function incrementOption(name, increment) {
     refreshFilesizeEstimate();
     restartRendering(optionValues);
     historize({modifiedOption: name, method: "keyboard"});
+    updateStorage();
 }
 
 const presets = {
@@ -289,6 +292,7 @@ function handlePresetClick(e) {
     unselectPreset();
     applyPreset(presets[e.name]);
     historize({method: "preset", selectedPreset: e.name});
+    updateStorage();
     e.classList.add("selected");
 }
 function applyPreset(preset) {
@@ -307,7 +311,8 @@ function applyOptions(opts) {
     refreshShareSheetUrl();
     refreshFilesizeEstimate();
     restartRendering(optionValues);
-    // historization should have been done by the caller if desired
+    // historization and adding-to-local-storage should have been done by the
+    // caller if desired
 }
 function applyRandomPreset() {
 
@@ -507,8 +512,9 @@ function applyHistory(i) {
             e.classList.add("flashed");
         });
 
-        // actually visually change the sliders etc.
+        // actually visually change the sliders etc. and update local storage
         applyOptions(history[i].optionValues);
+        updateStorage();
 
         // (un/re)select relevant preset (whether diverged or not)
         unselectPreset();
@@ -575,6 +581,39 @@ function handleKeyboardUndoRedo(e) {
             undo();
         }
     }
+}
+
+function setupRestoreDialogEtc() {
+    const stored = window.localStorage.getItem("uji-stored");
+    if (stored) {
+        const opts = parseShareHash(stored);
+        if (opts && Object.keys(opts).length) {
+
+            // so, if there seems to be something to restore, show the dialog
+            document.querySelector(".restore-dialog").style.display = "block";
+
+            // make sure the options are complete even if not all sliders had
+            // been changed
+            let completedOpts = Object.assign({}, defaults);
+            completedOpts = Object.assign(completedOpts, opts);
+
+            // "populate" undo button with it
+            historize({optionValues: completedOpts, method: "restore"})
+        }
+    }
+}
+function hideRestoreDialog() {
+    document.querySelector(".restore-dialog").style.display = "none";
+}
+
+// this function should be called whenever anything changes, i.e., whenever
+// rendering is kicked off (except on random preset selection or share url
+// extraction on load – since it seems bad to overwrite the user's previous work
+// without any interaction on their part – hence no call of this function in
+// applyRandomPreset() and the load event handler)
+function updateStorage() {
+    hideRestoreDialog();
+    window.localStorage.setItem("uji-stored", generateShareHash(optionValues));
 }
 
 function closeSheets() {
@@ -1327,6 +1366,8 @@ function restartRendering(opts) {
 window.addEventListener("load", e => {
     setupPresets();
     setupOptions();
+
+    setupRestoreDialogEtc();
 
     const opts = tryExtractingOptionsFromUrl();
     if (opts) {

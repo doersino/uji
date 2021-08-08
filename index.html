@@ -314,6 +314,43 @@
         .actions .buttons .buttons-group:last-child {
             margin-right: 0;
         }
+        .actions .buttons .restore-dialog {
+            display: none;
+            position: absolute;
+            height: 0;
+        }
+        .actions .buttons .restore-dialog-inner {
+            position: relative;
+            text-align: left;
+            margin-top: -7rem;
+            padding: 0.5rem;
+            font-size: 0.8em;
+            background-color: #eee;
+            color: #111;
+            width: 22em;
+            border-radius: 0.2rem;
+            box-shadow: 0 -0.3rem 1rem #0004;
+            transform: rotate(-5deg);
+            transform-origin: bottom left;
+            z-index: 600;
+            cursor: sw-resize;  /* thought this was cute since it points toward the undo button */
+        }
+        .actions .buttons .restore-dialog-inner i {
+            color: #666;
+        }
+        .actions .buttons .restore-dialog-inner:after {
+            content: '';
+            position: absolute;
+            margin-top: -0.1em;
+            left: 0.5em;
+            top: 100%;
+            width: 0;
+            height: 0;
+            border-left: 1em solid transparent;
+            border-right: 1em solid transparent;
+            border-top: 1em solid #eee;
+            clear: both;
+        }
         .actions .buttons button {
             font: inherit;
             font-size: 1.2em;
@@ -520,6 +557,13 @@
     <aside class="actions">
         <div class="buttons">
             <div class="buttons-group">
+                <div class="restore-dialog">
+                    <div class="restore-dialog-inner" onclick="hideRestoreDialog()">
+                        <!--<span style="font-size: 1.67em; float: right; padding-left: 0.2rem;">👋</span>-->
+                        Hey, welcome back! Looking to restore what you've been working on last time? Use the <em>undo</em> button!<br>
+                        <i>(Click me or just start doing something else to dismiss.)</i>
+                    </div>
+                </div>
                 <button class="undo" disabled onclick="undo()">
                     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="stroke-linecap: round; stroke-width: 6px; stroke: currentColor; fill: none;" viewBox="0 0 18 54">
                         <g transform="translate(7,3)">

@@ -56,6 +56,7 @@ const options = {
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
     segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
     segmentlengthening: {letter:"𐡑", description: "length of individual line segments <i>in % of their nominal length</i>", min: 10, max: 500, step: 10, default: 100},
+    rotationspeedup: {letter:"𐤄", description: "change of the rotation speed per iteration (negative values will eventually turn things the other way 'round)", min: -0.05, max: 0.05, step: 0.001, default: 0},
 
     // See note above when adding more.
 };
@@ -77,7 +78,7 @@ Object.keys(options).forEach(n => {
 const optionSections = {
     "": ["shape", "radius", "horicenter", "vericenter", "iterations"],
     "expansion": ["expansionhori", "expansionverti", "expansionhoriexp", "expansionvertiexp"],
-    "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationperiod", "rotationuntil", "segmentrotation"],
+    "rotation": ["initialrotation", "rotationspeed", "rotationoriginhori", "rotationoriginverti", "rotationspeedup", "rotationperiod", "rotationuntil", "segmentrotation"],
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeinspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
@@ -242,7 +243,7 @@ const presets = {
     "ⴼ": "s2r1250ro0.025e0.994ex0.994t0.5se8000sk0.74i1388w2560h2560line0.35wav1300",
     "ⵛ": "s3r1560ro-0.4e0.988ex0.988t0.2se8000i297c170ca181can180l232li255lin222b3tr-0.9wa239wav95wavi0.3wavin2j4.7",
     "ⵍ": "s4r460ro0.05rot0.68rota1e0.999ex1.05t2se3000sk0.5i201v0.94c0ca34can28l238li169lin54line0.75b3f196rotat9j0.2",
-    "ⵟ": "r170ro-0.4e1.013ex1.01t1.8se9000i192w2560h2560c16ca12can26l159li157lin161b3f153j2fa77sa170saw58",
+    "ⵟ": "r170ro-0.4e1.013ex1.01t1.8se9000i192w2560h2560c16ca12can26l159li157lin161b3f153j2fa77sa170saw58rotatio-0.02",
     "ⵥ": "s4r1080ro-0.9t0.5se5600sk0.31i201w2560h2560c44ca55can78l163li183lin201b6f201re172tr0.9wav2200hu0.4",
     "ⵣ": "s2r820ro-0.55e0.996ex0.996t0.8sk0.47i192w2095h2104ho0.46v0.58c0ca0can0l200li233lin255in21re18wav336j1.5sa70saw72exp-10expa58canva0.4seg90",
     "ⵠ": "r590ro-0.5e0.995ex0.995t0.8se4000i134w1659h1381c81ca91can103l255li255lin255line0.8f129in150wa913wav1586wavi0.2wavin0.3j0.5fa14sa70saw34exp15expa183sh20",
@@ -1348,6 +1349,7 @@ function restartRendering(opts) {
             y = center[1] + (y - center[1] + (r() - 0.5) * opts.jitter) * opts.expansionverti ** (1 + opts.expansionvertiexp * n / 1000) + opts.translationverti + ((opts.wavinesspverti > -1) ? (opts.wavinessaverti * Math.sin(2 * Math.PI * i / opts.wavinesspverti)) : 0);
 
             let angle = opts.rotationspeed * (Math.PI / 180);
+            if (opts.rotationspeedup != 0) angle *= (1 + opts.rotationspeedup * n);
             if (opts.rotationperiod > -1) angle *= Math.sin(2 * Math.PI * n / opts.rotationperiod);
             if (opts.rotationuntil > -1) angle *= (opts.rotationuntil - Math.min(n, opts.rotationuntil)) / opts.rotationuntil;
             p = rotate([w * opts.rotationoriginhori, h * opts.rotationoriginverti], [x, y], angle);

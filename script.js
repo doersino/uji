@@ -56,7 +56,8 @@ const options = {
     hueshiftspeed: {letter:"𐡌", description: "hue shift speed <i>in degrees per iteration</i>", min: -10, max: 10, step: 0.1, default: 0, class: "hueshifty"},
     segmentrotation: {letter:"𐤌", description: "rotation of individual line segments <i>in degrees</i>", min: 0, max: 179, step: 1, default: 0},
     segmentlengthening: {letter:"𐡑", description: "length of individual line segments <i>in % of their nominal length</i>", min: 10, max: 500, step: 10, default: 100},
-    rotationspeedup: {letter:"𐤄", description: "change of the rotation speed per iteration (negative values will eventually turn things the other way 'round)", min: -0.05, max: 0.05, step: 0.001, default: 0},
+    rotationspeedup: {letter:"𐤄", description: "change of the rotation speed per iteration (negative values will eventually turn things the other way 'round) <i>in %</i>", min: -0.05, max: 0.05, step: 0.001, default: 0},
+    lineswappiness: {letter:"𐡁", description: "chaotic line swappiness (how many randomly picked pairs of line segments, on average, should be swapped, creating long \"strands\", during initial line generation?)", min: 0, max: 100, step: 1, default: 0},
 
     // See note above when adding more.
 };
@@ -82,7 +83,7 @@ const optionSections = {
     "movement": ["translationhori", "translationverti"],
     "waviness": ["jitter", "wavinessphori", "wavinessahori", "wavinesspverti", "wavinessaverti"],
     "fade": ["revealspeed", "fadeinspeed", "fadeoutspeed", "fadeoutstart", "sawtoothfadeoutsize", "sawtoothfadeoutstart"],
-    "line": ["segments", "skipchance", "thickness", "segmentlengthening", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "hueshiftspeed", "blendmode", "shadowblur"],
+    "line": ["segments", "skipchance", "thickness", "segmentlengthening", "lineswappiness", "linecap", "linered", "linegreen", "lineblue", "lineopacity", "hueshiftspeed", "blendmode", "shadowblur"],
     "canvas": ["width", "height", "canvasred", "canvasgreen", "canvasblue", "canvasopacity", "canvasnoise"],
 };
 
@@ -268,7 +269,7 @@ const presets = {
     "ⵡ": "s3r360ro-0.95e0.995ex0.997t1.5i460v0.46c33ca33can89l194li202lin255b8f105j0.2fa34sa120saw10exp17expa-25",
     "ⴸ": "s3r1600ro0.2e0.99ex0.998se6400i402w1114h1580v0c5ca23can37l175li141lin140line0.27b8f403wav747j3.4sa410",
     "ⴲ": "r1850ro0.7rot0.25rota0.25e0.994ex0.994t0.5se11000sk0.74i603w2560h2560ho0.52ca238can239l172li168lin168line0.04b10rotat170wav1300j8",
-    "ⵌ": "r200ro4e1.05ex0.958se5000sk0.8i508w1580h1580ho0.51v0.52c44ca55can96l126li164lin240b2tr10tra10j0.2",
+    "ⵌ": "r200ro4e1.05ex0.958se5000sk0.8i508w1580h1580ho0.51v0.52c44ca55can96l126li164lin240b2tr10tra10j0.2lines5",
     "ⴷ": "r10ro-1e1.037ex1.037t2se1300sk0.1i220w946h946ho0.43c11ca15can20l159li204lin148re13rotat60wa358wav415wavi0.4wavin0.3j0canva0.1sh30linec2",
     "ⵎ": "s4r630ro0.1t0.3se4000i1206v0c244ca242can222l53lin12line0.3tr-0.1tra1rotat403wav3749wavin0.1j0.4",
     "ⴿ": "r30ro2.75e1.05ex1.05t0.2se2000sk0.5i58w2005c16ca21can60l130li163lin199b6wa432wav47wavi5wavin5j10canva0.3sh7.5",
@@ -1203,6 +1204,19 @@ function restartRendering(opts) {
         }
 
         line.push([x,y]);
+    }
+
+    if (opts.lineswappiness > 0) {
+        for (let i = 0; i < line.length; i++) {
+            if (r() > (1 - opts.lineswappiness / opts.segments)) {
+                const j = Math.floor(r() * line.length);
+
+                // swap
+                const temp = line[i];
+                line[i] = line[j];
+                line[j] = temp;
+            }
+        }
     }
 
     if (opts.initialrotation > 0) {

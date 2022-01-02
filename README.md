@@ -49,7 +49,7 @@ Chrome tends to draw less distinct/clear/bright lines than other browsers.
 
 ## License
 
-You may use this repository's contents under the terms of the bespoke *It's the MIT License Except You're Not Allowed to Make an NFT Unless You Use the Proceeds to Feed Birds*, see `LICENSE`.
+You may use this repository's contents under the terms of the bespoke *It's the MIT License Except You're Not Allowed to Make an NFT Unless You Use the Proceeds to Feed Birds & Send Me Pictures of Them* license, see `LICENSE`.
 
 However, the subdirectory `fonts/` contains **third-party webfonts with their own licenses**:
 

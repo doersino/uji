@@ -979,15 +979,6 @@ async function shareShareLink() {
         }
     }
 }
-function tweetShareLink() {
-    const url = document.querySelector(".caring").value;
-    const text = "I've created some generative art, take a look!"
-
-    let link = document.createElement("a");
-    link.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    link.target = "_blank";
-    link.click();
-}
 function refreshShareSheetUrl() {
     const shareUrl = generateShareURL(optionValues);
     document.querySelector(".caring").value = shareUrl;

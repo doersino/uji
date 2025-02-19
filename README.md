@@ -14,7 +14,7 @@ The **tiled buttons at the top are presets** – use them as jumping-off points,
 
 The **sliders determine all aspects of the generated images**. Hover over the icons next to them (which feature glyphs from [Imperial Aramaic](https://en.wikipedia.org/wiki/Imperial_Aramaic#Unicode) and [Phoenician](https://en.wikipedia.org/wiki/Phoenician_alphabet#Unicode)) for descriptions of what each slider does. You can also edit the options directly through the text inputs next to the sliders, which you're able to conveniently <kbd>tab</kbd> through. And pressing <kbd>+</kbd>, <kbd>→</kbd>, or <kbd>↑</kbd> while your mouse pointer's hovering over a slider will increase its value (<kbd>-</kbd>, <kbd>←</kbd>, or <kbd>↓</kbd> will *de*crease it instead). Press <kbd>shift</kbd> at the same time to adjust in 10× larger increments.
 
-#### [🎨 Play around with the various options at `doersino.github.io/uji/`!](https://doersino.github.io/uji/)
+#### [🎨 Play around with the various options at `ghpages.noahdoersing.com/uji/`!](https://ghpages.noahdoersing.com/uji/)
 
 If you find that changing a slider slightly modifies some behavior you'd expect to be the domain of other sliders: Let's just say that's a constraint designed to send your creativity down fresh paths (and not a result of lazy implementation details).
 
